@@ -1,2 +1,5 @@
 dist/
 .DS_Store
+# Studienunterlagen bleiben lokal – nur die README des Ordners wird versioniert
+unterlagen/*
+!unterlagen/README.md

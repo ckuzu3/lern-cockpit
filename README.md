@@ -21,7 +21,8 @@ app/                    das ist der Deploy-Ordner – alles darin wird ausgelief
   manifest.webmanifest  macht die Seite installierbar
   kurse/index.json      welche Kurse geladen werden + Fahrplan
   kurse/<id>.json       ein Kurs: Prüfungssteckbrief, Domains, Karten, Fragen, Plan, Glossar
-kurse/                  Rohmaterial und Uploads (Skripte, Folien) – wird NICHT ausgeliefert
+unterlagen/             deine Skripte, Folien, PDFs – NICHT veröffentlicht, Quelle für neue Kurse
+docs/SCHEMA.md          Aufbau einer Kursdatei
 tools/serve.js          lokaler Testserver
 tools/build-single.js   baut dist/Lern-Cockpit.html, eine einzige Datei für iCloud
 dist/                   Ergebnis des Einzeldatei-Builds
@@ -86,4 +87,4 @@ Also installieren, nicht nur als Lesezeichen speichern.
 
 ## Inhaltsschema
 
-Siehe `kurse/_SCHEMA.md`.
+Siehe `docs/SCHEMA.md`.

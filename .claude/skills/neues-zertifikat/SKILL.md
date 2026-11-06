@@ -12,11 +12,11 @@ Ziel: aus dem Satz „Nächstes Zertifikat: X" wird ohne weiteres Zutun fertiges
 1. **Recherchieren.** Immer die offizielle Quelle zuerst:
    - Microsoft: `learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/<code>`
    - Cisco, AXELOS/PeopleCert, CompTIA: die Herstellerseite mit den Exam Objectives
-   - Studienmodul: die hochgeladenen Unterlagen, ergänzt um Recherche
+   - Studienmodul: zuerst in `unterlagen/<kurs>/` nachsehen, dann mit Recherche ergänzen
    Prüfe das **Gültigkeitsdatum** der Prüfungsziele – sie ändern sich mehrmals pro Jahr.
    Niemals aus dem Gedächtnis arbeiten.
 
-2. **Datei erzeugen** nach `kurse/_SCHEMA.md` → `app/kurse/<id>.json`.
+2. **Datei erzeugen** nach `docs/SCHEMA.md` → `app/kurse/<id>.json`.
    Umfang: 80–150 Karten, 50–80 Fragen mit Erklärungen, 2–3 Probeprüfungen,
    pro Domain eine Zusammenfassung, Glossar, Last-Minute-Blatt.
    Domains und Gewichtungen **wörtlich** aus der offiziellen Quelle.
