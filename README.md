@@ -34,6 +34,31 @@ node tools/serve.js 8899
 ```
 Dann http://localhost:8899 öffnen.
 
+## Veröffentlichen
+
+```
+bash tools/deploy.sh "Was sich geändert hat"
+```
+
+Das Skript zählt die Version im Service Worker hoch (sonst behalten installierte iPhones den
+alten Stand), baut die iCloud-Einzeldatei neu, committet und pusht. GitHub Actions prüft danach
+alle Kursdateien auf Konsistenz und veröffentlicht `app/` auf GitHub Pages. Dauer: ein bis zwei
+Minuten. Schlägt die Prüfung fehl, wird nichts veröffentlicht.
+
+Einmalige Einrichtung im Repository: **Settings → Pages → Source: GitHub Actions**.
+
+## Auf dem iPhone installieren
+
+Die Pages-Adresse in **Safari** öffnen (nicht Chrome – nur Safari kann installieren),
+dann Teilen-Symbol → **Zum Home-Bildschirm**. Danach:
+
+- startet die App im Vollbild, ohne Browserleiste
+- funktioniert ohne Netz, auch im Tunnel
+- behält den Lernfortschritt dauerhaft (iOS räumt installierte Web-Apps nicht auf)
+
+Ohne Installation ist es eine normale Webseite: Netz nötig, und Safari löscht den Fortschritt
+irgendwann. Also wirklich installieren.
+
 ## Fortschritt
 
 Liegt im `localStorage` des Browsers, pro Kurs ein Eintrag (`lc.<kursid>`). Er überlebt jedes

@@ -1,0 +1,57 @@
+# Veröffentlicht den Ordner app/ auf GitHub Pages – bei jedem Push auf main.
+name: Deploy Lern-Cockpit
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Kursdateien prüfen
+        run: |
+          python3 - <<'PY'
+          import json, sys, pathlib
+          base = pathlib.Path('app/kurse')
+          idx = json.loads((base / 'index.json').read_text(encoding='utf-8'))
+          fehler = []
+          for datei in idx['kurse']:
+              k = json.loads((base / datei).read_text(encoding='utf-8'))
+              doms = {d['id'] for d in k.get('domains', [])}
+              fids = {f['id'] for f in k.get('fragen', [])}
+              for c in k.get('karten', []):
+                  if c['domain'] not in doms: fehler.append(f"{datei}: Karte {c['id']} -> Domain {c['domain']} fehlt")
+              for f in k.get('fragen', []):
+                  if f['domain'] not in doms: fehler.append(f"{datei}: Frage {f['id']} -> Domain {f['domain']} fehlt")
+                  if not f.get('richtig') or max(f['richtig']) >= len(f.get('optionen', [])):
+                      fehler.append(f"{datei}: Frage {f['id']} -> ungültiger Index für die richtige Antwort")
+              for p in k.get('pruefungen', []):
+                  for q in p['fragen']:
+                      if q not in fids: fehler.append(f"{datei}: Prüfung {p['id']} -> Frage {q} fehlt")
+              print(f"{datei}: {len(k.get('karten',[]))} Karten, {len(fids)} Fragen, {len(doms)} Domains – ok")
+          if fehler:
+              print('\n'.join(fehler)); sys.exit(1)
+          PY
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: app
+      - id: deployment
+        uses: actions/deploy-pages@v4
