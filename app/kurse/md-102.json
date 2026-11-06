@@ -737,6 +737,252 @@
    "domain": "d5",
    "front": "Was ist der Unterschied zwischen Service Health und Message Center?",
    "back": "**Service Health** zeigt aktuelle Störungen des Dienstes. **Message Center** kündigt geplante Änderungen und neue Funktionen an."
+  },
+  {
+   "domain": "d1",
+   "front": "Wie unterscheidet sich Entra Join von einer blossen Benutzerregistrierung in Windows?",
+   "back": "**Entra Join** entsteht im OOBE oder über *Einstellungen → Zugriff auf Arbeits-/Schulkonto → Dieses Gerät mit Entra ID verbinden*.\n**Registrierung** entsteht über *Arbeits- oder Schulkonto hinzufügen* – das Gerät bleibt privat. Häufige Ursache für falsch eingetragene Firmengeräte.",
+   "id": "k095"
+  },
+  {
+   "domain": "d1",
+   "front": "Womit markierst du Geräte als Firmeneigentum, die weder über Autopilot noch über ABM kommen?",
+   "back": "**Corporate device identifiers** (*Devices → Enrollment*): IMEI oder Seriennummern per CSV importieren. Passende Geräte gelten beim Enrollment automatisch als Firmengeräte.",
+   "id": "k096"
+  },
+  {
+   "domain": "d1",
+   "front": "Welche Einstellung in der Device type restriction blockiert BYOD?",
+   "back": "Pro Plattform der Schalter **Personally owned → Block**. Dann dürfen nur Geräte enrollieren, die Intune als Firmengerät kennt.",
+   "id": "k097"
+  },
+  {
+   "domain": "d1",
+   "front": "Wirkt eine neue Enrollment Restriction auf bereits enrollierte Geräte?",
+   "back": "**Nein.** Restrictions greifen ausschliesslich beim Enrollment. Bestand räumst du über Compliance-Policies oder Remote-Aktionen auf.",
+   "id": "k098"
+  },
+  {
+   "domain": "d1",
+   "front": "Was passiert, wenn das APNs-Zertifikat abläuft?",
+   "back": "Alle Apple-Geräte verlieren die Verwaltung und müssen **neu enrolliert** werden. Erneuern mit **derselben Apple-ID** – eine neue ID bedeutet dasselbe Desaster. Ablaufdatum unter *Tenant status* überwachen.",
+   "id": "k099"
+  },
+  {
+   "domain": "d1",
+   "front": "Lässt sich ein über ABM enrolliertes iPhone vom Benutzer aus der Verwaltung lösen?",
+   "back": "**Nein.** ABM/DEP-Geräte sind supervised; das Verwaltungsprofil ist nicht entfernbar, und auch nach einem Werksreset landet das Gerät beim Setup wieder in Intune.",
+   "id": "k100"
+  },
+  {
+   "domain": "d1",
+   "front": "Welche Voraussetzung hat Windows Hello for Business?",
+   "back": "Ein **TPM** (2.0 empfohlen) und passende Hardware für Biometrie. Konfiguration tenant-weit unter *Enrollment* oder gezielt über ein Profil. Kein lokales AD und kein Entra ID P2 nötig.",
+   "id": "k101"
+  },
+  {
+   "domain": "d2",
+   "front": "Welche Autopilot-Profileinstellung verhindert lokale Adminrechte für den Benutzer?",
+   "back": "**User account type → Standard** im Deployment-Profil. Nachträglich korrigieren liesse sich das über *Local user group membership*, aber das ist der Umweg.",
+   "id": "k102"
+  },
+  {
+   "domain": "d2",
+   "front": "Was bedeutet der Profilstatus Pending?",
+   "back": "Zugewiesen, aber vom Gerät noch **nicht abgeholt oder gemeldet**. Windows checkt etwa alle 8 Stunden ein; **Sync** beschleunigt. Nicht zu verwechseln mit *Error*, *Conflict* oder *Not applicable*.",
+   "id": "k103"
+  },
+  {
+   "domain": "d2",
+   "front": "Wie viele Assignment Filter kannst du pro Zuweisung setzen?",
+   "back": "**Genau einen**, im Modus *include* oder *exclude*. Mehrere Bedingungen schreibst du in die Regel des Filters.",
+   "id": "k104"
+  },
+  {
+   "domain": "d2",
+   "front": "Was macht 'Convert all targeted devices to Autopilot'?",
+   "back": "Registriert Geräte, die das Profil über ihre Gruppe erhalten, nachträglich im Autopilot-Dienst – ohne Hardware-Hash-Sammlung. Ändert **nicht** den Join-Typ.",
+   "id": "k105"
+  },
+  {
+   "domain": "d2",
+   "front": "Welche Konfigurationen auf iOS setzen ein supervised Gerät voraus?",
+   "back": "App Store sperren, einzelne Apps ausblenden, Single App Mode, Web-Content-Filter, globaler Proxy. **Nicht** supervised nötig: WLAN, E-Mail, Zertifikate, VPN.",
+   "id": "k106"
+  },
+  {
+   "domain": "d2",
+   "front": "Gerät ist in Entra ID, aber nicht in Intune – woran liegt es meist?",
+   "back": "Fehlende **Intune-Lizenz** beim Benutzer oder eine **Enrollment Restriction**, die Plattform oder Gerätetyp blockiert.",
+   "id": "k107"
+  },
+  {
+   "domain": "d2",
+   "front": "Wie steuerst du bei Konflikten zwischen GPO und MDM, wer gewinnt?",
+   "back": "Über die Policy **ControlPolicyConflict/MDMWinsOverGP**. Ohne sie gewinnt in vielen Fällen die GPO – auf Hybrid-Geräten eine klassische Fehlerquelle.",
+   "id": "k108"
+  },
+  {
+   "domain": "d2",
+   "front": "Wofür brauchst du bei Windows 365 eine Azure Network Connection?",
+   "back": "Damit Cloud PCs in **deinem eigenen vNet** landen und von dort über VPN oder ExpressRoute an lokale Server kommen. Das *Microsoft Hosted Network* hat keinen Weg in dein Netz.",
+   "id": "k109"
+  },
+  {
+   "domain": "d2",
+   "front": "Welche drei Statuswerte zeigt die Enrollment Status Page dem Benutzer?",
+   "back": "**Device preparation** (Sicherheitsrichtlinien, Join), **Device setup** (geräteweite Apps, Profile, Zertifikate) und **Account setup** (benutzerbezogene Apps und Profile).",
+   "id": "k110"
+  },
+  {
+   "domain": "d2",
+   "front": "Was ist der Unterschied zwischen Platform Script und Remediation?",
+   "back": "**Platform Script**: PowerShell, läuft **einmal** pro Gerät, kein Zeitplan.\n**Remediation**: Detection + Remediation, läuft **wiederkehrend** nach Zeitplan.",
+   "id": "k111"
+  },
+  {
+   "domain": "d2",
+   "front": "Welche Rolle hat die Intune Management Extension?",
+   "back": "Agent für **Win32-Apps** und **PowerShell-Skripte**. Wird automatisch installiert, sobald das Erste davon zugewiesen ist. Logs: `C:\\ProgramData\\Microsoft\\IntuneManagementExtension\\Logs`.",
+   "id": "k112"
+  },
+  {
+   "domain": "d2",
+   "front": "Wie oft checken die Plattformen nach Policies?",
+   "back": "Windows, iOS/macOS und Android jeweils etwa alle **8 Stunden**; frisch enrollierte Geräte anfangs häufiger. Sofort geht nur über **Sync** oder das Company Portal.",
+   "id": "k113"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie löst du einen Konflikt zwischen Security Baseline und eigenem Profil?",
+   "back": "Die betroffene Einstellung in der **Baseline auf *Not configured*** setzen und sie im eigenen Profil verwalten. Prioritäten gibt es hier nicht – ein Widerspruch endet als *Conflict* und greift gar nicht.",
+   "id": "k114"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche Verschlüsselung für Wechseldatenträger und warum?",
+   "back": "**AES-CBC 256** – XTS-AES ist erst ab Windows 10 lesbar. Für OS- und feste Laufwerke bleibt **XTS-AES 256**.",
+   "id": "k115"
+  },
+  {
+   "domain": "d3",
+   "front": "Was bewirkt eine Deadline in einem Update Ring?",
+   "back": "Nach Ablauf wird das Update **installiert und neu gestartet**, auch gegen den Willen des Benutzers; die **Grace Period** räumt danach noch eine Mindestzeit ein. *Active hours* verschiebt nur den Zeitpunkt.",
+   "id": "k116"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche ASR-Regel schützt vor dem Auslesen von Anmeldedaten?",
+   "back": "*Block credential stealing from the Windows local security authority subsystem* – gegen LSASS-Dumps (Mimikatz & Co.).",
+   "id": "k117"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist 'Security Management for Defender for Endpoint'?",
+   "back": "Geräte, die in **Defender onboarded**, aber **nicht in Intune enrolliert** sind, erhalten trotzdem Endpoint-Security-Policies. Freigeschaltet über *Allow Defender for Endpoint to enforce Endpoint Security Configurations*. Praktisch für Server und Altbestand.",
+   "id": "k118"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie verträgt sich Windows Autopatch mit eigenen Update Rings?",
+   "back": "Gar nicht gut: Autopatch verwaltet die Ringe (**Test, First, Fast, Broad**) selbst. Eigene Ringe für dieselben Geräte erzeugen Konflikte – entweder oder.",
+   "id": "k119"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche Option in Update Rings verhindert Treiber über Windows Update?",
+   "back": "**Block updates for drivers**. Alternativ Treiber gezielt über **Driver Updates**-Policies mit manueller Genehmigung steuern.",
+   "id": "k120"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie erzwingst du Mindest-OS-Versionen bei BYOD-Geräten, die du nicht updaten kannst?",
+   "back": "Über die **Compliance-Policy** (minimale OS-Version) plus Conditional Access, oder in der **App Protection Policy** unter *Conditional launch* mit Aktion *Block access*.",
+   "id": "k121"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche Edition braucht Hotpatch?",
+   "back": "**Windows 11 Enterprise 24H2** oder neuer, bzw. Windows 365. Nicht auf jeder Edition verfügbar. Konfiguration über Autopatch-/Hotpatch-Policies.",
+   "id": "k122"
+  },
+  {
+   "domain": "d4",
+   "front": "App installiert, Intune meldet trotzdem 'Failed' – warum?",
+   "back": "Die **Erkennungsregel** passt nicht zum Ergebnis: falscher MSI-Code, falscher Pfad, falsche Version. Intune hält die App für nicht installiert und versucht es erneut.",
+   "id": "k123"
+  },
+  {
+   "domain": "d4",
+   "front": "Supersedence mit 'Uninstall previous version' – was bewirkt Yes und was No?",
+   "back": "**Yes**: Vorgängerversion wird zuerst deinstalliert (nötig bei Installern ohne In-Place-Update).\n**No**: Die neue Version wird über die alte installiert – ein Update.",
+   "id": "k124"
+  },
+  {
+   "domain": "d4",
+   "front": "Was unterscheidet den Office Cloud Policy Service von Intune-Policies für M365 Apps?",
+   "back": "Der **Cloud Policy Service** (config.office.com) wirkt **benutzerbasiert** über die Anmeldung, auch auf nicht verwalteten Geräten. Intune-Policies setzen ein verwaltetes Gerät voraus.",
+   "id": "k125"
+  },
+  {
+   "domain": "d4",
+   "front": "Warum bleibt eine App Protection Policy manchmal wirkungslos?",
+   "back": "Weil der Benutzer eine App verwendet, die **nicht policy-managed** ist – etwa Safari oder eine Fremd-App. Geschützt sind nur unterstützte Apps wie Outlook, Teams, Word, Edge.",
+   "id": "k126"
+  },
+  {
+   "domain": "d4",
+   "front": "Welche App-Art aktualisiert sich von selbst?",
+   "back": "**Microsoft Store app (new)** über Store/Winget. Win32- und LOB-Apps musst du neu paketieren; der **Enterprise App Catalog** (Intune Suite) nimmt dir das für Standardsoftware ab.",
+   "id": "k127"
+  },
+  {
+   "domain": "d4",
+   "front": "Welche Requirements kannst du bei einer Win32-App setzen?",
+   "back": "Betriebssystem und Mindestversion, **Architektur** (x86/x64/ARM64), freier Speicher, RAM, CPU, sowie ein **Requirement-Skript** mit erwartetem Rückgabewert. Nicht erfüllt → Status *Not applicable*.",
+   "id": "k128"
+  },
+  {
+   "domain": "d4",
+   "front": "Was macht 'Available with or without enrollment'?",
+   "back": "Nur für **iOS und Android**: Die App erscheint auch auf nicht enrollierten Geräten im Company Portal – der Weg für MAM-WE-Szenarien.",
+   "id": "k129"
+  },
+  {
+   "domain": "d4",
+   "front": "Wo siehst du, warum eine App auf einem einzelnen Gerät nicht installiert wurde?",
+   "back": "*Apps → App → **Device install status***, Spalte *Status details* mit Fehlercode. Auf dem Gerät weiter in den **IME-Logs** unter ProgramData.",
+   "id": "k130"
+  },
+  {
+   "domain": "d5",
+   "front": "Welcher Graph-Endpunkt listet verwaltete Geräte?",
+   "back": "`GET /deviceManagement/managedDevices`. Entra-Geräteobjekte ohne Intune-Details lägen unter `/devices`, Profile unter `/deviceManagement/deviceConfigurations`.",
+   "id": "k131"
+  },
+  {
+   "domain": "d5",
+   "front": "Welche vier Report-Typen kennt Intune?",
+   "back": "**Operational** (Listen zum Handeln), **Organizational** (Gesamtbild), **Historical** (Trends), **Specialist** (Detailreports).",
+   "id": "k132"
+  },
+  {
+   "domain": "d5",
+   "front": "Wie findest du Geräte, die lange nicht eingecheckt haben?",
+   "back": "Geräte-Inventar nach **Last check-in** sortieren oder filtern, dann exportieren. Nicht verwechseln mit *nicht konform* – das ist etwas anderes.",
+   "id": "k133"
+  },
+  {
+   "domain": "d5",
+   "front": "Wofür brauchst du bei Custom Compliance zwei Dateien?",
+   "back": "Das **PowerShell-Discovery-Skript** liefert JSON mit den gemessenen Werten, die **JSON-Regeldatei** definiert Operator, erwarteten Wert und den Text, den der Benutzer sieht.",
+   "id": "k134"
+  },
+  {
+   "domain": "d5",
+   "front": "Service Health oder Message Center – was ist was?",
+   "back": "**Service Health**: aktuelle Störungen des Dienstes.\n**Message Center**: angekündigte Änderungen und neue Funktionen.\nBeides unter *Tenant administration → Tenant status*.",
+   "id": "k135"
   }
  ],
  "fragen": [
@@ -1618,6 +1864,939 @@
     1
    ],
    "erklaerung": "Die Agents liefern **Vorschläge** – Bedrohungsuntersuchung, Leistungsanalyse, Erklärungen zu Konflikten. Die Entscheidung bleibt beim Admin; nichts wird automatisch geändert."
+  },
+  {
+   "domain": "d1",
+   "frage": "Ein Gerät erscheint in Entra ID als 'Microsoft Entra registered', obwohl es ein Firmenlaptop ist, der per Autopilot ausgerollt wurde. Was ist passiert?",
+   "optionen": [
+    "Das Autopilot-Profil war nicht zugewiesen, der Benutzer hat sich über 'Arbeits- oder Schulkonto hinzufügen' angemeldet",
+    "Der MDM user scope steht auf None",
+    "Das Gerät hat kein TPM 2.0",
+    "Die Compliance-Policy ist nicht zugewiesen"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Meldet sich der Benutzer in Windows über *Einstellungen → Konten → Auf Arbeits- oder Schulkonto zugreifen* an, wird das Gerät nur **registriert**. Entra Join entsteht nur im OOBE oder über *Dieses Gerät mit Microsoft Entra ID verbinden*. Fehlender MDM scope verhindert das Enrollment, nicht den Join-Typ.",
+   "id": "f059"
+  },
+  {
+   "domain": "d1",
+   "frage": "Du willst verhindern, dass Mitarbeitende private Windows-Geräte enrollieren, Firmen-Windows-Geräte aber zulassen. Was konfigurierst du?",
+   "optionen": [
+    "Device type restriction: Windows (MDM) erlauben, 'Personally owned' blockieren",
+    "Device limit restriction auf 0",
+    "Eine Compliance-Policy mit Ownership-Prüfung",
+    "Einen Assignment Filter auf deviceOwnership"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Die **Device type restriction** kennt pro Plattform den Schalter *Personally owned*. Auf *Block* gestellt, dürfen nur als Firmengerät bekannte Geräte (Autopilot, ABM, Corporate Identifier) enrollieren. Filter und Compliance greifen erst **nach** dem Enrollment.",
+   "id": "f060"
+  },
+  {
+   "domain": "d1",
+   "frage": "Wie machst du Intune bekannt, dass bestimmte Geräte Firmeneigentum sind, obwohl sie weder über Autopilot noch über ABM laufen?",
+   "optionen": [
+    "Corporate device identifiers mit IMEI oder Seriennummer importieren",
+    "Eine dynamische Gruppe mit deviceOwnership -eq \"Company\"",
+    "Das Gerät nach dem Enrollment manuell umstellen",
+    "Scope Tag 'Corporate' setzen"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Über *Devices → Enrollment → **Corporate device identifiers*** importierst du IMEI oder Seriennummern per CSV. Geräte mit passender Kennung gelten beim Enrollment als Firmengeräte. Manuelles Umstellen geht zwar, skaliert aber nicht und ist nicht die vorgesehene Antwort.",
+   "id": "f061"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Angaben braucht eine Compliance-Policy, damit ein Windows-Gerät ohne BitLocker als nicht-konform gilt und der Benutzer zuerst gewarnt wird?",
+   "optionen": [
+    "Device Health: BitLocker erforderlich, dazu eine Action 'Send email to end user' am Tag 0 und 'Mark device noncompliant' nach einigen Tagen",
+    "Nur die Einstellung 'Require BitLocker'",
+    "Eine Conditional-Access-Policy mit BitLocker-Grant",
+    "Ein Endpoint-Security-Profil für Disk Encryption"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Die Regel liefert die Bewertung, aber erst die **Actions for noncompliance** erlauben die Staffelung: sofort E-Mail, später *Mark device noncompliant*. Ohne eigene Action wird das Gerät sofort als nicht-konform markiert. Das Encryption-Profil verschlüsselt, prüft aber nicht.",
+   "id": "f062"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Rolle gibst du einem Mitarbeiter, der Geräte suchen, Remote-Aktionen ausführen und Enrollment-Probleme beheben, aber keine Policies ändern soll?",
+   "optionen": [
+    "Help Desk Operator",
+    "Policy and Profile Manager",
+    "Endpoint Security Manager",
+    "Read Only Operator"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "**Help Desk Operator** darf Geräte sehen und Remote-Aktionen ausführen, aber keine Konfigurationen anlegen oder ändern. *Read Only Operator* dürfte nicht einmal die Aktionen, *Policy and Profile Manager* dürfte zu viel.",
+   "id": "f063"
+  },
+  {
+   "domain": "d1",
+   "frage": "Ein iPhone wurde über Apple Business Manager enrolliert. Der Benutzer will das Firmenprofil entfernen. Was gilt?",
+   "optionen": [
+    "Er kann es in den iOS-Einstellungen entfernen",
+    "Bei supervised Geräten aus ABM lässt sich das Verwaltungsprofil nicht entfernen",
+    "Er kann es entfernen, wenn er das Gerätepasswort kennt",
+    "Nur nach einem Werksreset"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Über ABM/DEP enrollierte Geräte sind **supervised**, und das Verwaltungsprofil ist nicht entfernbar – auch ein Werksreset bringt das Gerät beim Setup wieder in die Verwaltung zurück. Genau deshalb ist ABM der Weg für Firmengeräte.",
+   "id": "f064"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Voraussetzung gilt für Windows Hello for Business mit Biometrie auf einem Entra-joined Gerät?",
+   "optionen": [
+    "Ein TPM, kompatible Hardware und eine Policy, die Biometrie erlaubt",
+    "Ein lokales Active Directory",
+    "Entra ID P2",
+    "Eine Smartcard als Rückfallebene"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "WHfB braucht ein **TPM** (1.2 oder 2.0, Microsoft empfiehlt 2.0) und entsprechende Sensorik; Biometrie wird über *Use biometrics* in der Policy freigegeben. Ein lokales AD braucht nur das hybride Szenario, P2 ist nicht nötig.",
+   "id": "f065"
+  },
+  {
+   "domain": "d1",
+   "frage": "Du siehst in Entra ID zwei Einträge für dasselbe Notebook – einen 'Hybrid Microsoft Entra joined' und einen 'Microsoft Entra registered'. Woher kommt das?",
+   "optionen": [
+    "Das Gerät wurde zweimal enrolliert",
+    "Der Benutzer hat sich zusätzlich mit 'Arbeits- oder Schulkonto hinzufügen' angemeldet",
+    "Entra Connect synchronisiert doppelt",
+    "Das Autopilot-Profil wurde zweimal zugewiesen"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Doppeleinträge entstehen typischerweise, wenn auf einem bereits hybrid-joined Gerät zusätzlich eine Benutzerregistrierung stattfindet. Der registrierte Eintrag ist unschädlich, aber verwirrend – er lässt sich entfernen.",
+   "id": "f066"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Aussage über Scope Tags trifft zu?",
+   "optionen": [
+    "Ein Objekt ohne zugewiesenen Scope Tag trägt implizit den Tag 'Default'",
+    "Scope Tags ersetzen Rollen",
+    "Scope Tags lassen sich nur auf Geräte anwenden",
+    "Ein Admin sieht automatisch alle Objekte, unabhängig vom Scope Tag"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Objekte ohne eigenen Tag bekommen implizit **Default**. Wer nur einen Standort-Tag hat, sieht diese Objekte nicht – eine häufige Ursache für 'Ich sehe mein Profil nicht mehr'. Scope Tags gelten für Geräte, Profile, Apps und mehr.",
+   "id": "f067"
+  },
+  {
+   "domain": "d1",
+   "frage": "Was passiert mit bestehenden Geräten, wenn du eine neue Enrollment Restriction mit Priorität 1 erstellst und einer Gruppe zuweist?",
+   "optionen": [
+    "Sie werden sofort entfernt, wenn sie der Regel widersprechen",
+    "Nichts – Enrollment Restrictions wirken nur beim nächsten Enrollment",
+    "Sie werden als nicht-konform markiert",
+    "Sie werden automatisch neu enrolliert"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Enrollment Restrictions greifen ausschliesslich **beim Enrollment**. Bereits enrollierte Geräte bleiben unberührt. Wer Bestand aufräumen will, braucht Compliance-Policies oder Remote-Aktionen.",
+   "id": "f068"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche zwei Möglichkeiten gibt es, Windows-Geräte automatisch in eine Entra-Gruppe zu bekommen, bevor die erste Policy greifen muss?",
+   "optionen": [
+    "Dynamische Gruppe mit Autopilot-Regel",
+    "Enrollment Time Grouping bei Device Preparation",
+    "Assignment Filter",
+    "Scope Tag"
+   ],
+   "richtig": [
+    0,
+    1
+   ],
+   "erklaerung": "Die **dynamische Gruppe** funktioniert für Autopilot-Geräte über die ZTDId, braucht aber Zeit. **Enrollment Time Grouping** (Autopilot Device Preparation) legt das Gerät sofort beim Enrollment in die Zielgruppe. Filter und Scope Tags sind keine Gruppenmitgliedschaft.",
+   "id": "f069"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Einstellung muss gesetzt sein, damit ein Benutzer seinen BitLocker-Schlüssel selbst abrufen kann?",
+   "optionen": [
+    "In Entra ID: 'Restrict users from recovering the BitLocker key(s) for their owned devices' auf No",
+    "In Intune: 'Allow user self-service recovery' in der Compliance-Policy",
+    "Der Benutzer braucht die Rolle Help Desk Operator",
+    "Es ist technisch nicht möglich"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Diese Entra-Device-Einstellung entscheidet darüber. Steht sie auf **No**, findet der Benutzer den Schlüssel unter *myaccount.microsoft.com → Geräte*. Eine entsprechende Compliance-Einstellung gibt es nicht.",
+   "id": "f070"
+  },
+  {
+   "domain": "d1",
+   "frage": "Ein Android-Gerät soll als Kiosk mit genau einer App laufen, ohne dass sich jemand anmeldet. Welchen Enrollment-Modus wählst du?",
+   "optionen": [
+    "Personally-owned work profile",
+    "Corporate-owned fully managed",
+    "Corporate-owned dedicated (COSU)",
+    "Corporate-owned work profile (COPE)"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "**Dedicated / COSU** ist der Kiosk-Modus ohne Benutzerkonto, typischerweise mit einer Multi- oder Single-App-Konfiguration. *Fully managed* setzt einen angemeldeten Benutzer voraus, die anderen beiden haben einen privaten Bereich.",
+   "id": "f071"
+  },
+  {
+   "domain": "d2",
+   "frage": "Beim Autopilot-Lauf bleibt die ESP bei 'Installing apps' stehen und bricht nach einer Stunde ab. Welche zwei Ursachen prüfst du zuerst?",
+   "optionen": [
+    "Eine als blockierend markierte Win32-App schlägt fehl",
+    "Das Installation progress timeout ist zu kurz für die Apps",
+    "Das Gerät hat kein TPM 2.0",
+    "Die Compliance-Policy ist nicht zugewiesen"
+   ],
+   "richtig": [
+    0,
+    1
+   ],
+   "erklaerung": "Die ESP wartet auf alle **Required** und als blockierend geführten Apps. Schlägt eine fehl oder dauert die Summe länger als das **Timeout** (Standard 60 Minuten), bricht der Vorgang ab. TPM betrifft nur self-deploying, Compliance spielt im OOBE keine Rolle.",
+   "id": "f072"
+  },
+  {
+   "domain": "d2",
+   "frage": "Wie verhinderst du, dass bei einem user-driven Autopilot der lokale Benutzer Administrator des Geräts wird?",
+   "optionen": [
+    "Im Autopilot-Profil 'User account type' auf Standard setzen",
+    "Eine LAPS-Policy zuweisen",
+    "Die Policy 'Local user group membership' mit Replace",
+    "Im ESP 'Block device use' aktivieren"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Das Autopilot-Deployment-Profil hat die Einstellung **User account type: Standard oder Administrator**. Standard verhindert lokale Adminrechte von Anfang an. Die Gruppen-Policy kann nachträglich korrigieren, ist aber der Umweg.",
+   "id": "f073"
+  },
+  {
+   "domain": "d2",
+   "frage": "Du willst eine Einstellung setzen, die es im Settings Catalog nicht gibt, für die aber ein CSP existiert. Was nutzt du?",
+   "optionen": [
+    "Ein Custom-Profil mit OMA-URI",
+    "Administrative Templates",
+    "Ein Platform Script",
+    "Group Policy Analytics"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Für CSP-Einstellungen ausserhalb des Katalogs ist das **Custom-Profil mit OMA-URI** vorgesehen. Administrative Templates decken nur ADMX-Inhalte ab, ein Skript wäre keine verwaltete Konfiguration.",
+   "id": "f074"
+  },
+  {
+   "domain": "d2",
+   "frage": "Was ist der Unterschied zwischen 'Sync' und 'Fresh Start' als Remote-Aktion?",
+   "optionen": [
+    "Sync holt Policies sofort ab, Fresh Start installiert Windows neu und entfernt vorinstallierte Apps",
+    "Sync startet neu, Fresh Start setzt Policies zurück",
+    "Beide entfernen Firmendaten",
+    "Sync gilt nur für Apple-Geräte"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "**Sync** stösst den Check-in an, sonst alle acht Stunden. **Fresh Start** installiert Windows neu, entfernt OEM-Software und kann Benutzerdaten optional behalten.",
+   "id": "f075"
+  },
+  {
+   "domain": "d2",
+   "frage": "In welchem Fall greift ein Autopilot-Gerätenamen-Template nicht?",
+   "optionen": [
+    "Bei user-driven Entra Join",
+    "Bei Hybrid Entra Join",
+    "Bei self-deploying",
+    "Bei pre-provisioning"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Bei **Hybrid** Join bestimmt das **Domain Join**-Konfigurationsprofil den Namen, nicht das Autopilot-Template. In allen reinen Entra-Join-Varianten greift das Template.",
+   "id": "f076"
+  },
+  {
+   "domain": "d2",
+   "frage": "Ein Konfigurationsprofil zeigt den Status 'Pending' auf vielen Geräten. Was bedeutet das?",
+   "optionen": [
+    "Das Profil hat einen Fehler",
+    "Das Gerät hat die Zuweisung noch nicht abgeholt",
+    "Es besteht ein Konflikt",
+    "Die Einstellung wird nicht unterstützt"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Pending** heisst: zugewiesen, aber vom Gerät noch nicht abgeholt oder gemeldet. Windows meldet sich alle acht Stunden; mit **Sync** beschleunigst du es. *Error* wäre ein Fehler, *Conflict* ein Widerspruch, *Not applicable* nicht unterstützt.",
+   "id": "f077"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Aussage über Assignment Filters ist richtig?",
+   "optionen": [
+    "Ein Filter kann im Include- oder Exclude-Modus auf eine Zuweisung angewendet werden",
+    "Filter ersetzen Entra-Gruppen",
+    "Filter funktionieren nur für Apps",
+    "Pro Zuweisung sind mehrere Filter kombinierbar"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Ein Filter wird **einer Zuweisung** hinzugefügt, entweder *include* oder *exclude*. Du weist weiterhin an eine Gruppe zu. Pro Zuweisung ist genau ein Filter möglich; mehrere Bedingungen schreibst du in dessen Regel.",
+   "id": "f078"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Remote-Aktion brauchst du, wenn ein Mitarbeiter sein Windows-Notebook verloren hat und du sicherstellen willst, dass niemand an die Daten kommt?",
+   "optionen": [
+    "Retire",
+    "Wipe",
+    "Fresh Start",
+    "Collect diagnostics"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Wipe** setzt das Gerät auf Werkszustand zurück und entfernt alle Daten. *Retire* liesse die persönlichen Daten liegen. Zusätzlich sinnvoll: BitLocker-Schlüssel rotieren und das Gerät in Entra deaktivieren.",
+   "id": "f079"
+  },
+  {
+   "domain": "d2",
+   "frage": "Was brauchst du, damit Windows 365 Cloud PCs Zugriff auf Server in deinem lokalen Rechenzentrum haben?",
+   "optionen": [
+    "Microsoft Hosted Network",
+    "Eine Azure Network Connection in ein vNet mit Verbindung nach on-premises",
+    "Microsoft Tunnel",
+    "Eine Conditional-Access-Ausnahme"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Für Zugriff auf eigene Netze brauchst du eine **Azure Network Connection** (ANC), die den Cloud PC in dein eigenes vNet stellt – von dort über ExpressRoute oder VPN weiter. Das Microsoft Hosted Network hat keine Verbindung zu deinem Netz.",
+   "id": "f080"
+  },
+  {
+   "domain": "d2",
+   "frage": "Wofür ist die Option 'Convert all targeted devices to Autopilot' in einem Deployment-Profil gedacht?",
+   "optionen": [
+    "Bestehende, bereits enrollierte Geräte nachträglich als Autopilot-Geräte registrieren",
+    "Hybrid-Geräte in Entra-joined umwandeln",
+    "Alle Geräte auf Windows 11 heben",
+    "Geräte in den Self-deploying-Modus setzen"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Die Option registriert Geräte, die das Profil über ihre Gruppe erhalten, nachträglich im Autopilot-Dienst – praktisch beim Umstieg auf Autopilot ohne Hardware-Hash-Sammlung. Der Join-Typ ändert sich dadurch nicht.",
+   "id": "f081"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Intune-Suite-Funktion brauchst du, um eine Abfrage über die gesamte Geräteflotte statt nur über ein Gerät zu stellen?",
+   "optionen": [
+    "Device Query auf einem Gerät",
+    "Advanced Analytics mit Device Query über mehrere Geräte",
+    "Endpoint Analytics",
+    "Data Warehouse API"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Die einzelne Gerätabfrage ist Teil der Suite; die **flottenweite** Abfrage gehört zu **Advanced Analytics**. Endpoint Analytics liefert vorgefertigte Kennzahlen, das Data Warehouse historische Berichte.",
+   "id": "f082"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Einstellung in einem iOS-Konfigurationsprofil setzt voraus, dass das Gerät supervised ist?",
+   "optionen": [
+    "WLAN-Konfiguration",
+    "App-Store sperren oder einzelne Apps ausblenden",
+    "E-Mail-Profil",
+    "Zertifikat verteilen"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Einschränkungen wie das Sperren des App Store, Single App Mode oder das Ausblenden von Apps funktionieren nur auf **supervised** Geräten. WLAN, Mail und Zertifikate gehen auch auf nicht-supervised Geräten.",
+   "id": "f083"
+  },
+  {
+   "domain": "d2",
+   "frage": "Wie stellst du sicher, dass ein Konfigurationsprofil nur auf Firmengeräten landet, obwohl die Gruppe auch private enthält?",
+   "optionen": [
+    "Assignment Filter mit (device.deviceOwnership -eq \"Corporate\") im Include-Modus",
+    "Scope Tag 'Corporate'",
+    "Enrollment Restriction",
+    "Compliance-Policy"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Der **Assignment Filter** auf `deviceOwnership` schränkt die bestehende Zuweisung ein, ohne dass du die Gruppe ändern musst. Scope Tags steuern Admin-Sichtbarkeit, Restrictions wirken nur beim Enrollment.",
+   "id": "f084"
+  },
+  {
+   "domain": "d2",
+   "frage": "Ein Gerät taucht nach dem Enrollment nicht in Intune auf, in Entra ID aber schon. Wo suchst du?",
+   "optionen": [
+    "Enrollment Restrictions und zugewiesene Intune-Lizenz des Benutzers",
+    "Compliance-Policy",
+    "Autopilot-Profil",
+    "Delivery Optimization"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Ohne **Intune-Lizenz** für den Benutzer scheitert das MDM-Enrollment, obwohl der Entra-Join klappt. Zweiter Kandidat sind **Enrollment Restrictions**, die Plattform oder Gerätetyp blockieren.",
+   "id": "f085"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Aussage zu Endpoint Privilege Management stimmt?",
+   "optionen": [
+    "EPM macht den Benutzer dauerhaft zum lokalen Administrator",
+    "EPM hebt einzelne Anwendungen an, der Benutzer bleibt Standardbenutzer",
+    "EPM ersetzt LAPS",
+    "EPM ist in Intune Plan 1 enthalten"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "EPM erhöht **Anwendungen**, nicht Benutzer – das ist der ganze Sinn. Es ersetzt LAPS nicht (das verwaltet das lokale Admin-Konto) und gehört zur kostenpflichtigen **Intune Suite** bzw. ist als Add-on lizenziert.",
+   "id": "f086"
+  },
+  {
+   "domain": "d2",
+   "frage": "Wie lange braucht ein Windows-Gerät typischerweise, bis es eine neu zugewiesene Policy ohne manuellen Sync anwendet?",
+   "optionen": [
+    "sofort",
+    "etwa 8 Stunden",
+    "24 Stunden",
+    "beim nächsten Neustart"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Windows checkt etwa alle **8 Stunden** ein (frisch enrollierte Geräte anfangs häufiger). iOS/macOS etwa alle 8 Stunden, Android alle 8 Stunden. Sofort geht nur über die Remote-Aktion **Sync** oder das Company Portal.",
+   "id": "f087"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welches Werkzeug zeigt dir, ob deine Geräte die Hardwareanforderungen für Windows 11 erfüllen?",
+   "optionen": [
+    "Endpoint Analytics → Work from anywhere",
+    "Device Query",
+    "Group Policy Analytics",
+    "Tenant status"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Der Bericht **Work from anywhere** in Endpoint Analytics enthält die Windows-11-Readiness pro Gerät mit CPU, TPM, Secure Boot, RAM und Speicher – die Grundlage jeder Upgrade-Welle.",
+   "id": "f088"
+  },
+  {
+   "domain": "d3",
+   "frage": "Du weist einer Gruppe sowohl eine Security Baseline als auch ein eigenes Antivirus-Profil zu. Beide setzen 'Real-time protection' unterschiedlich. Was tust du?",
+   "optionen": [
+    "Die Priorität des eigenen Profils erhöhen",
+    "Die Einstellung in der Baseline auf 'Not configured' setzen",
+    "Die Baseline entfernen",
+    "Nichts – die restriktivere Einstellung gewinnt"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Baselines und Profile kennen **keine Priorität**; der Widerspruch endet als *Conflict* und die Einstellung greift nicht. Microsofts Weg: die betroffene Einstellung in der Baseline auf **Not configured** stellen und sie im eigenen Profil verwalten.",
+   "id": "f089"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche zwei Angaben braucht eine Compliance-Policy, damit Defender-for-Endpoint-Risiken den Zugriff steuern?",
+   "optionen": [
+    "'Require the device to be at or under the machine risk score'",
+    "Eine Conditional-Access-Policy mit 'Require device to be marked as compliant'",
+    "Eine ASR-Regel im Block-Modus",
+    "Eine EDR-Policy mit Risk Level"
+   ],
+   "richtig": [
+    0,
+    1
+   ],
+   "erklaerung": "Die Compliance-Regel übersetzt den Defender-Risikowert in konform/nicht konform, und **Conditional Access** zieht daraus die Konsequenz. ASR- und EDR-Policies schützen, bewerten aber nicht den Zugriff.",
+   "id": "f090"
+  },
+  {
+   "domain": "d3",
+   "frage": "Was passiert mit einem Gerät, das eine Security Baseline erhält, auf dem aber bereits lokale Gruppenrichtlinien dieselben Werte anders setzen?",
+   "optionen": [
+    "MDM gewinnt immer",
+    "GPO gewinnt immer",
+    "Standardmässig gewinnt MDM, über MDMWinsOverGP steuerbar",
+    "Die Einstellung wird ignoriert"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "Bei Konflikten zwischen GPO und MDM entscheidet die Policy **ControlPolicyConflict/MDMWinsOverGP**. Ohne sie gewinnt in vielen Fällen die GPO – auf Hybrid-Geräten eine klassische Fehlerquelle.",
+   "id": "f091"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Update-Einstellung sorgt dafür, dass ein Gerät nach Ablauf der Frist auch gegen den Willen des Benutzers neu startet?",
+   "optionen": [
+    "Deadline für Quality Updates plus Grace Period",
+    "Active hours",
+    "Deferral period",
+    "Pause updates"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "**Deadline** erzwingt Installation und Neustart nach der gesetzten Frist; die **Grace Period** gibt dem Gerät danach noch eine Mindestzeit. *Active hours* verschiebt nur den Zeitpunkt, *Deferral* den Start.",
+   "id": "f092"
+  },
+  {
+   "domain": "d3",
+   "frage": "Wie schützt du Geräte gegen das Auslesen von Anmeldedaten aus dem LSASS-Prozess?",
+   "optionen": [
+    "Mit der ASR-Regel 'Block credential stealing from the Windows local security authority subsystem'",
+    "Mit BitLocker",
+    "Mit App Control for Business",
+    "Mit einer Firewall-Regel"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Genau dafür gibt es diese **ASR-Regel**. BitLocker schützt Daten im Ruhezustand, App Control die Ausführung, die Firewall den Netzwerkverkehr – keines davon adressiert LSASS.",
+   "id": "f093"
+  },
+  {
+   "domain": "d3",
+   "frage": "Du willst Windows-Updates für eine Pilotgruppe nach zwei Tagen und für alle anderen nach zehn Tagen ausrollen. Wie setzt du das um?",
+   "optionen": [
+    "Zwei Update Rings mit unterschiedlichen Deferral-Werten, zugewiesen an getrennte Gruppen",
+    "Ein Ring mit zwei Zuweisungen",
+    "Zwei Feature-Update-Policies",
+    "Delivery Optimization mit Group ID"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Gestaffelte Ausrollung heisst **zwei Ringe** mit 2 und 10 Tagen Deferral, zugewiesen an **disjunkte** Gruppen. Ein Gerät darf nur in einem Ring sein, sonst Konflikt.",
+   "id": "f094"
+  },
+  {
+   "domain": "d3",
+   "frage": "Was ist bei Windows Autopatch bezüglich der Ringe zu beachten?",
+   "optionen": [
+    "Du legst die Ringe selbst an",
+    "Autopatch verteilt die Geräte automatisch auf Test, First, Fast und Broad",
+    "Autopatch ersetzt Intune",
+    "Autopatch funktioniert nur mit Windows 10"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Autopatch** übernimmt die Ringverwaltung und verteilt die Geräte selbst auf *Test*, *First*, *Fast* und *Broad*. Eigene Update Rings für dieselben Geräte würden kollidieren.",
+   "id": "f095"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Verschlüsselungseinstellung gilt für Wechseldatenträger, wenn sie auch auf älteren Windows-Versionen lesbar sein sollen?",
+   "optionen": [
+    "XTS-AES 256",
+    "XTS-AES 128",
+    "AES-CBC 256",
+    "Keine Verschlüsselung"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "**AES-CBC** ist das kompatible Verfahren für Wechseldatenträger, weil XTS-AES erst ab Windows 10 gelesen werden kann. Für OS- und feste Laufwerke bleibt **XTS-AES 256** die Empfehlung.",
+   "id": "f096"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Rolle spielt die Einstellung 'Defender for Endpoint enforce Endpoint Security Configurations'?",
+   "optionen": [
+    "Sie erlaubt es, Endpoint-Security-Policies über Defender an Geräte auszuliefern, die nicht in Intune enrolliert sind",
+    "Sie aktiviert den Virenschutz",
+    "Sie erzwingt Compliance",
+    "Sie schaltet ASR frei"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Mit dieser Einstellung können **Security-Management-Geräte** (in Defender onboarded, aber nicht Intune-enrolliert) Endpoint-Security-Profile erhalten. Praktisch für Server und Altbestand.",
+   "id": "f097"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Option brauchst du, damit iOS-Geräte eine Mindestversion erzwingen und Benutzer das Update nicht ewig verschieben können?",
+   "optionen": [
+    "Compliance-Policy mit minimaler OS-Version plus Conditional Access",
+    "Update policy for iOS/iPadOS auf supervised Geräten",
+    "Beides zusammen ist üblich",
+    "App Protection Policy mit min. OS"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "Beides ergänzt sich: Die **Update policy** schiebt das Update aktiv (nur supervised), die **Compliance-Policy mit Mindestversion** plus Conditional Access entzieht sonst den Zugriff. Bei BYOD bleibt nur der zweite Weg, bzw. die App Protection Policy.",
+   "id": "f098"
+  },
+  {
+   "domain": "d3",
+   "frage": "Was macht die Einstellung 'Block updates for drivers' in einem Update Ring?",
+   "optionen": [
+    "Sie verhindert, dass Windows Update Treiber mitliefert",
+    "Sie blockiert Feature Updates",
+    "Sie schaltet Delivery Optimization ab",
+    "Sie pausiert Qualitätsupdates"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Treiber kommen sonst über Windows Update mit. Das Blockieren ist üblich, wo Treiber über eigene Pakete gepflegt werden; alternativ steuerst du sie über **Driver Updates**-Policies mit manueller Genehmigung.",
+   "id": "f099"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Aussage über Hotpatch ist falsch?",
+   "optionen": [
+    "Hotpatch-Updates brauchen keinen Neustart",
+    "Es gibt pro Jahr Baseline-Monate mit Neustart",
+    "Hotpatch funktioniert auf jeder Windows-11-Edition",
+    "Hotpatch wird über Autopatch-Policies konfiguriert"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "Hotpatch setzt **Windows 11 Enterprise 24H2 oder neuer** (bzw. Windows 365) voraus und ist nicht auf jeder Edition verfügbar. Die übrigen Aussagen stimmen: kein Neustart bei Hotpatch-Monaten, vier Baseline-Monate pro Jahr, Konfiguration über Autopatch.",
+   "id": "f100"
+  },
+  {
+   "domain": "d4",
+   "frage": "Eine Win32-App installiert erfolgreich, Intune meldet aber weiter 'Failed'. Was ist die wahrscheinlichste Ursache?",
+   "optionen": [
+    "Die Erkennungsregel passt nicht zum tatsächlichen Ergebnis der Installation",
+    "Die Requirements sind falsch",
+    "Die Zuweisung fehlt",
+    "Die IME ist nicht installiert"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Intune prüft nach der Installation die **Erkennungsregel**. Passt sie nicht – falscher MSI-Code, falscher Pfad, falsche Version – gilt die App als fehlgeschlagen und wird erneut installiert. Falsche Requirements ergäben *Not applicable*.",
+   "id": "f101"
+  },
+  {
+   "domain": "d4",
+   "frage": "Welche Reihenfolge ist richtig, wenn App B die Runtime A braucht?",
+   "optionen": [
+    "A als Dependency von B mit 'Automatically install' = Yes",
+    "B als Dependency von A",
+    "A und B beide als Required zuweisen",
+    "A als Supersedence von B"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "**Dependencies** erzwingen die Reihenfolge: A wird vor B installiert, mit *Automatically install* auch ohne eigene Zuweisung. Zwei unabhängige Required-Zuweisungen garantieren keine Reihenfolge, Supersedence ist für Ablösung gedacht.",
+   "id": "f102"
+  },
+  {
+   "domain": "d4",
+   "frage": "Du willst Microsoft 365 Apps in einer bestimmten Konfiguration ausrollen, die der Intune-Assistent nicht abbildet. Was tust du?",
+   "optionen": [
+    "Eine XML aus dem Office Deployment Tool erzeugen und im Assistenten importieren",
+    "Die Apps als Win32-App paketieren",
+    "Eine Administrative-Template-Policy nutzen",
+    "Den Office Cloud Policy Service verwenden"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Der M365-Apps-Assistent erlaubt den **Import einer ODT-XML** für Sonderfälle wie bestimmte Produkte, Ausschlüsse oder Quellen. Der Cloud Policy Service konfiguriert die Apps zur Laufzeit, nicht die Installation.",
+   "id": "f103"
+  },
+  {
+   "domain": "d4",
+   "frage": "Welche Angabe fehlt, wenn eine App Protection Policy auf einem BYOD-iPhone wirkungslos bleibt, obwohl sie zugewiesen ist?",
+   "optionen": [
+    "Der Benutzer nutzt eine App, die nicht zu den policy-managed Apps gehört",
+    "Das Gerät ist nicht enrolliert",
+    "Es fehlt ein APNs-Zertifikat",
+    "Die Compliance-Policy fehlt"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "App Protection wirkt nur in **unterstützten, policy-managed Apps** (Outlook, Teams, Word …). Greift der Benutzer über Safari oder eine Fremd-App zu, schützt die Policy nicht. Enrollment und APNs sind für MAM gerade nicht nötig.",
+   "id": "f104"
+  },
+  {
+   "domain": "d4",
+   "frage": "Welche Zuweisung brauchst du, damit eine App im Company Portal sichtbar ist, aber nicht automatisch installiert wird?",
+   "optionen": [
+    "Required",
+    "Available for enrolled devices",
+    "Uninstall",
+    "Available with or without enrollment"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Available for enrolled devices** stellt die App im Company Portal zur Selbstbedienung bereit. *Required* installiert ohne Zutun, die letzte Option gilt nur für iOS/Android im MAM-Szenario.",
+   "id": "f105"
+  },
+  {
+   "domain": "d4",
+   "frage": "Wie verhinderst du, dass Firmendaten aus Outlook in die private Notizen-App kopiert werden?",
+   "optionen": [
+    "'Restrict cut, copy, and paste between other apps' auf 'Policy managed apps'",
+    "Conditional Access mit Gerätecompliance",
+    "Eine Device Restriction für iOS",
+    "App Configuration Policy"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Diese Einstellung der **App Protection Policy** begrenzt die Zwischenablage auf verwaltete Apps. Optional lässt sich ein Zeichenlimit für Ausnahmen setzen. Gerätebasierte Einschränkungen helfen bei BYOD nicht.",
+   "id": "f106"
+  },
+  {
+   "domain": "d4",
+   "frage": "Welche Aussage zur Intune Management Extension trifft zu?",
+   "optionen": [
+    "Sie muss manuell installiert werden",
+    "Sie kommt automatisch, sobald eine Win32-App oder ein PowerShell-Skript zugewiesen ist",
+    "Sie ist Teil des Company Portals",
+    "Sie ist nur für Windows 11 verfügbar"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Die **IME** wird automatisch nachinstalliert, sobald das erste Win32-Paket oder Skript zugewiesen wird. Sie ist nicht Teil des Company Portals und läuft ab Windows 10 1607.",
+   "id": "f107"
+  },
+  {
+   "domain": "d4",
+   "frage": "Du rollst eine App mit Supersedence aus und setzt 'Uninstall previous version' auf No. Was passiert?",
+   "optionen": [
+    "Die alte Version wird entfernt",
+    "Die neue Version wird über die alte installiert (Update)",
+    "Beide Versionen bleiben nebeneinander getrennt",
+    "Die Zuweisung schlägt fehl"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Mit **No** behandelt Intune den Vorgang als Update: Die neue Version wird über die alte installiert. Mit **Yes** wird die Vorgängerversion zuerst deinstalliert – nötig bei Installern, die kein In-Place-Update können.",
+   "id": "f108"
+  },
+  {
+   "domain": "d4",
+   "frage": "Welche App-Art aktualisiert sich selbständig, ohne dass du ein neues Paket hochlädst?",
+   "optionen": [
+    "Win32-App",
+    "Line-of-business app",
+    "Microsoft Store app (new)",
+    "Custom MSI"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "**Store apps (new)** beziehen Updates über den Store bzw. Winget. Win32- und LOB-Apps musst du selbst neu paketieren; der Enterprise App Catalog nimmt dir das für Standardsoftware ab.",
+   "id": "f109"
+  },
+  {
+   "domain": "d4",
+   "frage": "Wie erreichst du, dass nur Apps mit App Protection Policy auf Exchange Online zugreifen dürfen, ohne Geräte zu enrollieren?",
+   "optionen": [
+    "Conditional Access mit 'Require app protection policy' und 'Require approved client app'",
+    "Compliance-Policy mit App-Prüfung",
+    "Enrollment Restriction",
+    "Device Configuration Profile"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Dieses Grant-Control-Paar ist die Standardantwort für geschützten BYOD-Zugriff. Compliance setzt Enrollment voraus, Restrictions und Profile ebenso.",
+   "id": "f110"
+  },
+  {
+   "domain": "d4",
+   "frage": "Welche App Configuration Policy nutzt du für ein nicht enrolliertes Android-Gerät?",
+   "optionen": [
+    "Managed devices",
+    "Managed apps",
+    "Managed Google Play Configuration Designer",
+    "Keine – das geht nicht"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Für Geräte ohne Enrollment gibt es App Configuration Policies für **managed apps**; die Werte laufen über das Intune App SDK. Der Configuration Designer gehört zur Variante *managed devices*.",
+   "id": "f111"
+  },
+  {
+   "domain": "d4",
+   "frage": "Ein Benutzer meldet, dass eine zugewiesene App im Company Portal fehlt. Die Zuweisung ist 'Available'. Was prüfst du?",
+   "optionen": [
+    "Ob der Benutzer in der zugewiesenen Gruppe ist und ob die Requirements der App erfüllt sind",
+    "Ob die Erkennungsregel stimmt",
+    "Ob die IME läuft",
+    "Ob Delivery Optimization aktiv ist"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Available-Apps erscheinen nur für Benutzer in der Zielgruppe und nur, wenn die **Requirements** passen – auf einem ARM-Gerät taucht ein x64-Paket schlicht nicht auf. Erkennungsregeln und IME betreffen die Installation, nicht die Sichtbarkeit.",
+   "id": "f112"
+  },
+  {
+   "domain": "d5",
+   "frage": "Welche Automatisierung wählst du, wenn eine Registry-Einstellung auf allen Geräten täglich geprüft und bei Abweichung korrigiert werden soll?",
+   "optionen": [
+    "Platform Script mit täglichem Zeitplan",
+    "Remediation mit Detection- und Remediation-Skript",
+    "Konfigurationsprofil mit OMA-URI",
+    "Custom Compliance"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Platform Scripts haben **keinen** wiederkehrenden Zeitplan – sie laufen einmal. **Remediations** prüfen und korrigieren nach Zeitplan. Ein OMA-URI-Profil wäre die sauberste Lösung, wenn ein CSP existiert; bei freier Registry ist die Remediation richtig.",
+   "id": "f113"
+  },
+  {
+   "domain": "d5",
+   "frage": "Welcher Graph-Aufruf listet verwaltete Geräte?",
+   "optionen": [
+    "GET /deviceManagement/managedDevices",
+    "GET /devices",
+    "GET /deviceManagement/deviceConfigurations",
+    "GET /users/{id}/ownedDevices"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "`/deviceManagement/managedDevices` ist der Intune-Endpunkt. `/devices` liefert Entra-Geräteobjekte ohne Intune-Details, `deviceConfigurations` die Profile.",
+   "id": "f114"
+  },
+  {
+   "domain": "d5",
+   "frage": "Wie verhinderst du, dass ein Remediation-Skript auf allen Geräten gleichzeitig läuft und Last erzeugt?",
+   "optionen": [
+    "Zeitplan auf täglich mit zufälligem Startzeitpunkt und Zuweisung an Teilgruppen",
+    "Das Skript im Benutzerkontext ausführen",
+    "64-Bit erzwingen",
+    "Die Ausführung auf 1 Gerät begrenzen"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Remediations verteilen die Ausführung über das Intervall, und du kannst zusätzlich über **Gruppen staffeln**. Ausführungskontext und Architektur ändern an der Last nichts.",
+   "id": "f115"
+  },
+  {
+   "domain": "d5",
+   "frage": "Welche Daten liefert Endpoint Analytics 'Startup performance'?",
+   "optionen": [
+    "Boot- und Anmeldezeit mit einem Score von 0 bis 100",
+    "App-Abstürze",
+    "Netzwerkqualität",
+    "Updatestatus"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Startup performance misst **Boot- und Anmeldezeit** und verdichtet sie zu einem Score. Abstürze gehören zu *Application reliability*, Updates zu den Update-Reports.",
+   "id": "f116"
+  },
+  {
+   "domain": "d5",
+   "frage": "Welcher Bericht hilft dir, Geräte zu finden, die seit Wochen nicht eingecheckt haben?",
+   "optionen": [
+    "Operational-Report über nicht-konforme Geräte",
+    "Device-Inventar mit 'Last check-in' sortiert",
+    "Endpoint Analytics Score",
+    "Message Center"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Das **Device-Inventar** mit der Spalte *Last check-in* ist der direkte Weg; es lässt sich filtern und exportieren. Nicht-konform ist etwas anderes als inaktiv.",
+   "id": "f117"
+  },
+  {
+   "domain": "d5",
+   "frage": "Was brauchst du, damit ein Custom-Compliance-Skript ein Gerät bewerten kann?",
+   "optionen": [
+    "Nur das PowerShell-Skript",
+    "Skript plus JSON-Datei mit Regeln und Abhilfetext",
+    "Skript plus Konfigurationsprofil",
+    "Skript plus Remediation"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Custom Compliance braucht beides: das **Discovery-Skript**, das JSON ausgibt, und die **JSON-Regeldatei** mit Operator, erwartetem Wert und Benutzertext. Ohne Regeldatei weiss Intune nicht, was ein gutes Ergebnis ist.",
+   "id": "f118"
+  },
+  {
+   "domain": "d5",
+   "frage": "Welche Aussage über das Message Center stimmt?",
+   "optionen": [
+    "Es zeigt aktuelle Störungen",
+    "Es kündigt geplante Änderungen und neue Funktionen an",
+    "Es listet nicht-konforme Geräte",
+    "Es enthält Alert Rules"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Das **Message Center** kündigt an, was sich am Dienst ändert. Aktuelle Störungen stehen in **Service Health**, beides erreichbar über *Tenant administration → Tenant status*.",
+   "id": "f119"
+  },
+  {
+   "domain": "d5",
+   "frage": "Welche Berechtigung braucht eine App-Registrierung, die nachts Konfigurationsprofile anlegen soll?",
+   "optionen": [
+    "DeviceManagementConfiguration.ReadWrite.All als Application permission",
+    "DeviceManagementManagedDevices.Read.All delegiert",
+    "Directory.ReadWrite.All delegiert",
+    "Group.ReadWrite.All als Application permission"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Profile gehören zu **DeviceManagementConfiguration**, schreibend also `ReadWrite.All`, und für unbeaufsichtigten Betrieb als **Application permission** mit Admin Consent.",
+   "id": "f120"
   }
  ],
  "lernplan": {
@@ -1747,79 +2926,105 @@
   {
    "id": "p1",
    "titel": "Probeprüfung 1 – vollständig",
-   "dauer_min": 80,
+   "dauer_min": 95,
    "fragen": [
-    "f053",
-    "f048",
-    "f008",
-    "f012",
-    "f044",
-    "f001",
-    "f039",
-    "f009",
-    "f004",
-    "f047",
-    "f057",
-    "f023",
-    "f051",
-    "f014",
-    "f002",
-    "f026",
-    "f005",
-    "f024",
-    "f043",
-    "f041",
-    "f034",
-    "f052",
-    "f031",
-    "f020",
-    "f017",
-    "f032",
-    "f033",
-    "f018",
-    "f036",
-    "f021",
-    "f050",
-    "f045",
-    "f037",
+    "f011",
+    "f116",
+    "f073",
+    "f084",
+    "f077",
     "f015",
-    "f007",
-    "f016",
-    "f038"
+    "f054",
+    "f118",
+    "f088",
+    "f071",
+    "f093",
+    "f060",
+    "f025",
+    "f031",
+    "f062",
+    "f069",
+    "f064",
+    "f110",
+    "f053",
+    "f042",
+    "f080",
+    "f097",
+    "f094",
+    "f063",
+    "f004",
+    "f024",
+    "f104",
+    "f021",
+    "f047",
+    "f058",
+    "f046",
+    "f055",
+    "f091",
+    "f043",
+    "f086",
+    "f067",
+    "f105",
+    "f090",
+    "f019",
+    "f057",
+    "f082",
+    "f112",
+    "f098",
+    "f008",
+    "f036"
    ]
   },
   {
    "id": "p2",
-   "titel": "Probeprüfung 2 – zweiter Durchgang",
-   "dauer_min": 60,
+   "titel": "Probeprüfung 2 – andere Fragen",
+   "dauer_min": 95,
    "fragen": [
-    "f048",
-    "f057",
-    "f024",
-    "f014",
-    "f020",
-    "f039",
-    "f054",
-    "f033",
-    "f003",
-    "f041",
-    "f035",
-    "f018",
-    "f022",
-    "f052",
-    "f008",
-    "f038",
-    "f029",
-    "f055",
-    "f001",
-    "f011",
-    "f036",
-    "f047",
+    "f115",
     "f017",
-    "f042",
-    "f006",
+    "f020",
+    "f068",
+    "f076",
+    "f045",
+    "f099",
+    "f119",
+    "f013",
+    "f022",
+    "f028",
+    "f050",
+    "f109",
+    "f009",
+    "f111",
+    "f038",
+    "f034",
+    "f113",
+    "f078",
+    "f061",
     "f010",
-    "f013"
+    "f037",
+    "f065",
+    "f059",
+    "f114",
+    "f002",
+    "f100",
+    "f075",
+    "f066",
+    "f035",
+    "f074",
+    "f102",
+    "f072",
+    "f117",
+    "f023",
+    "f096",
+    "f001",
+    "f083",
+    "f049",
+    "f120",
+    "f003",
+    "f103",
+    "f106",
+    "f079",
+    "f107"
    ]
   },
   {
@@ -1827,21 +3032,21 @@
    "titel": "Kurzcheck – 15 Fragen",
    "dauer_min": 25,
    "fragen": [
-    "f008",
-    "f019",
-    "f030",
-    "f027",
-    "f033",
-    "f040",
-    "f045",
-    "f028",
-    "f014",
-    "f017",
-    "f057",
-    "f010",
-    "f043",
+    "f026",
+    "f108",
     "f007",
-    "f053"
+    "f040",
+    "f041",
+    "f029",
+    "f070",
+    "f052",
+    "f006",
+    "f018",
+    "f051",
+    "f092",
+    "f016",
+    "f095",
+    "f027"
    ]
   }
  ],

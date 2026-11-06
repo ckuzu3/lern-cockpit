@@ -10,6 +10,21 @@ auf dem iPhone über den Homescreen nutzbar. Inhalte sind reine JSON-Dateien.
 3. Claude veröffentlicht die neue Version
 4. Auf dem iPhone: App öffnen – der neue Kurs ist da. Kein technischer Schritt nötig.
 
+## Funktionen
+
+- **Übersicht** als Startbildschirm: alle Kurse mit Fortschritt, Fahrplan, Datensicherung
+- **Tagesziel**, aus Prüfungstermin und offenem Stoff zurückgerechnet; ohne Termin 20 Karten und 10 Fragen
+- **Kurz-Drill**: fünf Minuten, Karten und Fragen gemischt – für Pausen
+- **Lernkarten** mit Spaced Repetition (SM-2), Wischen links/rechts, Tastatur 1–4 am Mac
+- **Übungsfragen** nach Domain, mit Begründung auch zu den falschen Antworten
+- **Prüfungssimulation** mit Timer, Fragen markieren, Fragenübersicht, Auswertung nach Domain
+- **Fehlerprotokoll**: falsch beantwortete Fragen kommen zurück
+- **Markieren und Notizen** auf jeder Karte und jeder Frage
+- **Suche** über Karten, Fragen, Zusammenfassungen und Glossar
+- **Schwächster Bereich** und **Verlauf** der letzten 14 Tage auf der Startseite
+- **Datensicherung** zum Übertragen des Fortschritts auf ein anderes Gerät
+- Hell und dunkel, offline, als App auf dem Homescreen installierbar
+
 ## Struktur
 
 ```

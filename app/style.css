@@ -208,3 +208,42 @@ textarea.feld:focus{outline:2px solid var(--tint);outline-offset:-2px}
   background:rgba(40,40,42,.95);color:#fff;padding:11px 18px;border-radius:22px;font-size:15px;
   z-index:90;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:84vw;text-align:center}
 .toast.an{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- Statuszeile über Karten und Drill ---------- */
+.statuszeile,.drillbar{display:flex;justify-content:space-between;align-items:center;
+  margin:2px var(--inset) 0;font-size:13px;color:var(--label2)}
+.drillbar{margin-bottom:8px;font-weight:600;color:var(--label)}
+.drillbar span:last-child{font-weight:400;color:var(--label2)}
+
+/* ---------- Werkzeugleiste: markieren, Notiz, Flagge ---------- */
+.werkzeuge{display:flex;gap:8px;margin:10px var(--inset) 0}
+.werkzeuge button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--fg1);border-radius:11px;min-height:44px;padding:0 10px;
+  font-size:14px;color:var(--label2);font-weight:500}
+.werkzeuge button svg{width:19px;height:19px;flex:0 0 19px}
+.werkzeuge button:active{background:var(--fill)}
+.werkzeuge button.an{color:var(--orange)}
+.notiz{background:var(--fg1);border-left:3px solid var(--orange);border-radius:0 10px 10px 0;
+  margin:10px var(--inset) 0;padding:12px 14px;font-size:15px;line-height:1.45;white-space:pre-wrap}
+textarea.notizfeld{min-height:96px;margin-top:10px;font-family:inherit;font-size:16px}
+
+/* ---------- Verlauf ---------- */
+.verlauf{display:flex;align-items:flex-end;gap:4px;height:56px}
+.verlauf i{flex:1;background:var(--tint);border-radius:3px;min-height:3px;display:block}
+
+/* ---------- Suche ---------- */
+.suchfeld{display:flex;align-items:center;gap:8px;background:var(--fg1);border-radius:11px;
+  margin:10px var(--inset);padding:0 12px;height:44px}
+.suchfeld span{display:flex;color:var(--label3)}
+.suchfeld svg{width:19px;height:19px}
+.suchfeld input{flex:1;border:0;background:none;color:var(--label);font-size:17px;
+  font-family:inherit;outline:none;min-width:0;height:44px;-webkit-appearance:none}
+.suchfeld input::placeholder{color:var(--label3)}
+
+/* ---------- Prüfungsraster ---------- */
+.raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:9px;margin:10px var(--inset)}
+.feldnr{height:46px;border-radius:11px;background:var(--fg1);color:var(--label2);
+  font-size:16px;font-weight:600;display:grid;place-items:center;border:1.5px solid transparent}
+.feldnr.bea{background:var(--tint);color:#fff}
+.feldnr.mark{border-color:var(--orange)}
+.feldnr:active{opacity:.7}
