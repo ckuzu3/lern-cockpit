@@ -50,6 +50,8 @@ jobs:
           PY
 
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true   # schaltet Pages beim ersten Lauf selbst ein
       - uses: actions/upload-pages-artifact@v3
         with:
           path: app

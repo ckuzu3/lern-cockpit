@@ -45,7 +45,8 @@ alten Stand), baut die iCloud-Einzeldatei neu, committet und pusht. GitHub Actio
 alle Kursdateien auf Konsistenz und veröffentlicht `app/` auf GitHub Pages. Dauer: ein bis zwei
 Minuten. Schlägt die Prüfung fehl, wird nichts veröffentlicht.
 
-Einmalige Einrichtung im Repository: **Settings → Pages → Source: GitHub Actions**.
+Pages schaltet sich beim ersten Workflow-Lauf selbst ein. Sollte das an den
+Repository-Einstellungen scheitern: **Settings → Pages → Source: GitHub Actions**.
 
 ## Auf dem iPhone installieren
 
