@@ -1,6 +1,6 @@
 /* Offline-Cache: App-Hülle + Kursinhalte. Bei jedem Deploy VERSION erhöhen. */
-const VERSION = 'lc-v1';
-const CORE = ['./', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg'];
+const VERSION = 'lc-v3';
+const CORE = ['./', './index.html', './style.css', './app.js', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil((async () => {

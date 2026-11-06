@@ -3,3 +3,4 @@ dist/
 # Studienunterlagen bleiben lokal – nur die README des Ordners wird versioniert
 unterlagen/*
 !unterlagen/README.md
+unterlagen

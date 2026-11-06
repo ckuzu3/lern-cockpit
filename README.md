@@ -21,8 +21,10 @@ app/                    das ist der Deploy-Ordner – alles darin wird ausgelief
   manifest.webmanifest  macht die Seite installierbar
   kurse/index.json      welche Kurse geladen werden + Fahrplan
   kurse/<id>.json       ein Kurs: Prüfungssteckbrief, Domains, Karten, Fragen, Plan, Glossar
-unterlagen/             deine Skripte, Folien, PDFs – NICHT veröffentlicht, Quelle für neue Kurse
+unterlagen -> iCloud    Verweis auf iCloud Drive/Lern-App/Unterlagen – Quelle für neue Kurse,
+                        vom Mac und vom iPhone aus befüllbar, wird NICHT veröffentlicht
 docs/SCHEMA.md          Aufbau einer Kursdatei
+docs/UNTERLAGEN.md      wie Material für neue Kurse hierher kommt
 tools/serve.js          lokaler Testserver
 tools/build-single.js   baut dist/Lern-Cockpit.html, eine einzige Datei für iCloud
 dist/                   Ergebnis des Einzeldatei-Builds

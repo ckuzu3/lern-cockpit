@@ -1,516 +1,676 @@
-/* Lern-Cockpit – offline-fähige Lern-App für Zertifikate und Studium.
-   Inhalte: app/kurse/*.json (Schema siehe kurse/_SCHEMA.md) */
+/* Lern-Cockpit – Lern-App für Zertifikate und Studienmodule.
+   Aufbau nach Apples Human Interface Guidelines: Übersicht als Startbildschirm,
+   Navigationsleiste mit Zurück, gruppierte Listen, Tableiste innerhalb eines Kurses. */
 'use strict';
 
-const S = { kurse: [], kurs: null, view: 'start', sub: null, st: null, pruefung: null };
-const $ = (s, r = document) => r.querySelector(s);
-const el = $('#app');
-const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const S = { kurse: [], fahrplan: [], kurs: null, st: null,
+            root: 'uebersicht', view: 'heute', sub: null, pruefung: null };
+const el  = document.getElementById('app');
+const nav = document.getElementById('navbar');
+const tabs = document.getElementById('tabbar');
+const toastEl = document.getElementById('toast');
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const DAY = 864e5;
-const heute = () => new Date().setHours(0, 0, 0, 0);
-const datum = t => new Date(t).toLocaleDateString('de-CH', { day: '2-digit', month: 'short' });
-const tage = t => Math.ceil((new Date(t).setHours(0,0,0,0) - heute()) / DAY);
+const heute = () => new Date().setHours(0,0,0,0);
+const datum = t => new Date(t).toLocaleDateString('de-CH', { day:'numeric', month:'long' });
+const tage  = t => Math.ceil((new Date(t).setHours(0,0,0,0) - heute()) / DAY);
+
+/* ---------- Symbole ---------- */
+const sv = (vb, d) => `<svg viewBox="${vb}" fill="none" stroke="currentColor" stroke-width="1.7"
+  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const I = {
+  chevR: sv('0 0 9 16', '<path d="M1.3 1.5 7.2 8l-5.9 6.5" stroke-width="2.1"/>'),
+  chevL: sv('0 0 12 20', '<path d="M10 1.8 2.5 10 10 18.2" stroke-width="2.1"/>'),
+  heute: sv('0 0 24 24', '<rect x="3" y="4.8" width="18" height="16" rx="3.6"/><path d="M3 9.8h18M8 2.6v4.2M16 2.6v4.2"/><circle cx="12" cy="15.2" r="1.7" fill="currentColor" stroke="none"/>'),
+  plan:  sv('0 0 24 24', '<path d="M8.5 6.5h11.5M8.5 12h11.5M8.5 17.5h11.5"/><circle cx="4.2" cy="6.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="4.2" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="4.2" cy="17.5" r="1.4" fill="currentColor" stroke="none"/>'),
+  karten:sv('0 0 24 24', '<rect x="2.6" y="8" width="18.8" height="12.4" rx="3.2"/><path d="M5.6 5.3h12.8M7.8 2.7h8.4"/>'),
+  fragen:sv('0 0 24 24', '<circle cx="12" cy="12" r="9.1"/><path d="M9.5 9.4a2.55 2.55 0 1 1 3.35 2.42c-.62.22-.95.7-.95 1.35v.5"/><circle cx="12" cy="16.9" r="1.15" fill="currentColor" stroke="none"/>'),
+  wissen:sv('0 0 24 24', '<path d="M4.2 5A2 2 0 0 1 6.2 3H19.4v15.1H6.2a2 2 0 0 0-2 2z"/><path d="M4.2 18.1A2 2 0 0 1 6.2 16.1h13.2"/>'),
+  buch:  sv('0 0 24 24', '<path d="M4.2 5A2 2 0 0 1 6.2 3H19.4v15.1H6.2a2 2 0 0 0-2 2z"/><path d="M4.2 18.1A2 2 0 0 1 6.2 16.1h13.2"/>'),
+  karte: sv('0 0 24 24', '<path d="M9 4.2 3.4 6.6v13.2L9 17.4l6 2.4 5.6-2.4V4.2L15 6.6z"/><path d="M9 4.2v13.2M15 6.6v13.2"/>'),
+  sicher:sv('0 0 24 24', '<path d="M12 3.5v11M8.2 10.8 12 14.6l3.8-3.8"/><path d="M4.5 16v2.5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V16"/>'),
+  info:  sv('0 0 24 24', '<circle cx="12" cy="12" r="9.1"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor" stroke="none"/>'),
+  warn:  sv('0 0 24 24', '<path d="M12 3.6 2.6 20h18.8z"/><path d="M12 9.6v4.8"/><circle cx="12" cy="17.2" r="1.05" fill="currentColor" stroke="none"/>')
+};
+const TABS = [['heute','Heute',I.heute],['plan','Plan',I.plan],['karten','Karten',I.karten],
+              ['fragen','Fragen',I.fragen],['wissen','Wissen',I.wissen]];
 
 /* ---------- Speicher ---------- */
 const KEY = id => 'lc.' + id;
-function load(id) {
+const LEER = () => ({ karten:{}, plan:{}, fragen:{}, fehler:{}, pruefungen:[], neuProTag:20, log:{} });
+function load(id){
   let d = {};
-  try { d = JSON.parse(localStorage.getItem(KEY(id)) || '{}'); } catch (e) {}
-  return Object.assign({ karten: {}, plan: {}, fragen: {}, fehler: {}, pruefungen: [], neuProTag: 20, log: {} }, d);
+  try { d = JSON.parse(localStorage.getItem(KEY(id)) || '{}'); } catch(e){}
+  return Object.assign(LEER(), d);
 }
-function save() {
-  if (!S.kurs) return;
-  try { localStorage.setItem(KEY(S.kurs.id), JSON.stringify(S.st)); } catch (e) {}
+function save(){ if (!S.kurs) return; try { localStorage.setItem(KEY(S.kurs.id), JSON.stringify(S.st)); } catch(e){} }
+
+let toastTimer = null;
+function toast(msg){
+  toastEl.textContent = msg; toastEl.classList.add('an');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove('an'), 2200);
 }
 
 /* ---------- Mini-Markdown ---------- */
-function md(t) {
+function md(t){
   if (!t) return '';
   const lines = String(t).split('\n');
-  let out = '', ul = false;
-  const inl = s => esc(s)
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>');
-  let i = 0;
-  while (i < lines.length) {
-    let l = lines[i];
-    // Tabelle: | a | b |  /  |---|---|
-    if (/^\s*\|.*\|\s*$/.test(l) && i + 1 < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i + 1])) {
-      if (ul) { out += '</ul>'; ul = false; }
-      const zelle = r => r.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim());
-      out += '<div class="tbl"><table><thead><tr>' + zelle(l).map(c => '<th>' + inl(c) + '</th>').join('') + '</tr></thead><tbody>';
+  const inl = s => esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+                         .replace(/`(.+?)`/g,'<code>$1</code>')
+                         .replace(/\*(.+?)\*/g,'<em>$1</em>');
+  let out = '', ul = false, i = 0;
+  const zelle = r => r.trim().replace(/^\||\|$/g,'').split('|').map(c => c.trim());
+  while (i < lines.length){
+    const l = lines[i];
+    if (/^\s*\|.*\|\s*$/.test(l) && i+1 < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i+1])){
+      if (ul){ out += '</ul>'; ul = false; }
+      out += '<div class="tbl"><table><thead><tr>' + zelle(l).map(c => '<th>'+inl(c)+'</th>').join('') + '</tr></thead><tbody>';
       i += 2;
-      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
-        out += '<tr>' + zelle(lines[i]).map(c => '<td>' + inl(c) + '</td>').join('') + '</tr>'; i++;
+      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])){
+        out += '<tr>' + zelle(lines[i]).map(c => '<td>'+inl(c)+'</td>').join('') + '</tr>'; i++;
       }
       out += '</tbody></table></div>'; continue;
     }
     i++;
-    if (/^\s*[-•]\s+/.test(l)) { if (!ul) { out += '<ul>'; ul = true; } out += '<li>' + inl(l.replace(/^\s*[-•]\s+/, '')) + '</li>'; continue; }
-    if (ul) { out += '</ul>'; ul = false; }
-    if (/^###\s+/.test(l)) out += '<h4>' + inl(l.slice(4)) + '</h4>';
-    else if (/^##\s+/.test(l)) out += '<h3>' + inl(l.slice(3)) + '</h3>';
-    else if (l.trim()) out += '<p>' + inl(l) + '</p>';
+    if (/^\s*[-•]\s+/.test(l)){ if (!ul){ out += '<ul>'; ul = true; } out += '<li>'+inl(l.replace(/^\s*[-•]\s+/,''))+'</li>'; continue; }
+    if (ul){ out += '</ul>'; ul = false; }
+    if (/^###\s+/.test(l)) out += '<h4>'+inl(l.slice(4))+'</h4>';
+    else if (/^##\s+/.test(l)) out += '<h3>'+inl(l.slice(3))+'</h3>';
+    else if (l.trim()) out += '<p>'+inl(l)+'</p>';
   }
   if (ul) out += '</ul>';
   return out;
 }
+const roh = t => md(t).replace(/^<p>|<\/p>$/g,'');
 
-/* ---------- SM-2 ---------- */
-function plane(c, q) {
+/* ---------- Wiederholung (SM-2) ---------- */
+function plane(c, q){
   const n = { ef: c && c.ef || 2.5, iv: c && c.iv || 0, rep: c && c.rep || 0 };
-  if (q === 1) { n.rep = 0; n.iv = 0; n.ef = Math.max(1.3, n.ef - 0.2); n.due = Date.now() + 6e5; }
+  if (q === 1){ n.rep = 0; n.iv = 0; n.ef = Math.max(1.3, n.ef - .2); n.due = Date.now() + 6e5; }
   else {
-    if (q === 2) { n.ef = Math.max(1.3, n.ef - 0.15); n.iv = n.iv ? Math.max(1, Math.round(n.iv * 1.2)) : 1; }
+    if (q === 2){ n.ef = Math.max(1.3, n.ef - .15); n.iv = n.iv ? Math.max(1, Math.round(n.iv*1.2)) : 1; }
     else {
       n.rep++;
       if (n.rep === 1) n.iv = q === 4 ? 2 : 1;
       else if (n.rep === 2) n.iv = q === 4 ? 5 : 3;
       else n.iv = Math.round(n.iv * n.ef * (q === 4 ? 1.3 : 1));
-      if (q === 4) n.ef = Math.min(2.8, n.ef + 0.1);
+      if (q === 4) n.ef = Math.min(2.8, n.ef + .1);
     }
     n.iv = Math.min(n.iv, 180);
-    n.due = heute() + n.iv * DAY + 36e5 * 4;
+    n.due = heute() + n.iv*DAY + 36e5*4;
   }
   n.ges = (c && c.ges || 0) + 1;
   return n;
 }
-function queue() {
-  const k = S.kurs.karten || [], st = S.st.karten, now = Date.now();
-  const faellig = k.filter(x => st[x.id] && st[x.id].due <= now);
-  const neuH = (S.st.log['neu' + heute()] || 0);
-  const neu = k.filter(x => !st[x.id]).slice(0, Math.max(0, S.st.neuProTag - neuH));
+function queue(kurs, st){
+  const k = kurs.karten || [], now = Date.now();
+  const faellig = k.filter(x => st.karten[x.id] && st.karten[x.id].due <= now);
+  const neuH = st.log['neu'+heute()] || 0;
+  const neu = k.filter(x => !st.karten[x.id]).slice(0, Math.max(0, st.neuProTag - neuH));
   return { faellig, neu, alle: faellig.concat(neu) };
 }
 
 /* ---------- Statistik ---------- */
-function stats() {
-  const k = S.kurs, st = S.st;
-  const kt = (k.karten || []).length;
-  const gelernt = (k.karten || []).filter(x => st.karten[x.id] && st.karten[x.id].rep >= 2).length;
-  const fr = (k.fragen || []).length;
+function stats(kurs, st){
+  const kt = (kurs.karten||[]).length;
+  const gelernt = (kurs.karten||[]).filter(x => st.karten[x.id] && st.karten[x.id].rep >= 2).length;
+  const fr = (kurs.fragen||[]).length;
   const beant = Object.keys(st.fragen).length;
   const richtig = Object.values(st.fragen).filter(v => v.ok).length;
-  const aufg = (k.lernplan && k.lernplan.wochen || []).reduce((a, w) => a + w.aufgaben.length, 0);
+  const aufg = (kurs.lernplan && kurs.lernplan.wochen || []).reduce((a,w) => a + w.aufgaben.length, 0);
   const aufgOk = Object.values(st.plan).filter(Boolean).length;
-  const pc = x => x ? Math.round(x * 100) : 0;
-  const ges = kt + fr + aufg ? (gelernt + richtig + aufgOk) / (kt + fr + aufg) : 0;
-  return { kt, gelernt, fr, beant, richtig, aufg, aufgOk, ges: pc(ges),
-    karten: pc(kt ? gelernt / kt : 0), quote: pc(beant ? richtig / beant : 0),
-    planPc: pc(aufg ? aufgOk / aufg : 0), fehler: Object.keys(st.fehler).length };
+  const pc = x => Math.round((x||0)*100);
+  return { kt, gelernt, fr, beant, richtig, aufg, aufgOk,
+    ges: pc(kt+fr+aufg ? (gelernt+richtig+aufgOk)/(kt+fr+aufg) : 0),
+    quote: pc(beant ? richtig/beant : 0), planPc: pc(aufg ? aufgOk/aufg : 0),
+    fehler: Object.keys(st.fehler).length };
 }
-function ring(p, farbe) {
-  const r = 36, u = 2 * Math.PI * r;
-  return `<div class="ring"><svg width="84" height="84" viewBox="0 0 84 84">
-    <circle cx="42" cy="42" r="${r}" fill="none" stroke="var(--bg3)" stroke-width="8"/>
-    <circle cx="42" cy="42" r="${r}" fill="none" stroke="${farbe || 'var(--ac)'}" stroke-width="8"
-      stroke-linecap="round" stroke-dasharray="${u}" stroke-dashoffset="${u * (1 - p / 100)}"/>
-  </svg><b>${p}%</b></div>`;
+function ring(p, size, farbe){
+  const s = size || 44, r = s/2 - 3.2, u = 2*Math.PI*r;
+  return `<div class="ring" style="width:${s}px;height:${s}px">
+    <svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" style="transform:rotate(-90deg)">
+      <circle cx="${s/2}" cy="${s/2}" r="${r}" fill="none" stroke="var(--fill)" stroke-width="3.6"/>
+      <circle cx="${s/2}" cy="${s/2}" r="${r}" fill="none" stroke="${farbe||'var(--tint)'}" stroke-width="3.6"
+        stroke-linecap="round" stroke-dasharray="${u}" stroke-dashoffset="${u*(1-p/100)}"/>
+    </svg><b style="font-size:${s<40?11:12}px">${p}</b></div>`;
 }
+const zeile = (o) => `<button class="zeile ${o.tap===false?'':'tap'}" ${o.attr||''}>
+  ${o.ikon ? `<span class="ikon" style="background:${o.farbe||'var(--tint)'}">${o.ikon}</span>` : ''}
+  ${o.vor || ''}
+  <span class="haupt"><span class="t">${o.t}</span>${o.s ? `<span class="s">${o.s}</span>` : ''}</span>
+  ${o.wert ? `<span class="wert">${o.wert}</span>` : ''}
+  ${o.badge || ''}
+  ${o.chev === false ? '' : `<span class="chev">${I.chevR}</span>`}</button>`;
 
-/* ---------- Views ---------- */
+/* ================= Ansichten ================= */
 const V = {};
 
-V.start = () => {
-  const k = S.kurs, s = stats(), q = queue();
-  const p = k.pruefung || {}, w = aktuelleWoche();
-  let h = `<div class="row sb" style="align-items:flex-start">
-    <div><h1>${esc(k.titel)}</h1><div class="sub">${esc(k.anbieter || '')}${p.code ? ' · ' + esc(p.code) : ''}</div></div>
-    ${ring(s.ges)}</div>`;
+/* ---------- Übersicht ---------- */
+V.uebersicht = () => {
+  const d = new Date().toLocaleDateString('de-CH', { weekday:'long', day:'numeric', month:'long' });
+  let h = `<h1 class="gross">Lernen</h1><div class="unter">${esc(d)}</div>`;
 
-  if (k.termin) {
-    const d = tage(k.termin);
-    h += `<div class="card"><div class="row sb"><div><b>Prüfungstermin</b><div class="sub">${datum(k.termin)}</div></div>
-      <span class="pill ${d < 14 ? 'bad' : d < 30 ? 'warn' : 'ac'}">${d > 0 ? 'in ' + d + ' Tagen' : d === 0 ? 'heute' : 'vorbei'}</span></div></div>`;
-  } else {
-    h += `<div class="card"><b>Kein Prüfungstermin gesetzt</b><div class="sub">Sag im Chat Bescheid, dann rechne ich den Lernplan auf das Datum.</div></div>`;
-  }
-
-  h += `<h2>Heute</h2>
-  <div class="card tap" data-go="karten"><div class="row sb"><div><b>Lernkarten wiederholen</b>
-    <div class="sub">${q.faellig.length} fällig · ${q.neu.length} neu</div></div>
-    <span class="pill ${q.alle.length ? 'ac' : 'ok'}">${q.alle.length || '✓'}</span></div></div>`;
-  if (w) {
-    const offen = w.aufgaben.filter((a, i) => !S.st.plan[w.nr + '.' + i]).length;
-    h += `<div class="card tap" data-go="plan"><div class="row sb"><div><b>Woche ${w.nr}: ${esc(w.thema)}</b>
-      <div class="sub">${offen} von ${w.aufgaben.length} Aufgaben offen</div></div>
-      <span class="pill ${offen ? 'warn' : 'ok'}">${offen || '✓'}</span></div></div>`;
-  }
-  if (s.fehler) h += `<div class="card tap" data-go="fehler"><div class="row sb"><div><b>Fehlerprotokoll</b>
-    <div class="sub">Falsch beantwortete Fragen nochmal</div></div><span class="pill bad">${s.fehler}</span></div></div>`;
-
-  h += `<h2>Stand</h2><div class="grid2">
-    <div class="kpi"><b>${s.gelernt}/${s.kt}</b><small>Karten sitzen</small></div>
-    <div class="kpi"><b>${s.quote}%</b><small>Trefferquote</small></div>
-    <div class="kpi"><b>${s.beant}/${s.fr}</b><small>Fragen bearbeitet</small></div>
-    <div class="kpi"><b>${s.planPc}%</b><small>Lernplan</small></div></div>`;
-
-  h += `<h2>Prüfungssimulation</h2>`;
-  (k.pruefungen || []).forEach(pr => {
-    const letzt = S.st.pruefungen.filter(x => x.id === pr.id).pop();
-    h += `<div class="card tap" data-pruefung="${pr.id}"><div class="row sb"><div><b>${esc(pr.titel)}</b>
-      <div class="sub">${pr.fragen.length} Fragen · ${pr.dauer_min} Min</div></div>
-      ${letzt ? `<span class="pill ${letzt.pc >= 70 ? 'ok' : 'bad'}">${letzt.pc}%</span>` : '<span class="pill">start</span>'}</div></div>`;
+  h += `<div class="gruppe"><div class="kopf">Kurse</div><div class="liste">`;
+  S.kurse.forEach(k => {
+    const st = load(k.id), s = stats(k, st), q = queue(k, st);
+    const sub = k.termin
+      ? (tage(k.termin) > 0 ? `Prüfung in ${tage(k.termin)} Tagen` : 'Prüfung vorbei')
+      : (q.alle.length ? `${q.alle.length} Karten heute` : 'nichts fällig');
+    h += zeile({ vor: ring(s.ges, 44), t: esc(k.titel), s: `${esc(k.anbieter||'')} · ${sub}`,
+                 attr: `data-kurs="${k.id}"` });
   });
+  h += `</div></div>`;
 
-  h += `<h2>Prüfungssteckbrief</h2><div class="card prose">`;
-  [['Prüfung', p.name], ['Code', p.code], ['Dauer', p.dauer], ['Fragen', p.fragen],
-   ['Bestehen', p.bestehen], ['Kosten', p.kosten], ['Gültigkeit', p.gueltigkeit], ['Sprache', p.sprache]]
-    .filter(r => r[1]).forEach(r => h += `<div class="li"><div class="tx"><span class="sub">${r[0]}</span><br>${esc(r[1])}</div></div>`);
-  h += `</div>`;
-  if (p.quelle) h += `<p class="sub">Quelle: <a href="${esc(p.quelle)}" target="_blank" rel="noopener">offizieller Prüfungsleitfaden</a> · Inhalte Stand ${esc(k.stand || '')}</p>`;
-  h += `<div class="btnrow" style="margin-top:14px"><button class="btn sec sm" data-go="kurse">Kurse wechseln</button>
-    <button class="btn sec sm" data-reset="1">Fortschritt zurücksetzen</button></div>`;
+  if (S.fahrplan.length){
+    h += `<div class="gruppe"><div class="kopf">Fahrplan</div><div class="liste">`;
+    S.fahrplan.forEach((f,i) => {
+      const da = S.kurse.some(k => k.id === f.id);
+      h += zeile({ t: esc(f.titel), s: `${esc(f.zeitraum||'')} · ${esc(f.aufwand||'')}`,
+        badge: `<span class="badge ${da?'gruen':'leise'}">${da?'✓':i+1}</span>`,
+        chev:false, tap:false });
+    });
+    h += `</div><div class="fuss">Inhalte lade ich, sobald du mir sagst, dass ein Kurs dran ist.</div></div>`;
+  }
+
+  h += `<div class="gruppe"><div class="kopf">App</div><div class="liste">`;
+  h += zeile({ ikon:I.sicher, farbe:'var(--tint)', t:'Datensicherung', s:'Fortschritt sichern oder übertragen', attr:'data-go="sicherung"' });
+  h += zeile({ ikon:I.info, farbe:'var(--grau)', t:'Über diese App', attr:'data-go="info"' });
+  h += `</div></div>`;
   return h;
 };
 
-function aktuelleWoche() {
+/* ---------- Datensicherung ---------- */
+V.sicherung = () => {
+  const paket = { v:1, erstellt:new Date().toISOString(), daten:{} };
+  S.kurse.forEach(k => { const r = localStorage.getItem(KEY(k.id)); if (r) paket.daten[k.id] = JSON.parse(r); });
+  const anz = Object.keys(paket.daten).length;
+  let h = `<h1 class="gross">Datensicherung</h1>
+  <div class="unter">Dein Lernfortschritt liegt nur auf diesem Gerät und gleicht sich nicht ab.
+  Hier kannst du ihn sichern und auf ein anderes Gerät übertragen.</div>`;
+
+  h += `<div class="gruppe"><div class="kopf">Sicherung erstellen</div>
+    <textarea class="feld" id="aus" readonly>${esc(JSON.stringify(paket))}</textarea>
+    <button class="knopf" data-kopieren="1">Kopieren</button>
+    <div class="fuss">Enthält den Stand von ${anz} ${anz===1?'Kurs':'Kursen'}: Karten, Fragen,
+    Lernplan und Prüfungsergebnisse. Keine Inhalte – die kommen ohnehin vom Server.</div></div>`;
+
+  h += `<div class="gruppe"><div class="kopf">Sicherung einspielen</div>
+    <textarea class="feld" id="ein" placeholder="Sicherungstext hier einfügen"></textarea>
+    <button class="knopf warnung" data-einspielen="1">Einspielen und ersetzen</button>
+    <div class="fuss">Ersetzt den Fortschritt der enthaltenen Kurse auf diesem Gerät vollständig.
+    Sichere vorher den aktuellen Stand, falls du ihn noch brauchst.</div></div>`;
+  return h;
+};
+
+V.info = () => {
+  const k = S.kurse[0];
+  let h = `<h1 class="gross">Über diese App</h1>
+  <div class="unter">Lern-Cockpit – Lernkarten, Übungsfragen und Prüfungssimulation
+  für Zertifikate und Studienmodule.</div>`;
+  h += `<div class="gruppe"><div class="kopf">Inhalte</div><div class="liste">`;
+  S.kurse.forEach(c => h += zeile({ t: esc(c.titel), wert: esc(c.stand||'–'), chev:false, tap:false }));
+  h += `</div><div class="fuss">Das Datum nennt den Stand der Recherche. Prüfungsziele ändern sich –
+  sag im Chat Bescheid, wenn du die Prüfung buchst, dann prüfe ich sie neu.</div></div>`;
+  h += `<div class="gruppe"><div class="kopf">Daten</div><div class="liste">`;
+  h += zeile({ t:'Fortschritt', s:'nur auf diesem Gerät, im Browser gespeichert', chev:false, tap:false });
+  h += zeile({ t:'Offline', s:'Inhalte sind zwischengespeichert und ohne Netz nutzbar', chev:false, tap:false });
+  h += `</div></div>`;
+  h += `<div class="gruppe"><div class="liste">`;
+  h += zeile({ ikon:I.sicher, t:'Datensicherung', attr:'data-go="sicherung"' });
+  h += `</div></div>`;
+  return h;
+};
+
+/* ---------- Kurs: Heute ---------- */
+V.heute = () => {
+  const k = S.kurs, s = stats(k, S.st), q = queue(k, S.st), p = k.pruefung || {}, w = aktuelleWoche();
+  let h = `<h1 class="gross">${esc(k.titel)}</h1>
+    <div class="unter">${esc(p.name || k.anbieter || '')}</div>`;
+
+  if (k.termin){
+    const d = tage(k.termin);
+    h += `<div class="gruppe"><div class="liste">` + zeile({
+      t:'Prüfungstermin', s: datum(k.termin), chev:false, tap:false,
+      badge:`<span class="badge ${d<14?'rot':d<30?'orange':'tint'}">${d>0?'in '+d+' Tagen':d===0?'heute':'vorbei'}</span>`
+    }) + `</div></div>`;
+  }
+
+  h += `<div class="gruppe"><div class="kopf">Heute</div><div class="liste">`;
+  h += zeile({ ikon:I.karten, farbe:'var(--tint)', t:'Lernkarten', s:`${q.faellig.length} fällig · ${q.neu.length} neu`,
+    badge:`<span class="badge ${q.alle.length?'tint':'gruen'}">${q.alle.length||'✓'}</span>`, attr:'data-tab="karten"' });
+  if (w){
+    const offen = w.aufgaben.filter((a,i) => !S.st.plan[w.nr+'.'+i]).length;
+    h += zeile({ ikon:I.plan, farbe:'var(--orange)', t:`Woche ${w.nr}`, s: esc(w.thema),
+      badge:`<span class="badge ${offen?'orange':'gruen'}">${offen||'✓'}</span>`, attr:'data-tab="plan"' });
+  }
+  if (s.fehler) h += zeile({ ikon:I.warn, farbe:'var(--red)', t:'Fehlerprotokoll', s:'falsch beantwortete Fragen',
+    badge:`<span class="badge rot">${s.fehler}</span>`, attr:'data-go="fehler"' });
+  h += `</div></div>`;
+
+  h += `<div class="gruppe"><div class="kopf">Stand</div><div class="kacheln">
+    <div class="kachel"><b>${s.gelernt}<span>/${s.kt}</span></b><span>Karten sitzen</span></div>
+    <div class="kachel"><b>${s.quote}%</b><span>Trefferquote</span></div>
+    <div class="kachel"><b>${s.beant}<span>/${s.fr}</span></b><span>Fragen bearbeitet</span></div>
+    <div class="kachel"><b>${s.planPc}%</b><span>Lernplan</span></div></div></div>`;
+
+  h += `<div class="gruppe"><div class="kopf">Prüfungssimulation</div><div class="liste">`;
+  (k.pruefungen||[]).forEach(pr => {
+    const letzt = S.st.pruefungen.filter(x => x.id === pr.id).pop();
+    h += zeile({ t: esc(pr.titel), s:`${pr.fragen.length} Fragen · ${pr.dauer_min} Minuten`,
+      badge: letzt ? `<span class="badge ${letzt.pc>=70?'gruen':'rot'}">${letzt.pc}%</span>` : '',
+      attr:`data-pruefung="${pr.id}"` });
+  });
+  h += `</div></div>`;
+
+  h += `<div class="gruppe"><div class="kopf">Prüfung</div><div class="liste">`;
+  [['Code',p.code],['Dauer',p.dauer],['Fragen',p.fragen],['Bestehen',p.bestehen],
+   ['Kosten',p.kosten],['Gültigkeit',p.gueltigkeit],['Sprache',p.sprache]]
+   .filter(r => r[1]).forEach(r => h += `<div class="zeile"><span class="haupt"><span class="t">${r[0]}</span>
+     <span class="s">${esc(r[1])}</span></span></div>`);
+  h += `</div>`;
+  if (p.quelle) h += `<div class="fuss">Nach dem offiziellen Prüfungsleitfaden, Stand ${esc(k.stand||'')}.
+    ${esc(k.hinweis||'')}</div>`;
+  h += `</div>`;
+  h += `<button class="knopf leise" data-go="uebersicht">Anderen Kurs öffnen</button>`;
+  return h;
+};
+function aktuelleWoche(){
   const ws = S.kurs.lernplan && S.kurs.lernplan.wochen || [];
-  for (const w of ws) if (w.aufgaben.some((a, i) => !S.st.plan[w.nr + '.' + i])) return w;
-  return ws[ws.length - 1] || null;
+  for (const w of ws) if (w.aufgaben.some((a,i) => !S.st.plan[w.nr+'.'+i])) return w;
+  return ws[ws.length-1] || null;
 }
 
+/* ---------- Kurs: Plan ---------- */
 V.plan = () => {
-  const lp = S.kurs.lernplan || {}, ws = lp.wochen || [], s = stats();
-  if (!ws.length) return `<h1>Lernplan</h1><div class="empty">Noch kein Lernplan für diesen Kurs.</div>`;
-  let h = `<h1>Lernplan</h1><div class="sub">${esc(lp.hinweis || '')}</div>
-    <div class="bar"><i class="${s.planPc === 100 ? 'ok' : ''}" style="width:${s.planPc}%"></i></div>
-    <div class="sub">${s.aufgOk} von ${s.aufg} Aufgaben erledigt</div>`;
+  const lp = S.kurs.lernplan || {}, ws = lp.wochen || [], s = stats(S.kurs, S.st);
+  if (!ws.length) return `<h1 class="gross">Lernplan</h1><div class="leer">Noch kein Lernplan für diesen Kurs.</div>`;
   const akt = aktuelleWoche();
+  let h = `<h1 class="gross">Lernplan</h1><div class="unter">${esc(lp.hinweis||'')}</div>
+    <div class="gruppe"><div class="liste"><div class="zeile"><span class="haupt">
+      <span class="t">${s.aufgOk} von ${s.aufg} Aufgaben</span>
+      <span class="bar" style="margin-top:8px;display:block"><i class="${s.planPc===100?'gruen':''}" style="width:${s.planPc}%"></i></span>
+    </span></div></div></div>`;
   ws.forEach(w => {
-    const fertig = w.aufgaben.every((a, i) => S.st.plan[w.nr + '.' + i]);
-    h += `<div class="card"><div class="row sb"><b>Woche ${w.nr} · ${esc(w.thema)}</b>
-      <span class="pill ${fertig ? 'ok' : akt && akt.nr === w.nr ? 'ac' : ''}">${fertig ? '✓' : (w.stunden || 8) + ' h'}</span></div>
-      ${w.ziel ? `<div class="sub" style="margin:4px 0 8px">${esc(w.ziel)}</div>` : ''}`;
-    w.aufgaben.forEach((a, i) => {
-      const id = w.nr + '.' + i, on = !!S.st.plan[id];
-      h += `<div class="li ${on ? 'done' : ''}" data-plan="${id}"><div class="cb">✓</div><div class="tx">${md(a).replace(/^<p>|<\/p>$/g, '')}</div></div>`;
+    const fertig = w.aufgaben.every((a,i) => S.st.plan[w.nr+'.'+i]);
+    h += `<div class="gruppe"><div class="kopf">Woche ${w.nr} · ${esc(w.thema)}${fertig?' ✓':akt&&akt.nr===w.nr?' · jetzt':''}</div><div class="liste">`;
+    w.aufgaben.forEach((a,i) => {
+      const id = w.nr+'.'+i, on = !!S.st.plan[id];
+      h += `<button class="zeile tap" data-plan="${id}">
+        <span class="ikon" style="background:${on?'var(--green)':'var(--fill)'};color:${on?'#fff':'transparent'}">
+          ${sv('0 0 24 24','<path d="M5 12.5 10 17.5 19 7" stroke-width="2.4"/>')}</span>
+        <span class="haupt"><span class="t" style="font-size:16px;${on?'color:var(--label2);text-decoration:line-through':''}">${roh(a)}</span></span></button>`;
     });
-    h += `</div>`;
+    h += `</div>${w.ziel?`<div class="fuss">${esc(w.ziel)}</div>`:''}</div>`;
   });
   return h;
 };
 
+/* ---------- Kurs: Karten ---------- */
 V.karten = () => {
-  const q = queue();
-  if (S.sub === 'alle' && !q.alle.length) S.sub = null;
-  const liste = S.sub === 'alle' ? (S.kurs.karten || []) : q.alle;
-  if (!liste.length) {
-    const next = (S.kurs.karten || []).map(c => S.st.karten[c.id] && S.st.karten[c.id].due).filter(Boolean).sort()[0];
-    return `<h1>Lernkarten</h1><div class="empty">Für heute alles wiederholt. 🎉<br>
-      ${next ? 'Nächste Wiederholung: ' + datum(next) : ''}</div>
-      <button class="btn sec" data-sub="alle">Trotzdem weiter üben</button>`;
+  const q = queue(S.kurs, S.st);
+  const liste = S.sub === 'alle' ? (S.kurs.karten||[]) : q.alle;
+  if (!liste.length){
+    const next = (S.kurs.karten||[]).map(c => S.st.karten[c.id] && S.st.karten[c.id].due).filter(Boolean).sort((a,b)=>a-b)[0];
+    return `<h1 class="gross">Lernkarten</h1>
+      <div class="leer"><div class="gross">✓</div>Für heute alles wiederholt.
+      ${next?`<br>Nächste Wiederholung am ${datum(next)}.`:''}</div>
+      <button class="knopf leise" data-sub="alle">Trotzdem weiter üben</button>`;
   }
   const c = liste[S.kartenIdx % liste.length];
-  const aufgedeckt = S.auf;
   const st = S.st.karten[c.id];
-  const dom = (S.kurs.domains || []).find(d => d.id === c.domain);
-  let h = `<div class="row sb"><div class="sub">${q.faellig.length} fällig · ${q.neu.length} neu</div>
-    <span class="pill">${st ? 'Stufe ' + st.rep : 'neu'}</span></div>
+  const dom = (S.kurs.domains||[]).find(d => d.id === c.domain);
+  let h = `<div style="display:flex;justify-content:space-between;align-items:center;margin:2px var(--inset) 0;
+    font-size:13px;color:var(--label2)"><span>${q.faellig.length} fällig · ${q.neu.length} neu</span>
+    <span>${st ? 'Stufe '+st.rep : 'neu'}</span></div>
     <div class="flash" data-auf="1">
-      ${dom ? `<div class="sub" style="margin-bottom:10px">${esc(dom.kurz || dom.titel)}</div>` : ''}
-      <div class="q">${md(c.front).replace(/^<p>|<\/p>$/g, '')}</div>
-      ${aufgedeckt ? `<div class="a">${md(c.back)}</div>` : '<div class="sub" style="margin-top:18px">Tippen zum Aufdecken</div>'}
+      ${dom?`<div class="dom">${esc(dom.kurz||dom.titel)}</div>`:''}
+      <div class="frage">${roh(c.front)}</div>
+      ${S.auf ? `<div class="antwort">${md(c.back)}</div>` : `<div class="hinweis">Tippen zum Aufdecken</div>`}
     </div>`;
-  if (aufgedeckt) h += `<div class="rate">
-      <button data-q="1"><b>↺</b>Nochmal</button><button data-q="2"><b>◔</b>Schwer</button>
-      <button data-q="3"><b>✓</b>Gut</button><button data-q="4"><b>✓✓</b>Leicht</button></div>`;
-  else h += `<button class="btn" data-auf="1">Antwort zeigen</button>`;
+  h += S.auf
+    ? `<div class="bewerten">
+        <button data-q="1"><i>↺</i>Nochmal</button><button data-q="2"><i>◔</i>Schwer</button>
+        <button data-q="3"><i>✓</i>Gut</button><button data-q="4"><i>✓✓</i>Leicht</button></div>`
+    : `<button class="knopf" data-auf="1">Antwort zeigen</button>`;
   return h;
 };
 
+/* ---------- Kurs: Fragen ---------- */
 V.fragen = () => {
-  if (!S.sub) {
-    let h = `<h1>Übungsfragen</h1><div class="sub">Nach Prüfungsdomain, mit Begründung zu jeder Antwort.</div>`;
-    (S.kurs.domains || []).forEach(d => {
-      const fs = (S.kurs.fragen || []).filter(f => f.domain === d.id);
+  if (!S.sub){
+    let h = `<h1 class="gross">Übungsfragen</h1>
+      <div class="unter">Nach Prüfungsdomain, jede mit Begründung.</div>
+      <div class="gruppe"><div class="liste">`;
+    (S.kurs.domains||[]).forEach(d => {
+      const fs = (S.kurs.fragen||[]).filter(f => f.domain === d.id);
       const ok = fs.filter(f => S.st.fragen[f.id] && S.st.fragen[f.id].ok).length;
       const ab = fs.filter(f => S.st.fragen[f.id]).length;
-      h += `<div class="card tap" data-sub="${d.id}"><div class="row sb"><div><b>${esc(d.titel)}</b>
-        <div class="sub">${esc(d.gewicht || '')} · ${fs.length} Fragen</div></div>
-        <span class="pill ${ab === fs.length && fs.length ? 'ok' : ab ? 'ac' : ''}">${ok}/${fs.length}</span></div>
-        <div class="bar"><i style="width:${fs.length ? ab / fs.length * 100 : 0}%"></i></div></div>`;
+      h += zeile({ t: esc(d.titel), s:`${esc(d.gewicht||'')} · ${ab} von ${fs.length} bearbeitet`,
+        badge:`<span class="badge ${ab===fs.length&&fs.length?'gruen':ab?'tint':'leise'}">${ok}/${fs.length}</span>`,
+        attr:`data-sub="${d.id}"` });
     });
-    return h;
+    return h + `</div></div>`;
   }
-  const fs = (S.kurs.fragen || []).filter(f => f.domain === S.sub);
-  const f = fs[S.fragenIdx % fs.length];
-  const d = (S.kurs.domains || []).find(x => x.id === S.sub);
-  return frageHtml(f, `<a class="back" data-sub="">‹ Alle Domains</a><div class="row sb">
-    <div class="sub">${esc(d ? d.titel : '')}</div><span class="pill">${(S.fragenIdx % fs.length) + 1} / ${fs.length}</span></div>`);
+  const fs = (S.kurs.fragen||[]).filter(f => f.domain === S.sub);
+  const d = (S.kurs.domains||[]).find(x => x.id === S.sub);
+  return `<div style="margin:2px var(--inset) 0;display:flex;justify-content:space-between;
+    font-size:13px;color:var(--label2)"><span>${esc(d?d.titel:'')}</span>
+    <span>${(S.fragenIdx % fs.length)+1} von ${fs.length}</span></div>`
+    + frageHtml(fs[S.fragenIdx % fs.length]);
 };
 
-function frageHtml(f, kopf) {
-  if (!f) return `${kopf || ''}<div class="empty">Keine Fragen vorhanden.</div>`;
-  const sel = S.sel || [], gezeigt = S.gezeigt;
-  const multi = (f.richtig || []).length > 1;
-  let h = (kopf || '') + `<div class="card" style="margin-top:12px"><b>${md(f.frage).replace(/^<p>|<\/p>$/g, '')}</b>
-    ${multi ? '<div class="sub" style="margin-top:6px">Mehrfachauswahl – ' + f.richtig.length + ' Antworten</div>' : ''}</div>`;
-  (f.optionen || []).forEach((o, i) => {
+function frageHtml(f){
+  if (!f) return `<div class="leer">Keine Fragen vorhanden.</div>`;
+  const sel = S.sel || [], multi = (f.richtig||[]).length > 1;
+  let h = `<div class="frageblock">${roh(f.frage)}
+    ${multi?`<div class="mehrfach">Mehrfachauswahl – ${f.richtig.length} Antworten</div>`:''}</div>
+    <div class="optionen">`;
+  (f.optionen||[]).forEach((o,i) => {
     let cl = 'opt';
-    if (gezeigt) { if (f.richtig.includes(i)) cl += ' right'; else if (sel.includes(i)) cl += ' wrong'; }
-    else if (sel.includes(i)) cl += ' sel';
-    h += `<button class="${cl}" data-opt="${i}"><i>${'ABCDEFGH'[i]}</i>${md(o).replace(/^<p>|<\/p>$/g, '')}</button>`;
+    if (S.gezeigt){ if (f.richtig.includes(i)) cl += ' richtig'; else if (sel.includes(i)) cl += ' falsch'; }
+    else if (sel.includes(i)) cl += ' gewaehlt';
+    h += `<button class="${cl}" data-opt="${i}"><span class="b">${'ABCDEFGH'[i]}</span>
+      <span>${roh(o)}</span></button>`;
   });
-  if (gezeigt) {
+  h += `</div>`;
+  if (S.gezeigt){
     const ok = gleich(sel, f.richtig);
-    h += `<div class="expl"><b>${ok ? '✓ Richtig' : '✗ Falsch'}</b> – richtig ist ${f.richtig.map(i => 'ABCDEFGH'[i]).join(' + ')}.
-      <div style="margin-top:7px">${md(f.erklaerung)}</div>
-      ${f.quelle ? `<div class="sub" style="margin-top:6px">${esc(f.quelle)}</div>` : ''}</div>
-      <button class="btn" data-next="1">Nächste Frage</button>`;
+    h += `<div class="erklaerung"><div class="kopfz ${ok?'ok':'nok'}">${ok?'Richtig':'Falsch'} – ${f.richtig.map(i=>'ABCDEFGH'[i]).join(' + ')}</div>
+      ${md(f.erklaerung)}</div><button class="knopf" data-next="1">Nächste Frage</button>`;
   } else {
-    h += `<button class="btn" data-pruefen="1" ${sel.length ? '' : 'style="opacity:.45"'}>Antwort prüfen</button>`;
+    h += `<button class="knopf" data-pruefen="1" ${sel.length?'':'style="opacity:.4"'}>Antwort prüfen</button>`;
   }
   return h;
 }
-const gleich = (a, b) => a.length === b.length && a.every(x => b.includes(x));
+const gleich = (a,b) => a.length === b.length && a.every(x => b.includes(x));
 
+/* ---------- Kurs: Wissen ---------- */
 V.wissen = () => {
-  if (!S.sub) {
-    let h = `<h1>Wissen</h1><div class="sub">Zusammenfassungen pro Domain, Glossar und Last-Minute-Blatt.</div>`;
-    (S.kurs.domains || []).forEach(d => {
-      h += `<div class="card tap" data-sub="${d.id}"><div class="row sb"><div><b>${esc(d.titel)}</b>
-        <div class="sub">${esc(d.kurz || '')}</div></div><span class="pill ac">${esc(d.gewicht || '')}</span></div></div>`;
-    });
-    if (S.kurs.lastminute) h += `<div class="card tap" data-sub="__lm"><b>⚡ Last-Minute-Blatt</b>
-      <div class="sub">Die letzten 48 Stunden vor der Prüfung</div></div>`;
-    if (S.kurs.glossar) h += `<div class="card tap" data-sub="__gl"><b>Glossar</b>
-      <div class="sub">${(S.kurs.glossar || []).length} Begriffe</div></div>`;
-    if ((S.kurs.ressourcen || []).length) {
-      h += `<h2>Offizielle Ressourcen</h2><div class="card">`;
-      S.kurs.ressourcen.forEach(r => h += `<div class="li"><div class="tx"><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.titel)}</a>
-        <div class="sub">${esc(r.was || '')}</div></div></div>`);
-      h += `</div>`;
+  if (!S.sub){
+    let h = `<h1 class="gross">Wissen</h1><div class="unter">Zusammenfassungen, Glossar und Last-Minute-Blatt.</div>
+      <div class="gruppe"><div class="kopf">Prüfungsdomains</div><div class="liste">`;
+    (S.kurs.domains||[]).forEach(d => h += zeile({ t: esc(d.titel), s: esc(d.kurz||''),
+      wert: esc(d.gewicht||''), attr:`data-sub="${d.id}"` }));
+    h += `</div></div><div class="gruppe"><div class="liste">`;
+    if (S.kurs.lastminute) h += zeile({ ikon:I.warn, farbe:'var(--orange)', t:'Last-Minute-Blatt', s:'die letzten 48 Stunden', attr:'data-sub="__lm"' });
+    if (S.kurs.glossar) h += zeile({ ikon:I.buch, farbe:'var(--grau)', t:'Glossar', s:`${S.kurs.glossar.length} Begriffe`, attr:'data-sub="__gl"' });
+    h += `</div></div>`;
+    if ((S.kurs.ressourcen||[]).length){
+      h += `<div class="gruppe"><div class="kopf">Offizielle Ressourcen</div><div class="liste">`;
+      S.kurs.ressourcen.forEach(r => h += `<a class="zeile tap" href="${esc(r.url)}" target="_blank" rel="noopener">
+        <span class="haupt"><span class="t" style="color:var(--tint)">${esc(r.titel)}</span>
+        <span class="s">${esc(r.was||'')}</span></span><span class="chev">${I.chevR}</span></a>`);
+      h += `</div></div>`;
     }
     return h;
   }
-  const back = `<a class="back" data-sub="">‹ Wissen</a>`;
-  if (S.sub === '__lm') return back + `<h1>Last-Minute-Blatt</h1><div class="card prose">${md(S.kurs.lastminute)}</div>`;
-  if (S.sub === '__gl') {
-    let h = back + `<h1>Glossar</h1><div class="card prose">`;
-    (S.kurs.glossar || []).forEach(g => h += `<div class="li"><div class="tx"><b>${esc(g.b)}</b><br><span class="sub">${esc(g.d)}</span></div></div>`);
-    return h + `</div>`;
+  if (S.sub === '__lm') return `<h1 class="gross">Last-Minute</h1><div class="text">${md(S.kurs.lastminute)}</div>`;
+  if (S.sub === '__gl'){
+    let h = `<h1 class="gross">Glossar</h1><div class="gruppe"><div class="liste">`;
+    (S.kurs.glossar||[]).forEach(g => h += `<div class="zeile"><span class="haupt">
+      <span class="t">${esc(g.b)}</span><span class="s">${esc(g.d)}</span></span></div>`);
+    return h + `</div></div>`;
   }
-  const d = (S.kurs.domains || []).find(x => x.id === S.sub);
-  if (!d) return back + `<div class="empty">Nicht gefunden.</div>`;
-  let h = back + `<h1>${esc(d.titel)}</h1><span class="pill ac">${esc(d.gewicht || '')}</span>
-    <div class="card prose">${md(d.zusammenfassung)}</div>`;
-  if ((d.themen || []).length) h += `<h2>Geprüfte Fähigkeiten</h2><div class="card prose"><ul>
-    ${d.themen.map(t => '<li>' + esc(t) + '</li>').join('')}</ul></div>`;
-  h += `<button class="btn" data-fragen="${d.id}">Fragen zu dieser Domain</button>`;
+  const d = (S.kurs.domains||[]).find(x => x.id === S.sub);
+  if (!d) return `<div class="leer">Nicht gefunden.</div>`;
+  let h = `<h1 class="gross">${esc(d.titel)}</h1><div class="unter">${esc(d.gewicht||'')} der Prüfung</div>
+    <div class="text">${md(d.zusammenfassung)}</div>`;
+  if ((d.themen||[]).length){
+    h += `<div class="gruppe"><div class="kopf">Geprüfte Fähigkeiten</div>
+      <div class="text" style="margin-top:0"><ul>${d.themen.map(t=>'<li>'+esc(t)+'</li>').join('')}</ul></div></div>`;
+  }
+  h += `<button class="knopf" data-fragen="${d.id}">Fragen zu dieser Domain</button>`;
   return h;
 };
 
+/* ---------- Fehlerprotokoll ---------- */
 V.fehler = () => {
   const ids = Object.keys(S.st.fehler);
-  if (!ids.length) return `<a class="back" data-go="start">‹ Start</a><div class="empty">Kein offener Fehler. Sauber.</div>`;
-  const f = (S.kurs.fragen || []).find(x => x.id === ids[S.fehlerIdx % ids.length]);
-  return frageHtml(f, `<a class="back" data-go="start">‹ Start</a>
-    <div class="row sb"><div class="sub">Fehlerprotokoll</div><span class="pill bad">${ids.length} offen</span></div>`);
+  if (!ids.length) return `<h1 class="gross">Fehlerprotokoll</h1><div class="leer"><div class="gross">✓</div>Kein offener Fehler.</div>`;
+  const f = (S.kurs.fragen||[]).find(x => x.id === ids[(S.fehlerIdx||0) % ids.length]);
+  return `<h1 class="gross">Fehlerprotokoll</h1>
+    <div class="unter">${ids.length} ${ids.length===1?'Frage':'Fragen'} offen. Richtig beantwortet verschwindet sie hier.</div>`
+    + frageHtml(f);
 };
 
+/* ---------- Prüfung ---------- */
 V.pruefung = () => {
   const p = S.pruefung;
-  const fs = p.ids.map(id => (S.kurs.fragen || []).find(f => f.id === id)).filter(Boolean);
-  if (p.fertig) {
+  const fs = p.ids.map(id => (S.kurs.fragen||[]).find(f => f.id === id)).filter(Boolean);
+  if (p.fertig){
     const perDom = {};
-    fs.forEach((f, i) => {
-      const d = f.domain; perDom[d] = perDom[d] || { n: 0, ok: 0 };
-      perDom[d].n++; if (gleich(p.ant[i] || [], f.richtig)) perDom[d].ok++;
+    fs.forEach((f,i) => { const d = f.domain; perDom[d] = perDom[d] || {n:0,ok:0};
+      perDom[d].n++; if (gleich(p.ant[i]||[], f.richtig)) perDom[d].ok++; });
+    const ok = fs.filter((f,i) => gleich(p.ant[i]||[], f.richtig)).length;
+    const pc = Math.round(ok/fs.length*100);
+    let h = `<h1 class="gross">Ergebnis</h1>
+      <div class="gruppe"><div class="liste"><div class="zeile">
+        ${ring(pc, 56, pc>=70?'var(--green)':'var(--red)')}
+        <span class="haupt"><span class="t" style="font-weight:600">${pc>=70?'Bestanden':'Nicht bestanden'}</span>
+        <span class="s">${ok} von ${fs.length} richtig · Richtwert 70 %</span></span></div></div></div>`;
+    h += `<div class="gruppe"><div class="kopf">Nach Domain</div><div class="liste">`;
+    Object.entries(perDom).forEach(([id,v]) => {
+      const d = (S.kurs.domains||[]).find(x => x.id === id), q = Math.round(v.ok/v.n*100);
+      h += `<div class="zeile"><span class="haupt"><span class="t" style="font-size:16px">${esc(d?d.titel:id)}</span>
+        <span class="bar" style="margin-top:8px;display:block"><i class="${q>=70?'gruen':''}"
+          style="width:${q}%;${q<70?'background:var(--red)':''}"></i></span>
+        <span class="s">${v.ok}/${v.n}${q<70?' – hier nachlegen':''}</span></span>
+        <span class="badge ${q>=70?'gruen':'rot'}">${q}%</span></div>`;
     });
-    const ok = fs.filter((f, i) => gleich(p.ant[i] || [], f.richtig)).length;
-    const pc = Math.round(ok / fs.length * 100);
-    let h = `<h1>Ergebnis</h1><div class="row" style="gap:16px;margin:14px 0">
-      ${ring(pc, pc >= 70 ? 'var(--ok)' : 'var(--bad)')}
-      <div><b style="font-size:19px">${pc >= 70 ? 'Bestanden' : 'Nicht bestanden'}</b>
-      <div class="sub">${ok} von ${fs.length} richtig · Richtwert 70 %</div></div></div>`;
-    h += `<h2>Nach Domain</h2>`;
-    Object.entries(perDom).forEach(([id, v]) => {
-      const d = (S.kurs.domains || []).find(x => x.id === id);
-      const q = Math.round(v.ok / v.n * 100);
-      h += `<div class="card"><div class="row sb"><b style="font-size:14.5px">${esc(d ? d.titel : id)}</b>
-        <span class="pill ${q >= 70 ? 'ok' : 'bad'}">${q}%</span></div>
-        <div class="bar"><i class="${q >= 70 ? 'ok' : ''}" style="width:${q}%;background:${q >= 70 ? 'var(--ok)' : 'var(--bad)'}"></i></div>
-        <div class="sub">${v.ok}/${v.n} richtig${q < 70 ? ' – hier nachlegen' : ''}</div></div>`;
+    h += `</div></div><div class="gruppe"><div class="kopf">Durchgang</div>`;
+    fs.forEach((f,i) => {
+      const r = gleich(p.ant[i]||[], f.richtig);
+      h += `<div class="erklaerung"><div class="kopfz ${r?'ok':'nok'}">${i+1}. ${r?'Richtig':'Falsch'}</div>
+        <p style="font-weight:600;color:var(--label)">${roh(f.frage)}</p>
+        <p>Richtig: ${f.richtig.map(x=>'ABCDEFGH'[x]).join(' + ')} – ${esc(f.optionen[f.richtig[0]])}</p>
+        ${md(f.erklaerung)}</div>`;
     });
-    h += `<h2>Durchgang ansehen</h2>`;
-    fs.forEach((f, i) => {
-      const r = gleich(p.ant[i] || [], f.richtig);
-      h += `<div class="card"><div class="row sb"><span class="pill ${r ? 'ok' : 'bad'}">${i + 1}</span>
-        <span class="sub">${esc(((S.kurs.domains || []).find(x => x.id === f.domain) || {}).titel || '')}</span></div>
-        <div style="margin-top:8px;font-size:14.5px"><b>${md(f.frage).replace(/^<p>|<\/p>$/g, '')}</b></div>
-        <div class="expl" style="margin-top:9px">Richtig: ${f.richtig.map(x => 'ABCDEFGH'[x]).join(' + ')} – ${esc(f.optionen[f.richtig[0]])}
-        <div style="margin-top:6px">${md(f.erklaerung)}</div></div></div>`;
-    });
-    h += `<button class="btn" data-go="start">Zurück zum Start</button>`;
+    h += `</div><button class="knopf" data-go="heute">Fertig</button>`;
     return h;
   }
-  const i = p.idx, f = fs[i];
-  const rest = Math.max(0, p.ende - Date.now());
-  const mm = String(Math.floor(rest / 6e4)).padStart(2, '0'), ss = String(Math.floor(rest % 6e4 / 1000)).padStart(2, '0');
-  let h = `<div class="timer ${rest < 3e5 ? 'low' : ''}"><div class="sub">Frage ${i + 1} von ${fs.length}</div><b>${mm}:${ss}</b></div>
-    <div class="bar"><i style="width:${(i) / fs.length * 100}%"></i></div>`;
+  const i = p.idx, rest = Math.max(0, p.ende - Date.now());
+  const mm = String(Math.floor(rest/6e4)).padStart(2,'0'), ss = String(Math.floor(rest%6e4/1000)).padStart(2,'0');
   S.sel = p.ant[i] || []; S.gezeigt = false;
-  h += frageHtml(f, '').replace(/<button class="btn" data-pruefen[\s\S]*?<\/button>/, '');
-  h += `<div class="btnrow"><button class="btn sec" data-pnav="-1" ${i ? '' : 'style="opacity:.4"'}>Zurück</button>
-    <button class="btn" data-pnav="1">${i === fs.length - 1 ? 'Abgeben' : 'Weiter'}</button></div>
-    <button class="btn sec sm" data-pabbruch="1">Prüfung abbrechen</button>`;
+  let h = `<div class="timer ${rest<3e5?'knapp':''}"><span>Frage ${i+1} von ${p.ids.length}</span><b>${mm}:${ss}</b></div>`
+    + frageHtml((S.kurs.fragen||[]).find(f => f.id === p.ids[i])).replace(/<button class="knopf" data-pruefen[\s\S]*?<\/button>/,'');
+  h += `<div class="knopfreihe"><button class="knopf leise" data-pnav="-1" ${i?'':'style="opacity:.4"'}>Zurück</button>
+    <button class="knopf" data-pnav="1">${i===p.ids.length-1?'Abgeben':'Weiter'}</button></div>
+    <button class="knopf warnung klein" data-pabbruch="1">Prüfung abbrechen</button>`;
   return h;
 };
 
-V.kurse = () => {
-  let h = `<h1>Kurse</h1><div class="sub">Aktive Zertifikate und Studienmodule.</div>`;
-  S.kurse.forEach(k => {
-    const akt = S.kurs && k.id === S.kurs.id;
-    h += `<div class="card tap" data-kurs="${k.id}"><div class="row sb"><div><b>${esc(k.titel)}</b>
-      <div class="sub">${esc(k.anbieter || '')}${k.termin ? ' · Prüfung ' + datum(k.termin) : ''}</div></div>
-      <span class="pill ${akt ? 'ok' : 'ac'}">${akt ? 'aktiv' : 'öffnen'}</span></div></div>`;
-  });
-  if ((S.fahrplan || []).length) {
-    h += `<h2>Fahrplan</h2><div class="sub">Reihenfolge und Empfehlung – Inhalte lade ich, sobald du einen Kurs startest.</div>`;
-    S.fahrplan.forEach((f, i) => {
-      const da = S.kurse.some(k => k.id === f.id);
-      h += `<div class="card"><div class="row sb"><div><b>${i + 1}. ${esc(f.titel)}</b>
-        <div class="sub">${esc(f.zeitraum || '')} · ${esc(f.aufwand || '')}</div></div>
-        <span class="pill ${da ? 'ok' : ''}">${da ? 'geladen' : 'offen'}</span></div>
-        ${f.warum ? `<div class="sub" style="margin-top:7px">${esc(f.warum)}</div>` : ''}</div>`;
-    });
+/* ================= Rahmen ================= */
+const TITEL = { heute:'Übersicht', plan:'Lernplan', karten:'Lernkarten', fragen:'Übungsfragen',
+                wissen:'Wissen', fehler:'Fehlerprotokoll', pruefung:'Prüfung',
+                sicherung:'Datensicherung', info:'Über', uebersicht:'Lernen' };
+
+function navHtml(){
+  const v = S.view;
+  let zurueck = '', titel = TITEL[v] || '';
+  if (S.root === 'uebersicht'){ titel = 'Lernen'; }
+  else if (S.root === 'seite'){ zurueck = ['uebersicht','Lernen']; }
+  else {
+    if (S.sub || v === 'fehler' || v === 'pruefung') zurueck = ['zurueck', TITEL[v] && v !== 'heute' ? kurzTitel() : kurzTitel()];
+    else if (v !== 'heute') zurueck = null;
+    if (v === 'heute') titel = kurzTitel();
+    else if (S.sub) titel = TITEL[v];
   }
-  return h;
-};
+  const links = zurueck
+    ? `<button class="zurueck" data-zurueck="${zurueck[0]}">${I.chevL}<span>${esc(zurueck[1])}</span></button>`
+    : `<span style="width:8px"></span>`;
+  return `<div class="inner">${links}<span class="titel">${esc(titel)}</span></div>`;
+}
+const kurzTitel = () => S.kurs ? (S.kurs.pruefung && S.kurs.pruefung.code || S.kurs.titel.split(' ')[0]) : 'Kurs';
 
-/* ---------- Render ---------- */
+function tabsHtml(){
+  return TABS.map(([id,label,ikon]) =>
+    `<button data-tab="${id}" class="${S.view===id&&!S.sub?'an':''}">${ikon}<span>${label}</span></button>`).join('');
+}
+
 let timerId = null;
-function render() {
+function render(keepScroll){
   clearInterval(timerId); timerId = null;
-  el.innerHTML = (V[S.view] || V.start)();
-  el.scrollIntoView ? window.scrollTo(0, S.keepScroll ? window.scrollY : 0) : 0;
-  S.keepScroll = false;
-  const tb = $('#tabbar'); tb.hidden = false;
-  tb.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.view === S.view));
-  if (S.view === 'pruefung' && S.pruefung && !S.pruefung.fertig) {
+  const y = window.scrollY;
+  el.innerHTML = (V[S.view] || V.uebersicht)();
+  nav.hidden = false; nav.innerHTML = navHtml();
+  const imKurs = S.root === 'kurs';
+  tabs.hidden = !imKurs;
+  el.classList.toggle('ohne-tabs', !imKurs);
+  if (imKurs) tabs.innerHTML = tabsHtml();
+  window.scrollTo(0, keepScroll ? y : 0);
+  setFest();
+  if (S.view === 'pruefung' && S.pruefung && !S.pruefung.fertig){
     timerId = setInterval(() => {
-      if (Date.now() >= S.pruefung.ende) { abgeben(); return; }
-      const t = $('.timer b'); if (!t) return;
+      if (!S.pruefung) return clearInterval(timerId);
+      if (Date.now() >= S.pruefung.ende) return abgeben();
+      const t = nav.ownerDocument.querySelector('.timer b'); if (!t) return;
       const r = S.pruefung.ende - Date.now();
-      t.textContent = String(Math.floor(r / 6e4)).padStart(2, '0') + ':' + String(Math.floor(r % 6e4 / 1000)).padStart(2, '0');
-      if (r < 3e5) $('.timer').classList.add('low');
+      t.textContent = String(Math.floor(r/6e4)).padStart(2,'0')+':'+String(Math.floor(r%6e4/1000)).padStart(2,'0');
+      if (r < 3e5) document.querySelector('.timer').classList.add('knapp');
     }, 1000);
   }
 }
-function go(v, sub) { S.view = v; S.sub = sub === undefined ? null : sub; S.sel = []; S.gezeigt = false; render(); }
+const setFest = () => nav.classList.toggle('fest', window.scrollY > 26);
+window.addEventListener('scroll', setFest, { passive:true });
 
-/* ---------- Events ---------- */
+function go(root, view, sub){
+  S.root = root; S.view = view; S.sub = sub === undefined ? null : sub;
+  S.sel = []; S.gezeigt = false; S.auf = false;
+  render();
+}
+function oeffneKurs(id){
+  S.kurs = S.kurse.find(k => k.id === id) || S.kurse[0];
+  S.st = load(S.kurs.id);
+  S.kartenIdx = 0; S.fragenIdx = 0; S.fehlerIdx = 0; S.auf = false;
+  try { localStorage.setItem('lc.aktiv', S.kurs.id); } catch(e){}
+  go('kurs','heute');
+}
+
+/* ================= Eingaben ================= */
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-go],[data-sub],[data-plan],[data-auf],[data-q],[data-opt],[data-pruefen],[data-next],[data-kurs],[data-pruefung],[data-pnav],[data-pabbruch],[data-fragen],[data-reset],[data-view]');
+  const t = e.target.closest('[data-go],[data-tab],[data-sub],[data-kurs],[data-zurueck],[data-plan],[data-auf],[data-q],[data-opt],[data-pruefen],[data-next],[data-pruefung],[data-pnav],[data-pabbruch],[data-fragen],[data-kopieren],[data-einspielen]');
   if (!t) return;
   const d = t.dataset;
 
-  if (d.view) return go(d.view);
-  if (d.go) return go(d.go);
-  if (d.fragen) { S.fragenIdx = 0; return go('fragen', d.fragen); }
-  if (d.sub !== undefined) { S.fragenIdx = 0; S.sel = []; S.gezeigt = false; S.sub = d.sub || null; if (d.sub === 'alle') S.kartenIdx = 0; return render(); }
-  if (d.kurs) { oeffne(d.kurs); return go('start'); }
+  if (d.kurs) return oeffneKurs(d.kurs);
+  if (d.go === 'uebersicht') return go('uebersicht','uebersicht');
+  if (d.go === 'sicherung' || d.go === 'info') return go('seite', d.go);
+  if (d.go === 'heute') { S.pruefung = null; return go('kurs','heute'); }
+  if (d.go === 'fehler') { S.fehlerIdx = 0; return go('kurs','fehler'); }
+  if (d.tab) { S.kartenIdx = 0; S.fragenIdx = 0; return go('kurs', d.tab); }
+  if (d.fragen) { S.fragenIdx = 0; return go('kurs','fragen', d.fragen); }
+  if (d.zurueck === 'uebersicht') return go('uebersicht','uebersicht');
+  if (d.zurueck) { S.pruefung = null; return go('kurs', S.sub ? S.view : 'heute', null); }
+  if (d.sub !== undefined) { S.fragenIdx = 0; S.sel = []; S.gezeigt = false; S.sub = d.sub || null;
+    if (d.sub === 'alle') S.kartenIdx = 0; return render(); }
 
-  if (d.plan) { S.st.plan[d.plan] = !S.st.plan[d.plan]; save(); S.keepScroll = true; return render(); }
+  if (d.plan) { S.st.plan[d.plan] = !S.st.plan[d.plan]; save(); return render(true); }
 
   if (d.auf) { S.auf = true; return render(); }
-  if (d.q) {
-    const liste = S.sub === 'alle' ? (S.kurs.karten || []) : queue().alle;
+  if (d.q){
+    const liste = S.sub === 'alle' ? (S.kurs.karten||[]) : queue(S.kurs, S.st).alle;
     const c = liste[S.kartenIdx % liste.length]; if (!c) return;
     const neu = !S.st.karten[c.id];
     S.st.karten[c.id] = plane(S.st.karten[c.id], +d.q);
-    if (neu) S.st.log['neu' + heute()] = (S.st.log['neu' + heute()] || 0) + 1;
-    S.auf = false; S.kartenIdx = +d.q === 1 ? S.kartenIdx + 1 : S.kartenIdx; save();
-    if (+d.q !== 1) S.kartenIdx = S.kartenIdx; // Karte verlässt die Queue von selbst
-    return render();
+    if (neu) S.st.log['neu'+heute()] = (S.st.log['neu'+heute()] || 0) + 1;
+    if (+d.q === 1 || S.sub === 'alle') S.kartenIdx++;
+    S.auf = false; save(); return render();
   }
 
-  if (d.opt !== undefined) {
+  if (d.opt !== undefined){
     const f = aktuelleFrage(); if (!f || S.gezeigt) return;
-    const i = +d.opt, multi = f.richtig.length > 1;
-    S.sel = S.sel || [];
-    if (multi) S.sel = S.sel.includes(i) ? S.sel.filter(x => x !== i) : S.sel.concat(i);
-    else S.sel = [i];
+    const i = +d.opt;
+    S.sel = (f.richtig.length > 1)
+      ? (S.sel.includes(i) ? S.sel.filter(x => x !== i) : S.sel.concat(i))
+      : [i];
     if (S.view === 'pruefung') S.pruefung.ant[S.pruefung.idx] = S.sel;
-    S.keepScroll = true; return render();
+    return render(true);
   }
-  if (d.pruefen) {
-    const f = aktuelleFrage(); if (!f || !(S.sel || []).length) return;
+  if (d.pruefen){
+    const f = aktuelleFrage(); if (!f || !(S.sel||[]).length) return;
     const ok = gleich(S.sel, f.richtig);
-    S.st.fragen[f.id] = { ok, t: Date.now() };
-    if (ok) delete S.st.fehler[f.id]; else S.st.fehler[f.id] = (S.st.fehler[f.id] || 0) + 1;
-    S.gezeigt = true; save(); S.keepScroll = true; return render();
+    S.st.fragen[f.id] = { ok, t:Date.now() };
+    if (ok) delete S.st.fehler[f.id]; else S.st.fehler[f.id] = (S.st.fehler[f.id]||0) + 1;
+    S.gezeigt = true; save(); return render(true);
   }
-  if (d.next) {
+  if (d.next){
     S.sel = []; S.gezeigt = false;
-    if (S.view === 'fehler') S.fehlerIdx = (S.fehlerIdx || 0) + 1; else S.fragenIdx = (S.fragenIdx || 0) + 1;
+    if (S.view === 'fehler') S.fehlerIdx = (S.fehlerIdx||0) + 1; else S.fragenIdx = (S.fragenIdx||0) + 1;
     return render();
   }
 
-  if (d.pruefung) {
-    const pr = (S.kurs.pruefungen || []).find(x => x.id === d.pruefung); if (!pr) return;
-    S.pruefung = { id: pr.id, ids: pr.fragen.slice(), idx: 0, ant: [], ende: Date.now() + pr.dauer_min * 6e4, fertig: false };
-    return go('pruefung');
+  if (d.pruefung){
+    const pr = (S.kurs.pruefungen||[]).find(x => x.id === d.pruefung); if (!pr) return;
+    S.pruefung = { id:pr.id, ids:pr.fragen.slice(), idx:0, ant:[], ende:Date.now()+pr.dauer_min*6e4, fertig:false };
+    return go('kurs','pruefung');
   }
-  if (d.pnav) {
+  if (d.pnav){
     const p = S.pruefung, n = p.idx + (+d.pnav);
     if (n < 0) return;
     if (n >= p.ids.length) return abgeben();
     p.idx = n; S.sel = p.ant[n] || []; S.gezeigt = false; return render();
   }
-  if (d.pabbruch) { S.pruefung = null; return go('start'); }
-  if (d.reset) {
-    if (!S.resetArm) { S.resetArm = true; t.textContent = 'Wirklich? Nochmal tippen'; t.style.background = 'var(--bad)'; t.style.color = '#fff'; return; }
-    S.resetArm = false; S.st = load('__leer'); save(); return go('start');
+  if (d.pabbruch){ S.pruefung = null; return go('kurs','heute'); }
+
+  if (d.kopieren){
+    const ta = document.getElementById('aus');
+    navigator.clipboard.writeText(ta.value)
+      .then(() => toast('Sicherung kopiert'))
+      .catch(() => { ta.select(); toast('Markiert – jetzt kopieren'); });
+    return;
+  }
+  if (d.einspielen){
+    const ta = document.getElementById('ein');
+    let p;
+    try { p = JSON.parse(ta.value.trim()); } catch(err){ return toast('Das ist kein gültiger Sicherungstext'); }
+    if (!p || !p.daten || typeof p.daten !== 'object') return toast('Das ist kein gültiger Sicherungstext');
+    if (!S.bestaetigt){ S.bestaetigt = true; t.textContent = 'Wirklich ersetzen? Nochmal tippen'; return; }
+    let n = 0;
+    Object.entries(p.daten).forEach(([id,wert]) => { localStorage.setItem(KEY(id), JSON.stringify(wert)); n++; });
+    S.bestaetigt = false;
+    if (S.kurs) S.st = load(S.kurs.id);
+    toast(`${n} ${n===1?'Kurs':'Kurse'} übernommen`);
+    return go('uebersicht','uebersicht');
   }
 });
-function aktuelleFrage() {
-  if (S.view === 'pruefung') return (S.kurs.fragen || []).find(f => f.id === S.pruefung.ids[S.pruefung.idx]);
-  if (S.view === 'fehler') { const ids = Object.keys(S.st.fehler); return (S.kurs.fragen || []).find(x => x.id === ids[(S.fehlerIdx || 0) % ids.length]); }
-  const fs = (S.kurs.fragen || []).filter(f => f.domain === S.sub);
-  return fs[(S.fragenIdx || 0) % fs.length];
+
+function aktuelleFrage(){
+  if (S.view === 'pruefung') return (S.kurs.fragen||[]).find(f => f.id === S.pruefung.ids[S.pruefung.idx]);
+  if (S.view === 'fehler'){ const ids = Object.keys(S.st.fehler);
+    return (S.kurs.fragen||[]).find(x => x.id === ids[(S.fehlerIdx||0) % ids.length]); }
+  const fs = (S.kurs.fragen||[]).filter(f => f.domain === S.sub);
+  return fs[(S.fragenIdx||0) % fs.length];
 }
-function abgeben() {
+function abgeben(){
   const p = S.pruefung; p.fertig = true;
-  const fs = p.ids.map(id => (S.kurs.fragen || []).find(f => f.id === id)).filter(Boolean);
+  const fs = p.ids.map(id => (S.kurs.fragen||[]).find(f => f.id === id)).filter(Boolean);
   let ok = 0;
-  fs.forEach((f, i) => {
-    const r = gleich(p.ant[i] || [], f.richtig); if (r) ok++;
-    S.st.fragen[f.id] = { ok: r, t: Date.now() };
-    if (r) delete S.st.fehler[f.id]; else S.st.fehler[f.id] = (S.st.fehler[f.id] || 0) + 1;
+  fs.forEach((f,i) => {
+    const r = gleich(p.ant[i]||[], f.richtig); if (r) ok++;
+    S.st.fragen[f.id] = { ok:r, t:Date.now() };
+    if (r) delete S.st.fehler[f.id]; else S.st.fehler[f.id] = (S.st.fehler[f.id]||0) + 1;
   });
-  p.pc = Math.round(ok / fs.length * 100);
-  S.st.pruefungen.push({ id: p.id, pc: p.pc, t: Date.now() });
+  p.pc = Math.round(ok/fs.length*100);
+  S.st.pruefungen.push({ id:p.id, pc:p.pc, t:Date.now() });
   save(); render();
 }
 
-/* ---------- Start ---------- */
-function oeffne(id) {
-  S.kurs = S.kurse.find(k => k.id === id) || S.kurse[0];
-  S.st = load(S.kurs.id);
-  S.kartenIdx = 0; S.fragenIdx = 0; S.fehlerIdx = 0; S.auf = false;
-  try { localStorage.setItem('lc.aktiv', S.kurs.id); } catch (e) {}
-}
-async function start() {
+/* ================= Start ================= */
+async function start(){
   try {
-    if (window.KURSE) { S.kurse = window.KURSE.kurse; S.fahrplan = window.KURSE.fahrplan || []; }
+    if (window.KURSE){ S.kurse = window.KURSE.kurse; S.fahrplan = window.KURSE.fahrplan || []; }
     else {
-      const idx = await (await fetch('kurse/index.json?v=' + Date.now())).json();
+      const idx = await (await fetch('kurse/index.json?v='+Date.now())).json();
       S.fahrplan = idx.fahrplan || [];
-      S.kurse = await Promise.all(idx.kurse.map(f => fetch('kurse/' + f + '?v=' + Date.now()).then(r => r.json())));
+      S.kurse = await Promise.all(idx.kurse.map(f => fetch('kurse/'+f+'?v='+Date.now()).then(r => r.json())));
     }
-  } catch (e) {
-    el.innerHTML = `<h1>Keine Inhalte</h1><div class="empty">Die Kursdateien konnten nicht geladen werden.<br><small>${esc(e.message)}</small></div>`;
-    return;
+  } catch(e){
+    el.innerHTML = `<h1 class="gross">Keine Inhalte</h1><div class="leer">Die Kursdateien konnten nicht geladen werden.<br><br>${esc(e.message)}</div>`;
+    nav.hidden = false; nav.innerHTML = '<div class="inner"></div>'; return;
   }
-  if (!S.kurse.length) { el.innerHTML = `<div class="empty">Noch keine Kurse geladen.</div>`; return; }
-  let aktiv = null; try { aktiv = localStorage.getItem('lc.aktiv'); } catch (e) {}
-  oeffne(aktiv || S.kurse[0].id);
-  render();
+  if (!S.kurse.length){ el.innerHTML = `<div class="leer">Noch keine Kurse geladen.</div>`; return; }
+  go('uebersicht','uebersicht');
 }
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
 start();
