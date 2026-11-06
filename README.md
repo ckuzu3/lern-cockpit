@@ -42,11 +42,13 @@ bash tools/deploy.sh "Was sich geändert hat"
 
 Das Skript zählt die Version im Service Worker hoch (sonst behalten installierte iPhones den
 alten Stand), baut die iCloud-Einzeldatei neu, committet und pusht. GitHub Actions prüft danach
-alle Kursdateien auf Konsistenz und veröffentlicht `app/` auf GitHub Pages. Dauer: ein bis zwei
-Minuten. Schlägt die Prüfung fehl, wird nichts veröffentlicht.
+alle Kursdateien auf Konsistenz und schiebt den Inhalt von `app/` auf den Branch **gh-pages**,
+von dem GitHub Pages ausliefert. Dauer: ein bis zwei Minuten. Schlägt die Prüfung fehl, wird
+nichts veröffentlicht.
 
-Pages schaltet sich beim ersten Workflow-Lauf selbst ein. Sollte das an den
-Repository-Einstellungen scheitern: **Settings → Pages → Source: GitHub Actions**.
+Einmalige Einrichtung: **Settings → Pages → Source: Deploy from a branch → gh-pages / (root)**.
+Der Weg über die Pages-API (`enablement: true`) funktioniert hier nicht, weil der
+Workflow-Token Pages in diesem Repository nicht aktivieren darf.
 
 ## Zwischenlösung ohne GitHub: iCloud
 

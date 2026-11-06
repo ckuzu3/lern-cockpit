@@ -1,4 +1,5 @@
-# Veröffentlicht den Ordner app/ auf GitHub Pages – bei jedem Push auf main.
+# Prüft die Kursdateien und veröffentlicht den Ordner app/ auf dem Branch gh-pages,
+# von dem GitHub Pages ausliefert. Kommt ohne die Pages-API aus.
 name: Deploy Lern-Cockpit
 
 on:
@@ -7,9 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
@@ -18,9 +17,6 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -49,11 +45,16 @@ jobs:
               print('\n'.join(fehler)); sys.exit(1)
           PY
 
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true   # schaltet Pages beim ersten Lauf selbst ein
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: app
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Nach gh-pages veröffentlichen
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          touch app/.nojekyll
+          cd app
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA:0:7}"
+          git push -q --force "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages:gh-pages
+          echo "Veröffentlicht auf gh-pages."
