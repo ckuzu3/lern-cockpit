@@ -48,6 +48,18 @@ Minuten. Schlägt die Prüfung fehl, wird nichts veröffentlicht.
 Pages schaltet sich beim ersten Workflow-Lauf selbst ein. Sollte das an den
 Repository-Einstellungen scheitern: **Settings → Pages → Source: GitHub Actions**.
 
+## Zwischenlösung ohne GitHub: iCloud
+
+```
+node tools/build-single.js
+cp dist/Lern-Cockpit.html ~/Library/Mobile\ Documents/com~apple~CloudDocs/Lern-Cockpit/
+```
+
+Die Datei erscheint auf dem iPhone in **Dateien → iCloud Drive → Lern-Cockpit**. Antippen
+öffnet sie, auch ohne Netz. Grenzen gegenüber der installierten Variante: kein Icon auf dem
+Homescreen, und der Lernfortschritt wird in dieser Ansicht nicht zuverlässig gespeichert –
+innerhalb einer Sitzung ja, über Tage hinweg nicht.
+
 ## Auf dem iPhone installieren
 
 Die Pages-Adresse in **Safari** öffnen (nicht Chrome – nur Safari kann installieren),
