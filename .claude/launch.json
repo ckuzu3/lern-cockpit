@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "lern-app",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["/Users/cankuzu/Desktop/Lern-App/tools/serve.js", "8777"],
+      "port": 8777
+    }
+  ]
+}
