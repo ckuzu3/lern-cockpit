@@ -1,0 +1,1958 @@
+{
+ "id": "az-900",
+ "titel": "AZ-900 Azure Fundamentals",
+ "anbieter": "Microsoft",
+ "typ": "zertifikat",
+ "stand": "2026-11-09",
+ "termin": null,
+ "pruefung": {
+  "code": "AZ-900",
+  "name": "Microsoft Azure Fundamentals",
+  "dauer": "ca. 45 Min. Prüfungszeit (beim Buchen prüfen)",
+  "fragen": "ca. 35–50, Microsoft nennt keine feste Zahl",
+  "bestehen": "700 von 1000 Punkten",
+  "kosten": "ca. CHF 99 (Fundamentals-Tarif, Preis auf der Prüfungsseite prüfen)",
+  "gueltigkeit": "Fundamentals-Zertifizierungen laufen nicht ab – keine jährliche Erneuerung nötig",
+  "sprache": "Englisch zuerst, andere Sprachen ca. 8 Wochen später. Fehlt Deutsch, kannst du +30 Min. beantragen.",
+  "quelle": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-900"
+ },
+ "hinweis": "Fragen sind selbst formuliert und folgen den offiziellen Prüfungszielen (Stand 20.07.2026). Keine echten Prüfungsfragen.",
+ "ressourcen": [
+  {
+   "titel": "Offizieller Prüfungsleitfaden AZ-900",
+   "url": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-900",
+   "was": "Verbindliche Liste der geprüften Fähigkeiten, Stand 20. Juli 2026"
+  },
+  {
+   "titel": "Kostenloses Practice Assessment",
+   "url": "https://learn.microsoft.com/en-us/credentials/certifications/exams/az-900/practice/assessment?assessment-type=practice&assessmentId=23",
+   "was": "Microsofts eigene Übungsprüfung – vor dem Termin unbedingt machen"
+  },
+  {
+   "titel": "Azure-Preisrechner",
+   "url": "https://azure.microsoft.com/pricing/calculator/",
+   "was": "Einmal selbst durchklicken, das wird gefragt"
+  },
+  {
+   "titel": "Azure Portal",
+   "url": "https://portal.azure.com",
+   "was": "Kostenloses Konto anlegen und die Begriffe im Portal wiederfinden"
+  },
+  {
+   "titel": "Exam Sandbox",
+   "url": "https://aka.ms/examdemo",
+   "was": "Fragetypen vorab ansehen"
+  }
+ ],
+ "domains": [
+  {
+   "id": "d1",
+   "titel": "Cloud-Konzepte",
+   "kurz": "Modelle, Nutzen, IaaS/PaaS/SaaS",
+   "gewicht": "25–30 %",
+   "themen": [
+    "Cloud Computing definieren",
+    "Modell der geteilten Verantwortung beschreiben",
+    "Cloud-Modelle definieren: public, private, hybrid",
+    "Passende Einsatzfälle je Cloud-Modell nennen",
+    "Verbrauchsbasiertes Modell beschreiben",
+    "Preismodelle der Cloud vergleichen",
+    "Serverless beschreiben",
+    "Vorteile von Hochverfügbarkeit und Skalierbarkeit",
+    "Vorteile von Zuverlässigkeit und Vorhersagbarkeit",
+    "Vorteile von Sicherheit und Governance",
+    "Vorteile der Verwaltbarkeit",
+    "IaaS beschreiben",
+    "PaaS beschreiben",
+    "SaaS beschreiben",
+    "Passende Einsatzfälle je Servicetyp"
+   ],
+   "zusammenfassung": "## Die drei Begriffspaare, um die sich alles dreht\n\n### CapEx und OpEx\n**CapEx** ist Investition: Du kaufst Server, schreibst sie über Jahre ab, zahlst im Voraus.\n**OpEx** ist laufender Aufwand: Du zahlst monatlich für das, was du verbrauchst.\nDie Cloud verschiebt CapEx zu OpEx – das ist die Standardantwort, wenn eine Frage von\n„keine Vorabinvestition\" oder „nur zahlen, was genutzt wird\" spricht.\n\n### Skalierbarkeit und Elastizität\n- **Vertikal skalieren** (scale up): grössere VM – mehr CPU und RAM in derselben Maschine\n- **Horizontal skalieren** (scale out): mehr Instanzen derselben Grösse\n- **Elastizität**: das automatisch und nach Bedarf, auch wieder nach unten\n\n### Hochverfügbarkeit, Zuverlässigkeit, Disaster Recovery\n- **Hochverfügbarkeit**: der Dienst läuft, auch wenn eine Komponente ausfällt (Availability Zones)\n- **Zuverlässigkeit**: er erholt sich von Fehlern (verteilte Architektur)\n- **Disaster Recovery**: Wiederanlauf nach einem grossen Ausfall (Region Pairs, Backup)\n\n## Modell der geteilten Verantwortung\n\nWer kümmert sich um was – die Frage kommt fast sicher:\n\n| Ebene | Du | Microsoft |\n|---|---|---|\n| **On-Premises** | alles | nichts |\n| **IaaS** | Betriebssystem, Anwendungen, Daten, Identitäten, Netzwerkkonfiguration | Hardware, Rechenzentrum, Virtualisierung |\n| **PaaS** | Anwendungen, Daten, Identitäten | zusätzlich Betriebssystem, Laufzeit, Patching |\n| **SaaS** | Daten, Geräte, Konten und Identitäten | alles Übrige |\n\n**Immer bei dir, in jedem Modell**: Daten, Endgeräte, Konten und Zugriffsverwaltung.\nDieser Satz beantwortet eine ganze Reihe von Fragen.\n\n## Cloud-Modelle\n\n- **Public Cloud**: Ressourcen von Microsoft, geteilt mit anderen. Kein eigenes Blech, keine CapEx.\n- **Private Cloud**: eigene Infrastruktur, eigenes Rechenzentrum oder gehostet. Volle Kontrolle, volle Verantwortung.\n- **Hybrid**: beides verbunden. Typischer Grund: gesetzliche Auflagen, Altanwendungen, oder Lastspitzen in die Cloud auslagern.\n- **Multicloud**: mehrere Anbieter gleichzeitig. Nicht dasselbe wie hybrid.\n- **Azure Arc** bringt Azure-Verwaltung zu Servern und Kubernetes ausserhalb von Azure.\n- **Azure VMware Solution** betreibt eine bestehende VMware-Umgebung in Azure.\n\n## Servicetypen\n\n- **IaaS** – du mietest Infrastruktur: VMs, Netzwerke, Speicher. Meiste Kontrolle, meiste Arbeit.\n  Typisch: Lift-and-Shift, Testumgebungen, Alt-Anwendungen.\n- **PaaS** – du bekommst eine fertige Plattform: App Service, Azure SQL Database.\n  Du kümmerst dich nur um die Anwendung. Typisch: Entwicklung ohne Serverpflege.\n- **SaaS** – fertige Software: Microsoft 365, Dynamics. Du nutzt und verwaltest Daten und Benutzer.\n\n**Serverless** (Azure Functions, Logic Apps) ist die Zuspitzung von PaaS: keine Instanzen,\nAbrechnung pro Ausführung, automatische Skalierung bis null. Merkhilfe für Fragen:\n„nur zahlen, wenn Code läuft\" → serverless."
+  },
+  {
+   "id": "d2",
+   "titel": "Azure-Architektur und -Dienste",
+   "kurz": "Regionen, Compute, Netzwerk, Speicher, Identität",
+   "gewicht": "35–40 %",
+   "themen": [
+    "Regionen, Region Pairs und souveräne Regionen beschreiben",
+    "Availability Zones beschreiben",
+    "Azure-Rechenzentren beschreiben",
+    "Ressourcen und Ressourcengruppen beschreiben",
+    "Subscriptions beschreiben",
+    "Verwaltungsgruppen beschreiben",
+    "Hierarchie aus Ressourcengruppen, Subscriptions und Verwaltungsgruppen",
+    "Compute-Typen vergleichen: Container, virtuelle Maschinen, Functions",
+    "VM-Optionen: Azure Virtual Machines, Virtual Machine Scale Sets, Availability Sets, Azure Virtual Desktop",
+    "Benötigte Ressourcen für virtuelle Maschinen",
+    "Hosting-Optionen: Web Apps, Container, VMs",
+    "Virtuelle Netzwerke: vNet, Subnetze, Peering, Azure DNS, VPN Gateway, ExpressRoute",
+    "Öffentliche und private Endpunkte definieren",
+    "Azure-Storage-Dienste vergleichen",
+    "Speicherebenen beschreiben",
+    "Redundanzoptionen beschreiben",
+    "Speicherkonto-Optionen und Speichertypen",
+    "Dateien verschieben: AzCopy, Azure Storage Explorer, Azure File Sync",
+    "Migrationsoptionen: Azure Migrate und Azure Data Box",
+    "Verzeichnisdienste: Microsoft Entra ID und Microsoft Entra Domain Services",
+    "Authentifizierung: SSO, MFA, passwortlos",
+    "Externe Identitäten",
+    "Conditional Access",
+    "Azure RBAC",
+    "Zero Trust",
+    "Defense in Depth",
+    "Microsoft Defender for Cloud"
+   ],
+   "zusammenfassung": "## Die Hierarchie – von oben nach unten\n\n**Verwaltungsgruppen → Subscriptions → Ressourcengruppen → Ressourcen**\n\n- **Verwaltungsgruppe** bündelt Subscriptions. Richtlinien und Rechte vererben sich nach unten.\n  Bis zu sechs Ebenen tief unter der Root-Gruppe.\n- **Subscription** ist die Abrechnungs- und Grenzeinheit. Jede Ressource gehört zu genau einer.\n- **Ressourcengruppe** ist ein logischer Behälter. Eine Ressource liegt in **genau einer**\n  Ressourcengruppe, kann aber verschoben werden. Löschst du die Gruppe, sind alle Ressourcen darin weg.\n- **Ressource** ist die einzelne VM, das Speicherkonto, die Datenbank.\n\nMerke: Vererbung läuft **nur nach unten**. Was oben per Azure Policy verboten ist, ist unten verboten.\n\n## Geografie\n\n- **Region**: ein oder mehrere Rechenzentren in einem Umkreis mit geringer Latenz. Z. B. Switzerland North.\n- **Availability Zone**: physisch getrennte Standorte **innerhalb** einer Region, eigene Strom-,\n  Kühlungs- und Netzversorgung. Für **Hochverfügbarkeit innerhalb einer Region**.\n- **Region Pair**: zwei Regionen in derselben Geografie, mindestens 300 Meilen auseinander.\n  Für **Disaster Recovery**. Updates werden nie gleichzeitig in beiden ausgerollt.\n- **Souveräne Regionen**: getrennte Instanzen für besondere Anforderungen, etwa Azure Government oder China.\n\nPrüfungsmuster: „Ausfall eines Rechenzentrums überstehen\" → Availability Zones.\n„Ausfall einer ganzen Region überstehen\" → Region Pair.\n\n## Compute\n\n| Dienst | Was es ist | Wann |\n|---|---|---|\n| **Virtual Machines** | IaaS, volle Kontrolle | Lift-and-Shift, Spezialsoftware |\n| **Virtual Machine Scale Sets** | identische VMs, automatisch skaliert | Last schwankt |\n| **Availability Set** | VMs auf Fault- und Update-Domains verteilt | Verfügbarkeit **in einem** Rechenzentrum |\n| **Azure Virtual Desktop** | Windows-Desktops aus der Cloud | Remote-Arbeitsplätze, BYOD |\n| **Container Instances / Container Apps** | einzelne Container ohne Orchestrierung | kleine, isolierte Workloads |\n| **Azure Kubernetes Service** | verwaltetes Kubernetes | viele Container, Orchestrierung |\n| **Azure Functions** | serverless, ereignisgesteuert | kurze Aufgaben, Abrechnung pro Ausführung |\n| **App Service** | PaaS für Web-Apps und APIs | Webanwendungen ohne Serverpflege |\n\nEine VM braucht immer: **virtuelles Netzwerk mit Subnetz, Netzwerkschnittstelle, Datenträger\n(OS-Disk) und Grösse**. Optional öffentliche IP und NSG.\n\n## Netzwerk\n\n- **Virtuelles Netzwerk (vNet)** mit **Subnetzen** – die Grundlage. Ein vNet lebt in einer Region.\n- **Peering** verbindet zwei vNets, auch über Regionen hinweg, über das Microsoft-Backbone.\n- **VPN Gateway** verbindet über das Internet, verschlüsselt. Site-to-Site oder Point-to-Site.\n- **ExpressRoute** ist eine **private Leitung** ohne Internet – mehr Bandbreite, verlässliche Latenz, teurer.\n- **Azure DNS** hostet DNS-Zonen.\n- **NSG (Netzwerksicherheitsgruppe)** filtert Verkehr auf Subnetz- oder NIC-Ebene.\n- **Öffentlicher Endpunkt** ist über das Internet erreichbar, **Private Endpoint** gibt einem\n  PaaS-Dienst eine private IP im eigenen vNet – der Verkehr verlässt das Backbone nicht.\n\n## Speicher\n\nVier Dienste in einem Speicherkonto:\n- **Blob** – unstrukturierte Objekte, Bilder, Backups, Logs\n- **Files** – SMB/NFS-Freigaben, einbindbar wie ein Netzlaufwerk\n- **Queue** – Nachrichten zwischen Anwendungsteilen\n- **Table** – einfache NoSQL-Schlüssel-Wert-Daten\n\n**Zugriffsebenen für Blobs**: Hot (häufig), Cool (mind. 30 Tage), Cold (mind. 90 Tage),\nArchive (mind. 180 Tage, Abruf dauert Stunden). Je kälter, desto billiger die Speicherung\nund desto teurer der Zugriff.\n\n**Redundanz** – die Abkürzungen musst du auseinanderhalten:\n- **LRS** – drei Kopien in **einem** Rechenzentrum. Billigste Option.\n- **ZRS** – drei Kopien über **Availability Zones** einer Region.\n- **GRS** – LRS plus eine asynchrone Kopie in der **gekoppelten Region**.\n- **GZRS** – ZRS plus gekoppelte Region. Höchste Sicherheit.\n- **RA-GRS / RA-GZRS** – zusätzlich **lesbarer** Zugriff auf die Zweitregion.\n\n**Daten bewegen**: **AzCopy** (Kommandozeile), **Azure Storage Explorer** (grafisch),\n**Azure File Sync** (Dateiserver mit Azure Files synchronisieren),\n**Azure Migrate** (Server, Datenbanken, Apps bewerten und migrieren),\n**Azure Data Box** (physisches Gerät für Terabytes, wenn die Leitung nicht reicht).\n\n## Identität, Zugriff, Sicherheit\n\n- **Microsoft Entra ID** ist der Cloud-Verzeichnisdienst. **Nicht** dasselbe wie Active Directory:\n  kein Kerberos, keine Gruppenrichtlinien, keine Organisationseinheiten.\n- **Microsoft Entra Domain Services** bietet verwaltete Domänendienste (Domänenbeitritt, LDAP,\n  Kerberos) ohne eigene Domain Controller – für Altanwendungen in der Cloud.\n- **Authentifizierung** klärt *wer du bist*, **Autorisierung** *was du darfst*.\n- **SSO** – einmal anmelden, viele Anwendungen. **MFA** – zwei von drei: etwas, das du weisst,\n  hast, bist. **Passwortlos** – Windows Hello, FIDO2-Schlüssel, Authenticator.\n- **Externe Identitäten**: B2B (Gäste) und B2C (Kunden).\n- **Conditional Access** entscheidet anhand von Signalen (Benutzer, Gerät, Standort, Risiko)\n  über Zugriff, MFA oder Blockade.\n- **Azure RBAC** vergibt Rollen auf Verwaltungsgruppe, Subscription, Ressourcengruppe oder\n  Ressource – und vererbt nach unten. Grundrollen: Owner, Contributor, Reader, User Access Administrator.\n- **Zero Trust**: explizit verifizieren, geringste Rechte, von einem Einbruch ausgehen.\n- **Defense in Depth**: mehrere Schichten – physisch, Identität, Perimeter, Netzwerk,\n  Compute, Anwendung, Daten. Die Daten liegen in der Mitte.\n- **Microsoft Defender for Cloud** bewertet die Sicherheitslage (Secure Score), gibt Empfehlungen\n  und schützt auch Server ausserhalb von Azure."
+  },
+  {
+   "id": "d3",
+   "titel": "Verwaltung und Governance",
+   "kurz": "Kosten, Policy, Werkzeuge, Monitoring",
+   "gewicht": "30–35 %",
+   "themen": [
+    "Faktoren, die Kosten beeinflussen",
+    "Preisrechner nutzen",
+    "Kostenverwaltung in Azure",
+    "Zweck von Tags",
+    "Zweck von Microsoft Purview",
+    "Zweck von Azure Policy",
+    "Zweck von Ressourcensperren",
+    "Azure-Portal beschreiben",
+    "Cloud Shell, Azure CLI und Azure PowerShell beschreiben",
+    "Zweck von Azure Arc",
+    "Infrastructure as Code beschreiben",
+    "Azure Resource Manager und ARM-Vorlagen",
+    "Zweck von Azure Advisor",
+    "Azure Service Health beschreiben",
+    "Azure Monitor mit Log Analytics, Alerts und Application Insights"
+   ],
+   "zusammenfassung": "## Kosten\n\nWas den Preis beeinflusst: **Ressourcentyp, Grösse, Region, Datenausgang (egress),\nAbrechnungsmodell und Lizenzierung**. Eingehender Verkehr ist in der Regel kostenlos,\n**ausgehender kostet** – eine beliebte Fangfrage.\n\nSparmöglichkeiten, die du nennen können musst:\n- **Reservierungen** (1 oder 3 Jahre im Voraus) – bis zu etwa 72 % günstiger\n- **Azure Hybrid Benefit** – bestehende Windows-Server- oder SQL-Lizenzen mitbringen\n- **Spot-VMs** – ungenutzte Kapazität, jederzeit kündbar, sehr günstig\n- **Autoskalierung** und **Herunterfahren** von Test-VMs ausserhalb der Arbeitszeit\n\nWerkzeuge:\n- **Pricing Calculator** – Kosten **vor** der Bereitstellung schätzen\n- **TCO Calculator** – On-Premises mit Azure vergleichen\n- **Microsoft Cost Management** – tatsächliche Kosten analysieren, **Budgets** mit Warnungen setzen\n- **Tags** – Schlüssel-Wert-Paare an Ressourcen für Zuordnung und Kostenstellen.\n  Tags werden **nicht automatisch vererbt**; das erzwingst du mit Azure Policy.\n\n## Governance\n\n- **Azure Policy** erzwingt Regeln: nur erlaubte Regionen, nur bestimmte VM-Grössen,\n  Pflicht-Tags. Effekte: *Deny*, *Audit*, *Append*, *DeployIfNotExists*.\n  Policy sagt, **was erlaubt ist** – RBAC sagt, **wer etwas darf**. Diesen Unterschied musst du können.\n- **Ressourcensperren** schützen vor Versehen: **CanNotDelete** (ändern ja, löschen nein)\n  und **ReadOnly** (nur lesen). Sperren gelten unabhängig von RBAC – auch ein Owner kommt\n  nicht daran vorbei, ohne die Sperre vorher zu entfernen.\n- **Microsoft Purview** ist Datenverwaltung und Compliance: Daten finden, klassifizieren,\n  Herkunft nachvollziehen.\n\n## Werkzeuge\n\n- **Azure Portal** – die grafische Oberfläche im Browser\n- **Azure Cloud Shell** – Shell im Browser, mit Bash oder PowerShell, nichts zu installieren\n- **Azure CLI** – plattformübergreifend, Befehle wie `az vm create`\n- **Azure PowerShell** – Cmdlets wie `New-AzVM`\n- **Azure Arc** – bringt Azure-Verwaltung zu Servern, Kubernetes und Datendiensten\n  **ausserhalb** von Azure: On-Premises und in anderen Clouds\n- **Azure Resource Manager (ARM)** – die Verwaltungsschicht, durch die **jede** Anfrage läuft,\n  egal ob Portal, CLI oder PowerShell. Hier greifen RBAC, Policy und Sperren.\n- **ARM-Vorlagen** und **Bicep** – deklarative Beschreibung der Infrastruktur als Code.\n  Deklarativ heisst: du beschreibst das **Ziel**, nicht die Schritte. Idempotent: mehrfach\n  ausgeführt entsteht derselbe Zustand.\n\n## Überwachen\n\n- **Azure Advisor** – persönliche Empfehlungen in fünf Kategorien: Zuverlässigkeit, Sicherheit,\n  Leistung, Kosten, operative Exzellenz\n- **Azure Service Health** – Zustand der **Azure-Dienste**, die **dich** betreffen: geplante\n  Wartung, Störungen, Hinweise. Nicht zu verwechseln mit dem Zustand deiner eigenen Ressourcen.\n- **Azure Monitor** – das Dach über Metriken und Protokollen\n  - **Log Analytics** – Abfragen über gesammelte Protokolle mit KQL\n  - **Azure Monitor Alerts** – Warnungen bei Schwellenwerten, mit Aktionsgruppen\n  - **Application Insights** – Leistung und Fehler **in deiner Anwendung**\n\nPrüfungsmuster: „Störung eines Azure-Dienstes\" → Service Health.\n„Problem in der eigenen Webanwendung\" → Application Insights.\n„Empfehlung zum Sparen\" → Advisor."
+  }
+ ],
+ "karten": [
+  {
+   "domain": "d1",
+   "front": "CapEx oder OpEx – was ist die Cloud?",
+   "back": "**OpEx**: laufender Betriebsaufwand, monatlich nach Verbrauch.\n**CapEx** wäre der Kauf eigener Hardware mit Abschreibung. „Keine Vorabinvestition“ → OpEx.",
+   "id": "k001"
+  },
+  {
+   "domain": "d1",
+   "front": "Vertikal oder horizontal skalieren – was ist was?",
+   "back": "**Vertikal (scale up)**: grössere Maschine, mehr CPU/RAM.\n**Horizontal (scale out)**: mehr Instanzen derselben Grösse.",
+   "id": "k002"
+  },
+  {
+   "domain": "d1",
+   "front": "Was ist Elastizität?",
+   "back": "Automatisches Skalieren nach Bedarf – **in beide Richtungen**. Mehr Instanzen bei Last, weniger bei Ruhe, ohne manuelles Zutun.",
+   "id": "k003"
+  },
+  {
+   "domain": "d1",
+   "front": "Hochverfügbarkeit, Zuverlässigkeit, Disaster Recovery – der Unterschied?",
+   "back": "**Hochverfügbarkeit**: läuft weiter trotz Ausfall einer Komponente.\n**Zuverlässigkeit**: erholt sich von Fehlern.\n**Disaster Recovery**: Wiederanlauf nach grossem Ausfall (andere Region).",
+   "id": "k004"
+  },
+  {
+   "domain": "d1",
+   "front": "Was gehört im Modell der geteilten Verantwortung IMMER dir?",
+   "back": "**Daten**, **Endgeräte**, **Konten und Identitäten**. In jedem Modell – IaaS, PaaS und SaaS.",
+   "id": "k005"
+  },
+  {
+   "domain": "d1",
+   "front": "Wer patcht das Betriebssystem bei IaaS, PaaS und SaaS?",
+   "back": "**IaaS: du.** PaaS und SaaS: der Anbieter. Bei IaaS mietest du die virtuelle Maschine, nicht die Pflege darin.",
+   "id": "k006"
+  },
+  {
+   "domain": "d1",
+   "front": "Was ist eine Public Cloud?",
+   "back": "Ressourcen des Anbieters, geteilt mit anderen Kunden, über das Internet erreichbar. Keine eigene Hardware, keine CapEx, schnelle Bereitstellung.",
+   "id": "k007"
+  },
+  {
+   "domain": "d1",
+   "front": "Wann ist eine Private Cloud die Antwort?",
+   "back": "Wenn gesetzliche Auflagen oder Firmenrichtlinien eigene, nicht geteilte Infrastruktur verlangen. Volle Kontrolle, aber auch volle Verantwortung und Investition.",
+   "id": "k008"
+  },
+  {
+   "domain": "d1",
+   "front": "Hybrid oder Multicloud – was ist der Unterschied?",
+   "back": "**Hybrid**: eigene Infrastruktur **plus** Public Cloud, verbunden.\n**Multicloud**: mehrere Public-Cloud-Anbieter gleichzeitig. Beides kann auch zusammen auftreten.",
+   "id": "k009"
+  },
+  {
+   "domain": "d1",
+   "front": "Was macht Azure Arc?",
+   "back": "Bringt die **Azure-Verwaltung zu Ressourcen ausserhalb von Azure**: Server im eigenen Rechenzentrum, Kubernetes-Cluster, andere Clouds. Governance und Monitoring aus einem Portal.",
+   "id": "k010"
+  },
+  {
+   "domain": "d1",
+   "front": "Wofür gibt es Azure VMware Solution?",
+   "back": "Eine bestehende **VMware-Umgebung** unverändert in Azure betreiben – Lift-and-Shift ohne Umbau der Virtualisierung.",
+   "id": "k011"
+  },
+  {
+   "domain": "d1",
+   "front": "IaaS – was bekommst du und wann nimmst du es?",
+   "back": "Virtuelle Maschinen, Netzwerke, Speicher. **Meiste Kontrolle, meiste Arbeit.** Typisch: Lift-and-Shift, Testumgebungen, Software mit speziellen Anforderungen.",
+   "id": "k012"
+  },
+  {
+   "domain": "d1",
+   "front": "PaaS – was bekommst du und wann nimmst du es?",
+   "back": "Eine fertige Plattform: App Service, Azure SQL Database. Du kümmerst dich nur um **Anwendung und Daten**. Typisch: Entwicklung ohne Serverpflege.",
+   "id": "k013"
+  },
+  {
+   "domain": "d1",
+   "front": "SaaS – was bekommst du?",
+   "back": "Fertige Software, z. B. Microsoft 365. Du verwaltest nur **Daten, Benutzer und Geräte**. Alles andere macht der Anbieter.",
+   "id": "k014"
+  },
+  {
+   "domain": "d1",
+   "front": "Was bedeutet serverless?",
+   "back": "Keine Instanzen zu verwalten, **Abrechnung pro Ausführung**, automatische Skalierung bis hinunter auf null. In Azure: **Azure Functions**, **Logic Apps**.",
+   "id": "k015"
+  },
+  {
+   "domain": "d1",
+   "front": "Was heisst verbrauchsbasiertes Modell?",
+   "back": "Du zahlst für das, was du tatsächlich nutzt – pro Stunde, pro GB, pro Ausführung. Keine ungenutzte Kapazität, die du trotzdem bezahlst.",
+   "id": "k016"
+  },
+  {
+   "domain": "d1",
+   "front": "Welcher Vorteil der Cloud steht hinter dem Wort „Verwaltbarkeit“?",
+   "back": "Zwei Seiten: **Verwaltung in der Cloud** (Autoskalierung, Selbstheilung, Vorlagen) und **Verwaltung der Cloud** (Portal, CLI, PowerShell, APIs).",
+   "id": "k017"
+  },
+  {
+   "domain": "d1",
+   "front": "Was ist Fault Tolerance?",
+   "back": "Der Dienst arbeitet **ohne Unterbrechung** weiter, wenn eine Komponente ausfällt – durch Redundanz. Gehört zur Zuverlässigkeit.",
+   "id": "k018"
+  },
+  {
+   "domain": "d1",
+   "front": "Was ist Agilität im Cloud-Kontext?",
+   "back": "Ressourcen in Minuten bereitstellen und wieder abbauen statt in Wochen zu beschaffen. Schnelle Reaktion auf geänderte Anforderungen.",
+   "id": "k019"
+  },
+  {
+   "domain": "d1",
+   "front": "Welche Cloud-Eigenschaft steht hinter „geografische Verteilung“?",
+   "back": "Dienste näher am Benutzer betreiben – kürzere Latenz und oft die Erfüllung von Anforderungen an den Datenstandort.",
+   "id": "k020"
+  },
+  {
+   "domain": "d1",
+   "front": "Wer kümmert sich bei PaaS um die Laufzeitumgebung?",
+   "back": "**Der Anbieter.** Du bringst nur Anwendung und Daten mit – Betriebssystem, Laufzeit und Patching übernimmt Microsoft.",
+   "id": "k021"
+  },
+  {
+   "domain": "d1",
+   "front": "Nenne drei typische Einsatzfälle für IaaS.",
+   "back": "Lift-and-Shift bestehender Server, Test- und Entwicklungsumgebungen, Anwendungen mit speziellen Betriebssystem- oder Treiberanforderungen.",
+   "id": "k022"
+  },
+  {
+   "domain": "d1",
+   "front": "Was spricht gegen die Cloud – welche Gründe erkennt die Prüfung an?",
+   "back": "Gesetzliche Vorgaben zum Datenstandort, bestehende abgeschriebene Hardware, sehr konstante Last ohne Spitzen, Anforderungen an sehr geringe Latenz vor Ort.",
+   "id": "k023"
+  },
+  {
+   "domain": "d1",
+   "front": "Worin unterscheiden sich Skalierbarkeit und Elastizität?",
+   "back": "**Skalierbarkeit** ist die Möglichkeit, Kapazität zu ändern. **Elastizität** ist, dass das **automatisch und bedarfsgerecht** passiert.",
+   "id": "k024"
+  },
+  {
+   "domain": "d1",
+   "front": "Welches Preismodell passt zu einer Last, die 23 Stunden am Tag gleich bleibt?",
+   "back": "Eine **Reservierung** (1 oder 3 Jahre) – deutlich günstiger als Pay-as-you-go. Verbrauchsabrechnung lohnt sich bei schwankender Last.",
+   "id": "k025"
+  },
+  {
+   "domain": "d2",
+   "front": "Wie lautet die Azure-Hierarchie von oben nach unten?",
+   "back": "**Verwaltungsgruppen → Subscriptions → Ressourcengruppen → Ressourcen.** Richtlinien und Rechte vererben sich **nach unten**.",
+   "id": "k026"
+  },
+  {
+   "domain": "d2",
+   "front": "In wie vielen Ressourcengruppen kann eine Ressource liegen?",
+   "back": "In **genau einer**. Verschieben ist möglich, Mehrfachzugehörigkeit nicht. Löschst du die Gruppe, ist alles darin weg.",
+   "id": "k027"
+  },
+  {
+   "domain": "d2",
+   "front": "Was ist eine Availability Zone?",
+   "back": "Physisch getrennter Standort **innerhalb einer Region** mit eigener Strom-, Kühlungs- und Netzversorgung. Für **Hochverfügbarkeit innerhalb der Region**.",
+   "id": "k028"
+  },
+  {
+   "domain": "d2",
+   "front": "Was ist ein Region Pair und wofür?",
+   "back": "Zwei Regionen derselben Geografie, mindestens **300 Meilen** auseinander. Für **Disaster Recovery**. Updates werden nie gleichzeitig in beiden ausgerollt.",
+   "id": "k029"
+  },
+  {
+   "domain": "d2",
+   "front": "Availability Zone oder Region Pair – welche Frage führt wohin?",
+   "back": "„Ausfall eines Rechenzentrums überstehen“ → **Availability Zones**.\n„Ausfall einer ganzen Region überstehen“ → **Region Pair**.",
+   "id": "k030"
+  },
+  {
+   "domain": "d2",
+   "front": "Was ist eine souveräne Region?",
+   "back": "Eine physisch und logisch getrennte Azure-Instanz für besondere Anforderungen – z. B. **Azure Government** oder **Azure China**.",
+   "id": "k031"
+  },
+  {
+   "domain": "d2",
+   "front": "Was ist der Zweck einer Verwaltungsgruppe?",
+   "back": "Mehrere **Subscriptions** bündeln, um Richtlinien und Zugriffsrechte einmal zu setzen und nach unten zu vererben. Bis zu sechs Ebenen tief.",
+   "id": "k032"
+  },
+  {
+   "domain": "d2",
+   "front": "Was braucht eine virtuelle Maschine mindestens?",
+   "back": "**vNet mit Subnetz**, **Netzwerkschnittstelle (NIC)**, **OS-Datenträger** und eine **Grösse**. Optional öffentliche IP und Netzwerksicherheitsgruppe.",
+   "id": "k033"
+  },
+  {
+   "domain": "d2",
+   "front": "Wofür gibt es Virtual Machine Scale Sets?",
+   "back": "Eine Gruppe **identischer VMs**, die automatisch nach Last skaliert – mit Lastverteilung. Für Webfronten und schwankende Last.",
+   "id": "k034"
+  },
+  {
+   "domain": "d2",
+   "front": "Was macht ein Availability Set?",
+   "back": "Verteilt VMs auf **Fault Domains** (eigene Strom-/Netzversorgung) und **Update Domains** (getrennte Wartungsfenster) – Verfügbarkeit **innerhalb eines Rechenzentrums**.",
+   "id": "k035"
+  },
+  {
+   "domain": "d2",
+   "front": "Wofür ist Azure Virtual Desktop?",
+   "back": "Windows-Desktops und -Apps aus der Cloud, Mehrbenutzerbetrieb auf Windows 11 Enterprise multi-session. Für Remote-Arbeit und BYOD.",
+   "id": "k036"
+  },
+  {
+   "domain": "d2",
+   "front": "Container Instances, Container Apps oder AKS – was wann?",
+   "back": "**Container Instances**: einzelne Container, kein Orchestrator.\n**Container Apps**: serverless Container mit Skalierung.\n**AKS**: verwaltetes Kubernetes für viele Container mit Orchestrierung.",
+   "id": "k037"
+  },
+  {
+   "domain": "d2",
+   "front": "Wann nimmst du Azure Functions?",
+   "back": "Für kurze, **ereignisgesteuerte** Aufgaben: Datei landet im Storage, Nachricht kommt an, Zeitplan läuft ab. Abrechnung **pro Ausführung**, Skalierung bis null.",
+   "id": "k038"
+  },
+  {
+   "domain": "d2",
+   "front": "Was ist Azure App Service?",
+   "back": "**PaaS** für Web-Apps, APIs und Hintergrundjobs. Microsoft kümmert sich um Betriebssystem, Patching und Skalierung.",
+   "id": "k039"
+  },
+  {
+   "domain": "d2",
+   "front": "Was ist ein virtuelles Netzwerk in Azure?",
+   "back": "Ein privates Netzwerk innerhalb einer **Region**, unterteilt in **Subnetze**. Grundlage für VMs und private Endpunkte.",
+   "id": "k040"
+  },
+  {
+   "domain": "d2",
+   "front": "Was macht vNet-Peering?",
+   "back": "Verbindet zwei virtuelle Netzwerke über das **Microsoft-Backbone** – auch regionsübergreifend (global peering). Kein Gateway nötig, geringe Latenz.",
+   "id": "k041"
+  },
+  {
+   "domain": "d2",
+   "front": "VPN Gateway oder ExpressRoute?",
+   "back": "**VPN Gateway**: verschlüsselt **über das Internet**, günstiger, Bandbreite schwankt.\n**ExpressRoute**: **private Leitung** ohne Internet, verlässliche Latenz, höhere Bandbreite, teurer.",
+   "id": "k042"
+  },
+  {
+   "domain": "d2",
+   "front": "Was ist der Unterschied zwischen öffentlichem und privatem Endpunkt?",
+   "back": "**Öffentlicher Endpunkt**: über das Internet erreichbar.\n**Private Endpoint**: der PaaS-Dienst bekommt eine **private IP im eigenen vNet**, der Verkehr bleibt im Microsoft-Netz.",
+   "id": "k043"
+  },
+  {
+   "domain": "d2",
+   "front": "Was macht eine Netzwerksicherheitsgruppe (NSG)?",
+   "back": "Filtert ein- und ausgehenden Verkehr auf **Subnetz- oder NIC-Ebene** nach Regeln mit Priorität – Quelle, Ziel, Port, Protokoll.",
+   "id": "k044"
+  },
+  {
+   "domain": "d2",
+   "front": "Welche vier Dienste stecken in einem Speicherkonto?",
+   "back": "**Blob** (Objekte), **Files** (SMB/NFS-Freigaben), **Queue** (Nachrichten), **Table** (einfaches NoSQL).",
+   "id": "k045"
+  },
+  {
+   "domain": "d2",
+   "front": "Welche Blob-Zugriffsebenen gibt es und wie lange mindestens?",
+   "back": "**Hot** (häufig), **Cool** (≥ 30 Tage), **Cold** (≥ 90 Tage), **Archive** (≥ 180 Tage, Abruf dauert Stunden). Je kälter: billigere Speicherung, teurerer Zugriff.",
+   "id": "k046"
+  },
+  {
+   "domain": "d2",
+   "front": "LRS, ZRS, GRS, GZRS – was bedeuten sie?",
+   "back": "**LRS**: 3 Kopien in einem Rechenzentrum.\n**ZRS**: 3 Kopien über Availability Zones.\n**GRS**: LRS + asynchrone Kopie in der gekoppelten Region.\n**GZRS**: ZRS + gekoppelte Region.",
+   "id": "k047"
+  },
+  {
+   "domain": "d2",
+   "front": "Was bedeutet das RA in RA-GRS?",
+   "back": "**Read-Access**: die Kopie in der Zweitregion ist **lesbar**, auch ohne Failover. Bei GRS ohne RA kommst du erst nach einem Failover daran.",
+   "id": "k048"
+  },
+  {
+   "domain": "d2",
+   "front": "AzCopy, Storage Explorer oder File Sync – was wann?",
+   "back": "**AzCopy**: Kommandozeile für Kopiervorgänge.\n**Storage Explorer**: grafisches Werkzeug.\n**Azure File Sync**: lokalen Dateiserver mit Azure Files synchronisieren.",
+   "id": "k049"
+  },
+  {
+   "domain": "d2",
+   "front": "Wann nimmst du Azure Data Box?",
+   "back": "Wenn sehr grosse Datenmengen (Terabytes) zu übertragen sind und die **Leitung nicht reicht**. Microsoft schickt ein physisches Gerät.",
+   "id": "k050"
+  },
+  {
+   "domain": "d2",
+   "front": "Wofür ist Azure Migrate?",
+   "back": "Zentrale Stelle zum **Bewerten und Migrieren** von Servern, Datenbanken, Webanwendungen und virtuellen Desktops nach Azure.",
+   "id": "k051"
+  },
+  {
+   "domain": "d2",
+   "front": "Worin unterscheidet sich Microsoft Entra ID von Active Directory?",
+   "back": "Entra ID ist ein **Cloud-Verzeichnisdienst**: kein Kerberos, keine Gruppenrichtlinien, keine Organisationseinheiten, keine Domänenstruktur. Es ist **kein** AD in der Cloud.",
+   "id": "k052"
+  },
+  {
+   "domain": "d2",
+   "front": "Wofür gibt es Microsoft Entra Domain Services?",
+   "back": "Verwaltete Domänendienste – **Domänenbeitritt, LDAP, Kerberos, NTLM** – ohne eigene Domain Controller. Für Altanwendungen, die echtes AD brauchen.",
+   "id": "k053"
+  },
+  {
+   "domain": "d2",
+   "front": "Was ist der Unterschied zwischen Authentifizierung und Autorisierung?",
+   "back": "**Authentifizierung**: wer bist du.\n**Autorisierung**: was darfst du.\nErst AuthN, dann AuthZ.",
+   "id": "k054"
+  },
+  {
+   "domain": "d2",
+   "front": "Welche drei Faktoren kennt MFA?",
+   "back": "Etwas, das du **weisst** (Passwort), **hast** (Telefon, Schlüssel), **bist** (Fingerabdruck, Gesicht). MFA verlangt mindestens zwei verschiedene davon.",
+   "id": "k055"
+  },
+  {
+   "domain": "d2",
+   "front": "Was macht Conditional Access?",
+   "back": "Entscheidet anhand von **Signalen** – Benutzer, Gerät, Standort, Anwendung, Risiko – ob Zugriff gewährt, zusätzlich MFA verlangt oder blockiert wird.",
+   "id": "k056"
+  },
+  {
+   "domain": "d2",
+   "front": "Was ist Azure RBAC und wo greift es?",
+   "back": "Rollenbasierte Zugriffssteuerung auf **Verwaltungsgruppe, Subscription, Ressourcengruppe oder Ressource**, mit Vererbung nach unten. Grundrollen: Owner, Contributor, Reader, User Access Administrator.",
+   "id": "k057"
+  },
+  {
+   "domain": "d2",
+   "front": "Was sind die drei Grundsätze von Zero Trust?",
+   "back": "**Explizit verifizieren**, **geringste Rechte vergeben**, **von einem Einbruch ausgehen**.",
+   "id": "k058"
+  },
+  {
+   "domain": "d2",
+   "front": "Welche Schichten umfasst Defense in Depth?",
+   "back": "Physische Sicherheit, Identität und Zugriff, Perimeter, Netzwerk, Compute, Anwendung, **Daten** – die Daten liegen in der Mitte.",
+   "id": "k059"
+  },
+  {
+   "domain": "d2",
+   "front": "Was macht Microsoft Defender for Cloud?",
+   "back": "Bewertet die Sicherheitslage (**Secure Score**), gibt Empfehlungen, erkennt Bedrohungen – auch für Server **ausserhalb** von Azure über Azure Arc.",
+   "id": "k060"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche Faktoren bestimmen die Azure-Kosten?",
+   "back": "**Ressourcentyp, Grösse, Region, ausgehender Datenverkehr, Abrechnungsmodell und Lizenzierung.** Eingehender Verkehr ist meist kostenlos.",
+   "id": "k061"
+  },
+  {
+   "domain": "d3",
+   "front": "Kostet eingehender oder ausgehender Datenverkehr?",
+   "back": "**Ausgehender** (egress) kostet, eingehender ist in der Regel kostenlos. Beliebte Fangfrage.",
+   "id": "k062"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist der Unterschied zwischen Pricing Calculator und TCO Calculator?",
+   "back": "**Pricing Calculator**: Kosten geplanter Azure-Ressourcen schätzen.\n**TCO Calculator**: bestehende On-Premises-Umgebung mit Azure vergleichen.",
+   "id": "k063"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie viel sparen Reservierungen typischerweise?",
+   "back": "Bis zu etwa **72 %** gegenüber Pay-as-you-go, bei Bindung über **1 oder 3 Jahre**.",
+   "id": "k064"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist Azure Hybrid Benefit?",
+   "back": "Bestehende **Windows-Server- oder SQL-Server-Lizenzen** mit Software Assurance in Azure weiterverwenden – senkt die Compute-Kosten deutlich.",
+   "id": "k065"
+  },
+  {
+   "domain": "d3",
+   "front": "Wofür gibt es Spot-VMs?",
+   "back": "Ungenutzte Azure-Kapazität zu stark reduziertem Preis. Azure kann sie **jederzeit beenden** – nur für unterbrechbare Lasten wie Batch-Jobs.",
+   "id": "k066"
+  },
+  {
+   "domain": "d3",
+   "front": "Was macht Microsoft Cost Management?",
+   "back": "Zeigt **tatsächliche** Kosten, analysiert sie nach Ressource, Gruppe oder Tag, und erlaubt **Budgets mit Warnungen**. Der Pricing Calculator schätzt vorher.",
+   "id": "k067"
+  },
+  {
+   "domain": "d3",
+   "front": "Wofür sind Tags da – und was können sie nicht?",
+   "back": "Schlüssel-Wert-Paare an Ressourcen für Zuordnung, Kostenstellen und Umgebung. Sie werden **nicht automatisch vererbt** – das erzwingst du mit Azure Policy.",
+   "id": "k068"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist der Unterschied zwischen Azure Policy und RBAC?",
+   "back": "**Policy**: *was* erlaubt ist (nur bestimmte Regionen, Pflicht-Tags).\n**RBAC**: *wer* etwas tun darf. Policy prüft die Ressource, RBAC die Person.",
+   "id": "k069"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche Effekte kennt Azure Policy?",
+   "back": "**Deny** (verhindert), **Audit** (protokolliert), **Append** (ergänzt Werte), **DeployIfNotExists** (stellt Fehlendes bereit), **Modify**.",
+   "id": "k070"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche zwei Arten von Ressourcensperren gibt es?",
+   "back": "**CanNotDelete**: ändern ja, löschen nein.\n**ReadOnly**: nur lesen, keine Änderung.\nBeide gelten auch für Owner – die Sperre muss erst entfernt werden.",
+   "id": "k071"
+  },
+  {
+   "domain": "d3",
+   "front": "Was macht Microsoft Purview?",
+   "back": "Datenverwaltung und Compliance: Daten im ganzen Bestand **finden, klassifizieren** und ihre **Herkunft** nachvollziehen.",
+   "id": "k072"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist Azure Resource Manager?",
+   "back": "Die **Verwaltungsschicht**, durch die jede Anfrage läuft – Portal, CLI, PowerShell, REST. Hier greifen RBAC, Azure Policy und Sperren.",
+   "id": "k073"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist an ARM-Vorlagen deklarativ?",
+   "back": "Du beschreibst den **Zielzustand**, nicht die Schritte dorthin. Vorlagen sind **idempotent**: mehrfach ausgeführt entsteht immer derselbe Zustand.",
+   "id": "k074"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist Bicep?",
+   "back": "Eine schlankere Sprache für Azure-Infrastruktur als Code, die zu ARM-Vorlagen übersetzt wird – lesbarer als JSON, gleiche Wirkung.",
+   "id": "k075"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist Azure Cloud Shell?",
+   "back": "Eine Shell **im Browser**, wahlweise Bash oder PowerShell, vorkonfiguriert und ohne lokale Installation. Braucht ein Speicherkonto für persistente Dateien.",
+   "id": "k076"
+  },
+  {
+   "domain": "d3",
+   "front": "Azure CLI oder Azure PowerShell – woran erkennst du sie?",
+   "back": "**CLI**: `az vm create` – plattformübergreifend, Bash-nah.\n**PowerShell**: `New-AzVM` – Cmdlets nach Verb-Substantiv-Muster.",
+   "id": "k077"
+  },
+  {
+   "domain": "d3",
+   "front": "Wofür gibt es Azure Arc?",
+   "back": "Azure-Verwaltung für Ressourcen **ausserhalb** von Azure: Server im eigenen Rechenzentrum, Kubernetes, andere Clouds – mit Policy, Monitoring und RBAC.",
+   "id": "k078"
+  },
+  {
+   "domain": "d3",
+   "front": "Was leistet Azure Advisor?",
+   "back": "Persönliche Empfehlungen in fünf Kategorien: **Zuverlässigkeit, Sicherheit, Leistung, Kosten, operative Exzellenz**.",
+   "id": "k079"
+  },
+  {
+   "domain": "d3",
+   "front": "Was zeigt Azure Service Health?",
+   "back": "Den Zustand der **Azure-Dienste**, die dich betreffen: Störungen, geplante Wartung, Hinweise. **Nicht** den Zustand deiner eigenen Ressourcen.",
+   "id": "k080"
+  },
+  {
+   "domain": "d3",
+   "front": "Service Health oder Resource Health – was ist was?",
+   "back": "**Service Health**: Probleme bei Azure.\n**Resource Health**: Zustand deiner konkreten Ressource.\n**Azure Status**: weltweite Übersicht aller Dienste.",
+   "id": "k081"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist Azure Monitor?",
+   "back": "Das Dach über **Metriken und Protokollen** aller Azure-Ressourcen, mit Alerts, Dashboards und Datenexport.",
+   "id": "k082"
+  },
+  {
+   "domain": "d3",
+   "front": "Wofür ist Log Analytics?",
+   "back": "Sammelt Protokolldaten in einem Workspace und erlaubt Abfragen mit **KQL**. Das Abfragewerkzeug von Azure Monitor.",
+   "id": "k083"
+  },
+  {
+   "domain": "d3",
+   "front": "Wofür ist Application Insights?",
+   "back": "Überwacht **deine eigene Anwendung**: Antwortzeiten, Fehlerraten, Abhängigkeiten, Benutzerverhalten. Teil von Azure Monitor.",
+   "id": "k084"
+  },
+  {
+   "domain": "d3",
+   "front": "Welches Werkzeug bei „Meine Webanwendung ist langsam“?",
+   "back": "**Application Insights** – es misst in der Anwendung. Service Health betrifft Azure-Störungen, Advisor gibt allgemeine Empfehlungen.",
+   "id": "k085"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie stellst du sicher, dass Ressourcen nur in der Schweiz erstellt werden?",
+   "back": "**Azure Policy** mit erlaubten Standorten und dem Effekt **Deny**, zugewiesen auf Verwaltungsgruppe oder Subscription.",
+   "id": "k086"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie verhinderst du, dass jemand versehentlich eine Produktionsdatenbank löscht?",
+   "back": "Eine **Ressourcensperre** vom Typ **CanNotDelete** auf der Ressource oder der Ressourcengruppe.",
+   "id": "k087"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie wirst du gewarnt, bevor das Monatsbudget überschritten ist?",
+   "back": "Ein **Budget** in Microsoft Cost Management mit Warnschwellen – zum Beispiel bei 80 % und 100 % – und E-Mail-Benachrichtigung.",
+   "id": "k088"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche Rolle gibst du jemandem, der alles verwalten, aber keine Rechte vergeben darf?",
+   "back": "**Contributor**. **Owner** dürfte zusätzlich Rollen zuweisen, **Reader** nur lesen, **User Access Administrator** nur Zugriffsrechte verwalten.",
+   "id": "k089"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist Infrastructure as Code?",
+   "back": "Infrastruktur in **versionierbaren Dateien** beschreiben statt von Hand klicken – wiederholbar, prüfbar, automatisierbar. In Azure: ARM-Vorlagen, Bicep, Terraform.",
+   "id": "k090"
+  }
+ ],
+ "fragen": [
+  {
+   "domain": "d1",
+   "frage": "Ein Unternehmen will keine Hardware mehr kaufen und nur noch für tatsächlich genutzte Ressourcen zahlen. Welches Kostenmodell beschreibt das?",
+   "optionen": [
+    "CapEx",
+    "OpEx",
+    "Amortisation",
+    "Leasing"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**OpEx** sind laufende Betriebskosten nach Verbrauch. **CapEx** wäre der Kauf von Hardware mit Abschreibung über Jahre. Die Cloud verschiebt CapEx zu OpEx.",
+   "id": "f001"
+  },
+  {
+   "domain": "d1",
+   "frage": "Bei welchen Cloud-Modellen bist du für die Verwaltung der Daten und Benutzerkonten verantwortlich?",
+   "optionen": [
+    "Nur bei IaaS",
+    "Nur bei IaaS und PaaS",
+    "Bei IaaS, PaaS und SaaS",
+    "Bei keinem – das macht Microsoft"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "**Daten, Endgeräte sowie Konten und Identitäten** bleiben in **jedem** Modell in deiner Verantwortung. Alles andere verschiebt sich je nach Servicetyp.",
+   "id": "f002"
+  },
+  {
+   "domain": "d1",
+   "frage": "Wer patcht bei IaaS das Betriebssystem der virtuellen Maschine?",
+   "optionen": [
+    "Microsoft",
+    "Der Kunde",
+    "Beide gemeinsam",
+    "Niemand, es ist automatisch"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Bei **IaaS** mietest du die virtuelle Maschine, nicht deren Pflege: Betriebssystem, Updates und Anwendungen liegen bei dir. Erst ab **PaaS** übernimmt Microsoft das Betriebssystem.",
+   "id": "f003"
+  },
+  {
+   "domain": "d1",
+   "frage": "Eine Anwendung soll bei Lastspitzen automatisch mehr Instanzen bekommen und danach wieder weniger. Welche Eigenschaft ist das?",
+   "optionen": [
+    "Hochverfügbarkeit",
+    "Elastizität",
+    "Fault Tolerance",
+    "Disaster Recovery"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Elastizität** ist das automatische Skalieren nach Bedarf in beide Richtungen. *Hochverfügbarkeit* bedeutet Weiterlaufen trotz Ausfall, *Disaster Recovery* den Wiederanlauf nach einem grossen Ausfall.",
+   "id": "f004"
+  },
+  {
+   "domain": "d1",
+   "frage": "Was beschreibt horizontale Skalierung?",
+   "optionen": [
+    "Eine grössere VM mit mehr CPU und RAM",
+    "Mehr Instanzen derselben Grösse",
+    "Mehr Speicherplatz an einer VM",
+    "Eine VM in eine andere Region verschieben"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Horizontal (scale out)** heisst: mehr Instanzen. **Vertikal (scale up)** wäre die grössere Maschine. Horizontal skaliert besser, weil die Grösse einer einzelnen VM begrenzt ist.",
+   "id": "f005"
+  },
+  {
+   "domain": "d1",
+   "frage": "Ein Spital muss Patientendaten im eigenen Rechenzentrum halten, will aber Testumgebungen in der Cloud betreiben. Welches Modell?",
+   "optionen": [
+    "Public Cloud",
+    "Private Cloud",
+    "Hybrid Cloud",
+    "Multicloud"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "**Hybrid** verbindet eigene Infrastruktur mit der Public Cloud – genau für den Fall, dass ein Teil der Daten aus rechtlichen Gründen im Haus bleiben muss. *Multicloud* wären mehrere Anbieter.",
+   "id": "f006"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Aussage über Serverless trifft zu?",
+   "optionen": [
+    "Es laufen keine Server",
+    "Du verwaltest keine Server und zahlst pro Ausführung",
+    "Es ist dasselbe wie IaaS",
+    "Es skaliert nicht automatisch"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Server laufen natürlich – du **verwaltest** sie nur nicht. Die Abrechnung erfolgt pro Ausführung, und die Skalierung reicht bis null. In Azure: Azure Functions, Logic Apps.",
+   "id": "f007"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welcher Servicetyp passt am besten für eine Entwicklungsabteilung, die Webanwendungen bereitstellen will, ohne Server zu pflegen?",
+   "optionen": [
+    "IaaS",
+    "PaaS",
+    "SaaS",
+    "On-Premises"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**PaaS** liefert die fertige Plattform (z. B. App Service): Betriebssystem, Laufzeit und Patching kommen von Microsoft, du bringst Anwendung und Daten. IaaS hiesse weiterhin Serverpflege.",
+   "id": "f008"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche zwei Vorteile nennt Microsoft für Hochverfügbarkeit und Skalierbarkeit in der Cloud?",
+   "optionen": [
+    "Der Dienst bleibt bei Ausfall einzelner Komponenten erreichbar",
+    "Kapazität lässt sich dem Bedarf anpassen",
+    "Daten verlassen nie das eigene Rechenzentrum",
+    "Es entstehen keine Kosten mehr"
+   ],
+   "richtig": [
+    0,
+    1
+   ],
+   "erklaerung": "Hochverfügbarkeit heisst Weiterlaufen trotz Ausfall, Skalierbarkeit heisst Anpassen der Kapazität. Dass Daten das Haus nicht verlassen, spricht gerade **gegen** die Public Cloud, und kostenlos ist nichts.",
+   "id": "f009"
+  },
+  {
+   "domain": "d1",
+   "frage": "Was bedeutet das Modell der geteilten Verantwortung bei SaaS?",
+   "optionen": [
+    "Der Kunde verwaltet nur Daten, Geräte, Konten und Zugriff",
+    "Der Kunde verwaltet das Betriebssystem",
+    "Microsoft verwaltet auch die Benutzerkonten",
+    "Der Kunde verwaltet die Virtualisierung"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Bei **SaaS** bleibt dem Kunden am wenigsten: Daten, Endgeräte sowie Konten und Zugriffsverwaltung. Betriebssystem, Laufzeit, Anwendung und Infrastruktur liegen beim Anbieter.",
+   "id": "f010"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welcher Dienst bringt Azure-Verwaltung zu Servern im eigenen Rechenzentrum?",
+   "optionen": [
+    "Azure Migrate",
+    "Azure Arc",
+    "Azure VMware Solution",
+    "Azure Stack HCI"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Azure Arc** projiziert Ressourcen ausserhalb von Azure ins Azure-Portal und erlaubt Policy, Monitoring und RBAC. *Azure Migrate* migriert, *VMware Solution* betreibt VMware in Azure.",
+   "id": "f011"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Aussage über die Private Cloud ist richtig?",
+   "optionen": [
+    "Sie ist immer günstiger als die Public Cloud",
+    "Sie bietet volle Kontrolle, erfordert aber eigene Investition und Pflege",
+    "Sie skaliert unbegrenzt",
+    "Sie benötigt kein eigenes Personal"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Private Cloud heisst volle Kontrolle über Hardware und Daten – mit allen Kosten und der gesamten Betriebsverantwortung. Unbegrenzte Skalierung kann sie gerade nicht bieten.",
+   "id": "f012"
+  },
+  {
+   "domain": "d1",
+   "frage": "Eine Firma will Kosten sparen, hat aber eine konstante Grundlast rund um die Uhr. Was ist sinnvoll?",
+   "optionen": [
+    "Pay-as-you-go",
+    "Eine Reservierung über ein oder drei Jahre",
+    "Spot-VMs",
+    "Serverless"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Bei konstanter Last lohnt die **Reservierung** – bis zu etwa 72 % günstiger. *Spot-VMs* können jederzeit beendet werden, *serverless* rechnet sich bei schwankender, ereignisgesteuerter Last.",
+   "id": "f013"
+  },
+  {
+   "domain": "d1",
+   "frage": "Was beschreibt Fault Tolerance?",
+   "optionen": [
+    "Die Wiederherstellung nach einem Rechenzentrumsausfall",
+    "Der Betrieb läuft ohne Unterbrechung weiter, wenn eine Komponente ausfällt",
+    "Die automatische Anpassung der Kapazität",
+    "Die Verschlüsselung ruhender Daten"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Fault Tolerance** bedeutet unterbrechungsfreien Weiterbetrieb durch Redundanz. Die Wiederherstellung nach einem grossen Ausfall ist **Disaster Recovery**.",
+   "id": "f014"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Einsatzfälle passen typischerweise zu IaaS?",
+   "optionen": [
+    "Lift-and-Shift bestehender Server",
+    "Test- und Entwicklungsumgebungen",
+    "Nutzung von Microsoft 365",
+    "Eine fertige CRM-Lösung abonnieren"
+   ],
+   "richtig": [
+    0,
+    1
+   ],
+   "erklaerung": "IaaS ist die Wahl, wenn du Kontrolle über das Betriebssystem brauchst – Lift-and-Shift und Testumgebungen sind die Klassiker. Microsoft 365 und ein fertiges CRM sind **SaaS**.",
+   "id": "f015"
+  },
+  {
+   "domain": "d1",
+   "frage": "Was ist der Unterschied zwischen Hybrid Cloud und Multicloud?",
+   "optionen": [
+    "Es gibt keinen",
+    "Hybrid verbindet eigene Infrastruktur mit einer Public Cloud, Multicloud nutzt mehrere Anbieter",
+    "Multicloud ist immer privat",
+    "Hybrid bedeutet zwei Regionen desselben Anbieters"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Hybrid** = eigenes Rechenzentrum plus Public Cloud. **Multicloud** = mehrere Public-Cloud-Anbieter gleichzeitig. Beides kann zusammen auftreten.",
+   "id": "f016"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welcher Vorteil der Cloud beschreibt, dass Ressourcen in Minuten statt Wochen bereitstehen?",
+   "optionen": [
+    "Elastizität",
+    "Agilität",
+    "Zuverlässigkeit",
+    "Governance"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Agilität** meint die Geschwindigkeit, mit der Ressourcen bereitgestellt und wieder abgebaut werden. Elastizität bezieht sich auf die bedarfsgerechte Kapazitätsanpassung.",
+   "id": "f017"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Aussage über das verbrauchsbasierte Modell stimmt?",
+   "optionen": [
+    "Du zahlst eine feste monatliche Pauschale",
+    "Du zahlst nur für tatsächlich genutzte Ressourcen",
+    "Du zahlst für reservierte, aber ungenutzte Kapazität",
+    "Du zahlst einmalig beim Kauf"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Verbrauchsbasiert heisst: Abrechnung nach tatsächlicher Nutzung – pro Stunde, GB oder Ausführung. Genau dadurch entfällt das Bezahlen ungenutzter Kapazität.",
+   "id": "f018"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welcher Servicetyp verlangt vom Kunden die meiste Verwaltungsarbeit?",
+   "optionen": [
+    "SaaS",
+    "PaaS",
+    "IaaS",
+    "Serverless"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "Je weiter unten im Stapel, desto mehr Arbeit: **IaaS** verlangt die Pflege von Betriebssystem, Laufzeit und Anwendung. SaaS verlangt am wenigsten.",
+   "id": "f019"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Aussage über Verwaltbarkeit in der Cloud ist richtig?",
+   "optionen": [
+    "Sie meint nur die Verwaltung durch Microsoft",
+    "Sie umfasst Verwaltung in der Cloud und Verwaltung der Cloud",
+    "Sie bezieht sich nur auf das Portal",
+    "Sie betrifft ausschliesslich SaaS"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Microsoft unterscheidet **Verwaltung in der Cloud** (Autoskalierung, Selbstheilung, Vorlagen) und **Verwaltung der Cloud** (Portal, CLI, PowerShell, APIs).",
+   "id": "f020"
+  },
+  {
+   "domain": "d2",
+   "frage": "In welcher Reihenfolge ist die Azure-Hierarchie von oben nach unten aufgebaut?",
+   "optionen": [
+    "Subscription → Verwaltungsgruppe → Ressourcengruppe → Ressource",
+    "Verwaltungsgruppe → Subscription → Ressourcengruppe → Ressource",
+    "Ressourcengruppe → Subscription → Verwaltungsgruppe → Ressource",
+    "Verwaltungsgruppe → Ressourcengruppe → Subscription → Ressource"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Verwaltungsgruppen** bündeln Subscriptions, diese enthalten **Ressourcengruppen**, die wiederum **Ressourcen** enthalten. Richtlinien und Rechte vererben sich nach unten.",
+   "id": "f021"
+  },
+  {
+   "domain": "d2",
+   "frage": "Zu wie vielen Ressourcengruppen kann eine einzelne Ressource gehören?",
+   "optionen": [
+    "Zu beliebig vielen",
+    "Zu genau einer",
+    "Zu höchstens zwei",
+    "Zu keiner, das ist optional"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Eine Ressource liegt in **genau einer** Ressourcengruppe. Verschieben ist möglich, Mehrfachzugehörigkeit nicht. Beim Löschen der Gruppe verschwinden alle enthaltenen Ressourcen.",
+   "id": "f022"
+  },
+  {
+   "domain": "d2",
+   "frage": "Eine Anwendung soll den Ausfall eines einzelnen Rechenzentrums innerhalb einer Region überstehen. Was setzt du ein?",
+   "optionen": [
+    "Region Pairs",
+    "Availability Zones",
+    "Availability Sets",
+    "Geo-redundanten Speicher"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Availability Zones** sind physisch getrennte Standorte innerhalb einer Region mit eigener Strom- und Netzversorgung. *Region Pairs* schützen gegen den Ausfall einer ganzen Region.",
+   "id": "f023"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Aussage über Region Pairs trifft zu?",
+   "optionen": [
+    "Sie liegen immer in derselben Stadt",
+    "Sie sind mindestens 300 Meilen voneinander entfernt",
+    "Updates werden gleichzeitig in beiden ausgerollt",
+    "Sie ersetzen Availability Zones"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Region Pairs liegen mindestens **300 Meilen** auseinander, in derselben Geografie, und werden bei geplanten Updates **nacheinander** aktualisiert – nie gleichzeitig.",
+   "id": "f024"
+  },
+  {
+   "domain": "d2",
+   "frage": "Was ist der Zweck einer Verwaltungsgruppe?",
+   "optionen": [
+    "Ressourcen gruppieren",
+    "Mehrere Subscriptions gemeinsam steuern",
+    "Kosten berechnen",
+    "Netzwerke verbinden"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Verwaltungsgruppen bündeln **Subscriptions**, damit Richtlinien und Zugriffsrechte einmal gesetzt und vererbt werden. Ressourcen gruppiert die **Ressourcengruppe**.",
+   "id": "f025"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Komponenten braucht eine virtuelle Maschine zwingend?",
+   "optionen": [
+    "Virtuelles Netzwerk mit Subnetz",
+    "Netzwerkschnittstelle",
+    "OS-Datenträger",
+    "Öffentliche IP-Adresse"
+   ],
+   "richtig": [
+    0,
+    1,
+    2
+   ],
+   "erklaerung": "vNet, NIC und OS-Disk sind Pflicht. Eine **öffentliche IP** ist optional – viele VMs sind bewusst nur intern erreichbar.",
+   "id": "f026"
+  },
+  {
+   "domain": "d2",
+   "frage": "Eine Webfront soll bei Last automatisch auf mehr identische VMs wachsen. Was nutzt du?",
+   "optionen": [
+    "Availability Set",
+    "Virtual Machine Scale Set",
+    "Azure Virtual Desktop",
+    "Azure Functions"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Virtual Machine Scale Sets** betreiben identische VMs mit automatischer Skalierung und Lastverteilung. Ein *Availability Set* erhöht nur die Verfügbarkeit, es skaliert nicht.",
+   "id": "f027"
+  },
+  {
+   "domain": "d2",
+   "frage": "Wofür sind Fault Domains und Update Domains in einem Availability Set gedacht?",
+   "optionen": [
+    "Verteilung über mehrere Regionen",
+    "Schutz vor Hardware-Ausfall und vor gleichzeitiger Wartung innerhalb eines Rechenzentrums",
+    "Automatische Skalierung",
+    "Verschlüsselung der Datenträger"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Fault Domains** trennen Strom- und Netzversorgung, **Update Domains** verteilen Wartungsfenster. Beides wirkt **innerhalb** eines Rechenzentrums, nicht über Regionen.",
+   "id": "f028"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welcher Dienst eignet sich für kurze, ereignisgesteuerte Aufgaben mit Abrechnung pro Ausführung?",
+   "optionen": [
+    "Azure App Service",
+    "Azure Functions",
+    "Azure Kubernetes Service",
+    "Virtual Machine Scale Sets"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Azure Functions** ist der serverless Compute-Dienst: ereignisgesteuert, Abrechnung pro Ausführung, Skalierung bis null. App Service hält immer eine Instanz bereit.",
+   "id": "f029"
+  },
+  {
+   "domain": "d2",
+   "frage": "Du brauchst Orchestrierung für viele Container mit Selbstheilung und Rolling Updates. Was nimmst du?",
+   "optionen": [
+    "Azure Container Instances",
+    "Azure Kubernetes Service",
+    "Azure App Service",
+    "Azure Functions"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**AKS** ist verwaltetes Kubernetes und damit der Orchestrator. *Container Instances* starten einzelne Container ohne Orchestrierung.",
+   "id": "f030"
+  },
+  {
+   "domain": "d2",
+   "frage": "Was verbindet zwei virtuelle Netzwerke über das Microsoft-Backbone, ohne Gateway?",
+   "optionen": [
+    "VPN Gateway",
+    "vNet-Peering",
+    "ExpressRoute",
+    "Private Endpoint"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Peering** verbindet vNets direkt über das Microsoft-Netz, auch regionsübergreifend. Ein *VPN Gateway* liefe über das Internet, *ExpressRoute* über eine eigene Leitung.",
+   "id": "f031"
+  },
+  {
+   "domain": "d2",
+   "frage": "Ein Unternehmen braucht eine Verbindung nach Azure mit verlässlicher Latenz, die nicht über das Internet läuft. Was ist richtig?",
+   "optionen": [
+    "Site-to-Site VPN",
+    "ExpressRoute",
+    "vNet-Peering",
+    "Point-to-Site VPN"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**ExpressRoute** ist eine private Leitung über einen Konnektivitätsanbieter – kein Internet, verlässliche Latenz, höhere Bandbreite, dafür teurer. VPN läuft immer über das Internet.",
+   "id": "f032"
+  },
+  {
+   "domain": "d2",
+   "frage": "Was bewirkt ein Private Endpoint?",
+   "optionen": [
+    "Er macht eine VM aus dem Internet erreichbar",
+    "Er gibt einem PaaS-Dienst eine private IP im eigenen vNet",
+    "Er verschlüsselt den Datenverkehr",
+    "Er ersetzt die Netzwerksicherheitsgruppe"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Ein **Private Endpoint** bindet einen PaaS-Dienst mit einer privaten IP in dein vNet ein – der Verkehr verlässt das Microsoft-Netz nicht. Ein *öffentlicher Endpunkt* wäre über das Internet erreichbar.",
+   "id": "f033"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Speicherdienste gehören zu einem Azure-Speicherkonto?",
+   "optionen": [
+    "Blob",
+    "Files",
+    "Queue",
+    "Table"
+   ],
+   "richtig": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "erklaerung": "Alle vier: **Blob** für Objekte, **Files** für SMB/NFS-Freigaben, **Queue** für Nachrichten, **Table** für einfache NoSQL-Daten.",
+   "id": "f034"
+  },
+  {
+   "domain": "d2",
+   "frage": "Daten müssen mindestens 180 Tage aufbewahrt werden, werden fast nie gelesen, und der Abruf darf Stunden dauern. Welche Zugriffsebene?",
+   "optionen": [
+    "Hot",
+    "Cool",
+    "Cold",
+    "Archive"
+   ],
+   "richtig": [
+    3
+   ],
+   "erklaerung": "**Archive** ist die günstigste Speicherung bei mindestens 180 Tagen Mindestdauer; der Abruf (Rehydrierung) dauert Stunden. *Cold* verlangt 90 Tage und ist sofort lesbar.",
+   "id": "f035"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Redundanzoption hält drei Kopien über Availability Zones einer Region?",
+   "optionen": [
+    "LRS",
+    "ZRS",
+    "GRS",
+    "RA-GRS"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**ZRS** verteilt drei Kopien über Zonen derselben Region. **LRS** bleibt in einem Rechenzentrum, **GRS** fügt eine Kopie in der gekoppelten Region hinzu.",
+   "id": "f036"
+  },
+  {
+   "domain": "d2",
+   "frage": "Was bedeutet das RA in RA-GRS?",
+   "optionen": [
+    "Redundant Archive",
+    "Read-Access auf die Zweitregion",
+    "Regional Availability",
+    "Rapid Access"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Read-Access**: die Kopie in der gekoppelten Region ist lesbar, auch ohne Failover. Bei einfachem GRS kommst du erst nach einem Failover an die Daten.",
+   "id": "f037"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welches Werkzeug synchronisiert einen lokalen Dateiserver mit Azure Files?",
+   "optionen": [
+    "AzCopy",
+    "Azure Storage Explorer",
+    "Azure File Sync",
+    "Azure Data Box"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "**Azure File Sync** hält einen Windows-Dateiserver und eine Azure-Dateifreigabe synchron, inklusive Cloud-Tiering. AzCopy und Storage Explorer kopieren, Data Box ist ein physisches Gerät.",
+   "id": "f038"
+  },
+  {
+   "domain": "d2",
+   "frage": "Es müssen 80 TB in die Cloud, die Leitung schafft das in vertretbarer Zeit nicht. Was nutzt du?",
+   "optionen": [
+    "AzCopy",
+    "Azure Data Box",
+    "Azure Migrate",
+    "Azure File Sync"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Azure Data Box** ist ein physisches Gerät, das Microsoft schickt: lokal befüllen, zurücksenden, einlesen lassen. Über die Leitung wäre das zu langsam.",
+   "id": "f039"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Aussage über Microsoft Entra ID ist richtig?",
+   "optionen": [
+    "Es ist Active Directory in der Cloud",
+    "Es unterstützt Gruppenrichtlinien und Organisationseinheiten",
+    "Es ist ein Cloud-Verzeichnisdienst ohne Kerberos und ohne Gruppenrichtlinien",
+    "Es erfordert Domain Controller"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "Entra ID ist **kein** AD in der Cloud: keine Domänen, keine OUs, keine GPOs, kein Kerberos. Wer das braucht, nimmt **Microsoft Entra Domain Services**.",
+   "id": "f040"
+  },
+  {
+   "domain": "d2",
+   "frage": "Eine Altanwendung in Azure braucht Domänenbeitritt und LDAP, aber niemand will Domain Controller betreiben. Was passt?",
+   "optionen": [
+    "Microsoft Entra ID",
+    "Microsoft Entra Domain Services",
+    "Azure Arc",
+    "Conditional Access"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Entra Domain Services** liefert verwaltete Domänendienste – Domänenbeitritt, LDAP, Kerberos, NTLM – ohne eigene Domain Controller.",
+   "id": "f041"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Kombination erfüllt die Anforderung an Multi-Faktor-Authentifizierung?",
+   "optionen": [
+    "Passwort und Sicherheitsfrage",
+    "Passwort und Code aus der Authenticator-App",
+    "Passwort und PIN",
+    "Benutzername und Passwort"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "MFA verlangt Faktoren aus **unterschiedlichen Kategorien**: Passwort (wissen) plus App-Code (haben). Passwort und Sicherheitsfrage sind beide Wissen, also kein MFA.",
+   "id": "f042"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welcher Dienst entscheidet anhand von Standort, Gerätezustand und Risiko, ob ein Zugriff erlaubt wird?",
+   "optionen": [
+    "Azure RBAC",
+    "Conditional Access",
+    "Azure Policy",
+    "Defender for Cloud"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Conditional Access** wertet Signale aus und erlaubt, verlangt MFA oder blockiert. *RBAC* regelt Berechtigungen auf Ressourcen, *Policy* die erlaubte Konfiguration.",
+   "id": "f043"
+  },
+  {
+   "domain": "d2",
+   "frage": "Auf welchen Ebenen kannst du eine Azure-RBAC-Rolle zuweisen?",
+   "optionen": [
+    "Verwaltungsgruppe",
+    "Subscription",
+    "Ressourcengruppe",
+    "Ressource"
+   ],
+   "richtig": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "erklaerung": "Auf allen vier Ebenen, mit **Vererbung nach unten**. Eine Rolle auf der Subscription gilt damit auch für alle Ressourcengruppen und Ressourcen darin.",
+   "id": "f044"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche Rolle erlaubt das Verwalten aller Ressourcen, aber nicht das Vergeben von Zugriffsrechten?",
+   "optionen": [
+    "Owner",
+    "Contributor",
+    "Reader",
+    "User Access Administrator"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Contributor** darf alles verwalten, aber keine Rollen zuweisen. **Owner** dürfte auch das, **Reader** nur lesen, **User Access Administrator** ausschliesslich Zugriff verwalten.",
+   "id": "f045"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welche drei Grundsätze gehören zu Zero Trust?",
+   "optionen": [
+    "Explizit verifizieren",
+    "Geringste Rechte vergeben",
+    "Von einem Einbruch ausgehen",
+    "Dem internen Netzwerk vertrauen"
+   ],
+   "richtig": [
+    0,
+    1,
+    2
+   ],
+   "erklaerung": "Die drei Grundsätze sind *verify explicitly*, *least privilege* und *assume breach*. Dem internen Netz zu vertrauen ist genau das Gegenteil von Zero Trust.",
+   "id": "f046"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welcher Dienst bewertet die Sicherheitslage deiner Azure-Umgebung und liefert einen Secure Score?",
+   "optionen": [
+    "Azure Advisor",
+    "Microsoft Defender for Cloud",
+    "Azure Monitor",
+    "Microsoft Purview"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Defender for Cloud** bewertet die Sicherheitslage, vergibt den Secure Score und gibt Empfehlungen – auch für Server ausserhalb von Azure. Advisor deckt fünf Kategorien ab, nicht nur Sicherheit.",
+   "id": "f047"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Datenübertragung verursacht in Azure in der Regel Kosten?",
+   "optionen": [
+    "Eingehender Verkehr",
+    "Ausgehender Verkehr",
+    "Beide gleich",
+    "Keiner von beiden"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Ausgehender** Verkehr (egress) kostet, eingehender ist in der Regel kostenlos. Das ist eine der häufigsten Fangfragen zu Azure-Kosten.",
+   "id": "f048"
+  },
+  {
+   "domain": "d3",
+   "frage": "Womit schätzt du die Kosten einer geplanten Azure-Umgebung, bevor du etwas bereitstellst?",
+   "optionen": [
+    "Microsoft Cost Management",
+    "Pricing Calculator",
+    "TCO Calculator",
+    "Azure Advisor"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Der **Pricing Calculator** schätzt im Voraus. **Cost Management** zeigt tatsächliche Kosten im Nachhinein, der **TCO Calculator** vergleicht On-Premises mit Azure.",
+   "id": "f049"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welches Werkzeug vergleicht die Kosten deiner bestehenden lokalen Infrastruktur mit Azure?",
+   "optionen": [
+    "Pricing Calculator",
+    "TCO Calculator",
+    "Azure Advisor",
+    "Azure Migrate"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Der **TCO Calculator** (Total Cost of Ownership) stellt die Gesamtkosten der eigenen Umgebung denen in Azure gegenüber.",
+   "id": "f050"
+  },
+  {
+   "domain": "d3",
+   "frage": "Eine Abteilung soll gewarnt werden, wenn 80 % des Monatsbudgets erreicht sind. Was richtest du ein?",
+   "optionen": [
+    "Eine Azure-Policy",
+    "Ein Budget mit Warnschwellen in Microsoft Cost Management",
+    "Einen Ressourcen-Lock",
+    "Einen Azure-Monitor-Alert auf Metriken"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Budgets** in Microsoft Cost Management lösen bei festgelegten Schwellen Benachrichtigungen aus. Policy regelt erlaubte Konfiguration, Locks schützen vor Löschen.",
+   "id": "f051"
+  },
+  {
+   "domain": "d3",
+   "frage": "Wofür nutzt du Tags?",
+   "optionen": [
+    "Um Ressourcen Kostenstellen und Umgebungen zuzuordnen",
+    "Um Zugriff zu steuern",
+    "Um Ressourcen zu verschlüsseln",
+    "Um Regionen festzulegen"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "**Tags** sind Metadaten für Zuordnung, Auswertung und Kostenaufteilung. Zugriff steuert RBAC. Tags werden **nicht** automatisch vererbt – dafür braucht es Azure Policy.",
+   "id": "f052"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Funktion verhindert, dass VMs ausserhalb erlaubter Regionen erstellt werden?",
+   "optionen": [
+    "Azure RBAC",
+    "Azure Policy mit Effekt Deny",
+    "Ressourcensperre",
+    "Verwaltungsgruppe"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Azure Policy** bestimmt, *was* erlaubt ist, hier mit dem Effekt **Deny**. RBAC bestimmt, *wer* handeln darf – ein Owner könnte ohne Policy jede Region wählen.",
+   "id": "f053"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Sperre erlaubt Änderungen, verhindert aber das Löschen?",
+   "optionen": [
+    "ReadOnly",
+    "CanNotDelete",
+    "Deny",
+    "Audit"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**CanNotDelete** lässt Änderungen zu und blockiert nur das Löschen. **ReadOnly** verbietet zusätzlich jede Änderung. Deny und Audit sind Policy-Effekte, keine Sperren.",
+   "id": "f054"
+  },
+  {
+   "domain": "d3",
+   "frage": "Ein Owner kann eine Ressource mit ReadOnly-Sperre nicht ändern. Was gilt?",
+   "optionen": [
+    "Das ist ein Fehler",
+    "Sperren gelten unabhängig von RBAC und müssen zuerst entfernt werden",
+    "Nur Policy kann das aufheben",
+    "Owner-Rollen umgehen Sperren automatisch"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Ressourcensperren wirken unabhängig von Berechtigungen** – auch für Owner. Wer ändern will, muss die Sperre zuerst entfernen, was wiederum eine Berechtigung verlangt.",
+   "id": "f055"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welcher Dienst findet und klassifiziert Daten im gesamten Datenbestand und zeigt ihre Herkunft?",
+   "optionen": [
+    "Azure Policy",
+    "Microsoft Purview",
+    "Defender for Cloud",
+    "Azure Monitor"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Microsoft Purview** ist die Lösung für Datenverwaltung und Compliance: Katalog, Klassifizierung und Datenherkunft.",
+   "id": "f056"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Aussage über Azure Resource Manager ist richtig?",
+   "optionen": [
+    "Er ist nur im Portal aktiv",
+    "Jede Anfrage – Portal, CLI, PowerShell, REST – läuft durch ihn",
+    "Er ersetzt RBAC",
+    "Er ist ein Überwachungsdienst"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**ARM** ist die zentrale Verwaltungsschicht. Genau deshalb greifen RBAC, Azure Policy und Sperren unabhängig davon, welches Werkzeug du benutzt.",
+   "id": "f057"
+  },
+  {
+   "domain": "d3",
+   "frage": "Was bedeutet es, dass ARM-Vorlagen deklarativ und idempotent sind?",
+   "optionen": [
+    "Sie beschreiben Schritte, die nacheinander ausgeführt werden",
+    "Sie beschreiben den Zielzustand, und mehrfaches Ausführen führt zum selben Ergebnis",
+    "Sie laufen nur einmal",
+    "Sie funktionieren nur im Portal"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Deklarativ**: du beschreibst das Ziel, nicht den Weg. **Idempotent**: mehrfaches Anwenden erzeugt denselben Zustand, ohne Duplikate oder Fehler.",
+   "id": "f058"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Shell lässt sich ohne lokale Installation direkt im Browser nutzen?",
+   "optionen": [
+    "Azure CLI",
+    "Azure PowerShell",
+    "Azure Cloud Shell",
+    "Windows Terminal"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "**Azure Cloud Shell** läuft im Browser, wahlweise mit Bash oder PowerShell, und ist vorkonfiguriert. Sie braucht ein Speicherkonto für persistente Dateien.",
+   "id": "f059"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welcher Befehl gehört zur Azure CLI?",
+   "optionen": [
+    "New-AzVM",
+    "az vm create",
+    "Get-AzResource",
+    "Set-AzContext"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Die **Azure CLI** nutzt `az <gruppe> <befehl>`. Die drei anderen sind **Azure-PowerShell**-Cmdlets im Verb-Substantiv-Muster.",
+   "id": "f060"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welcher Dienst ermöglicht es, Kubernetes-Cluster in einer anderen Cloud über Azure Policy zu steuern?",
+   "optionen": [
+    "Azure Migrate",
+    "Azure Arc",
+    "Azure Monitor",
+    "Azure Lighthouse"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Azure Arc** bindet Server, Kubernetes und Datendienste ausserhalb von Azure ein – inklusive Policy, RBAC und Monitoring aus dem Azure-Portal.",
+   "id": "f061"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche fünf Kategorien deckt Azure Advisor ab?",
+   "optionen": [
+    "Zuverlässigkeit, Sicherheit, Leistung, Kosten, operative Exzellenz",
+    "Compute, Netzwerk, Speicher, Identität, Monitoring",
+    "Verfügbarkeit, Skalierbarkeit, Elastizität, Agilität, Governance",
+    "IaaS, PaaS, SaaS, Serverless, Hybrid"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "Advisor gliedert seine Empfehlungen in **Reliability, Security, Performance, Cost und Operational Excellence**.",
+   "id": "f062"
+  },
+  {
+   "domain": "d3",
+   "frage": "Es gibt eine Störung bei einem Azure-Dienst, den du nutzt. Wo erfährst du davon?",
+   "optionen": [
+    "Azure Advisor",
+    "Azure Service Health",
+    "Application Insights",
+    "Azure Policy"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Service Health** informiert über Störungen, geplante Wartung und Hinweise zu den Diensten, die **deine** Subscriptions betreffen. Application Insights überwacht deine eigene Anwendung.",
+   "id": "f063"
+  },
+  {
+   "domain": "d3",
+   "frage": "Deine Webanwendung antwortet seit heute langsam. Womit untersuchst du das?",
+   "optionen": [
+    "Azure Service Health",
+    "Application Insights",
+    "Azure Advisor",
+    "Microsoft Purview"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Application Insights** misst in der Anwendung selbst: Antwortzeiten, Fehler, Abhängigkeiten. Service Health zeigt nur Störungen auf Azure-Seite.",
+   "id": "f064"
+  },
+  {
+   "domain": "d3",
+   "frage": "Womit fragst du gesammelte Protokolldaten über mehrere Ressourcen hinweg ab?",
+   "optionen": [
+    "Azure Monitor Alerts",
+    "Log Analytics mit KQL",
+    "Azure Advisor",
+    "Resource Health"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Log Analytics** ist der Abfrageteil von Azure Monitor; Abfragen werden in **KQL** geschrieben. Alerts lösen aus, fragen aber nicht ab.",
+   "id": "f065"
+  },
+  {
+   "domain": "d3",
+   "frage": "Was zeigt Resource Health im Unterschied zu Service Health?",
+   "optionen": [
+    "Den Zustand einer einzelnen eigenen Ressource",
+    "Weltweite Azure-Störungen",
+    "Empfehlungen zur Kostenoptimierung",
+    "Die Sicherheitslage"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "**Resource Health** betrifft deine konkrete Ressource, **Service Health** die Azure-Dienste deiner Subscription, **Azure Status** die weltweite Lage.",
+   "id": "f066"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Massnahme senkt die Kosten für eine Entwicklungsumgebung, die nur tagsüber gebraucht wird?",
+   "optionen": [
+    "Reservierung über drei Jahre",
+    "Automatisches Herunterfahren ausserhalb der Arbeitszeit",
+    "Geo-redundanten Speicher aktivieren",
+    "Auf Premium-Datenträger wechseln"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Für nur zeitweise genutzte Umgebungen ist **Auto-Shutdown** die wirksamste Massnahme. Eine Reservierung lohnt sich nur bei durchgehender Last, die anderen Optionen erhöhen die Kosten.",
+   "id": "f067"
+  },
+  {
+   "domain": "d3",
+   "frage": "Wofür ist Azure Hybrid Benefit gedacht?",
+   "optionen": [
+    "Bestehende Windows-Server- oder SQL-Lizenzen in Azure weiterzuverwenden",
+    "Lokale und Cloud-Netzwerke zu verbinden",
+    "Daten zwischen Regionen zu replizieren",
+    "Container zu orchestrieren"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "**Azure Hybrid Benefit** erlaubt es, vorhandene Lizenzen mit Software Assurance anzurechnen und senkt dadurch die Compute-Kosten deutlich.",
+   "id": "f068"
+  },
+  {
+   "domain": "d3",
+   "frage": "Was ist der wesentliche Nachteil von Spot-VMs?",
+   "optionen": [
+    "Sie sind teurer",
+    "Azure kann sie jederzeit beenden",
+    "Sie skalieren nicht",
+    "Sie laufen nur in einer Region"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Spot-VMs** nutzen freie Kapazität zu stark reduziertem Preis, können aber jederzeit entzogen werden. Nur für unterbrechbare Lasten geeignet.",
+   "id": "f069"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Aussage über Infrastructure as Code trifft zu?",
+   "optionen": [
+    "Infrastruktur wird von Hand im Portal erstellt",
+    "Infrastruktur wird in versionierbaren Dateien beschrieben und automatisiert bereitgestellt",
+    "Es funktioniert nur mit Containern",
+    "Es ersetzt Azure Policy"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**IaC** beschreibt Infrastruktur in Dateien, die versioniert, geprüft und wiederholt angewendet werden können – in Azure über ARM-Vorlagen, Bicep oder Terraform.",
+   "id": "f070"
+  }
+ ],
+ "lernplan": {
+  "hinweis": "3 Wochen à ca. 5 Stunden. Läuft gut neben MD-102, weil sich die Identitätsthemen überschneiden.",
+  "wochen": [
+   {
+    "nr": 1,
+    "thema": "Cloud-Konzepte",
+    "stunden": 5,
+    "ziel": "Du erklärst geteilte Verantwortung, IaaS/PaaS/SaaS und die Cloud-Modelle sicher.",
+    "aufgaben": [
+     "Learn: Pfad **Describe cloud concepts** vollständig",
+     "Wissen → Domain 1 lesen, besonders die Tabelle zur geteilten Verantwortung",
+     "Kostenloses **Azure-Konto** anlegen und im Portal umsehen",
+     "Karten: alle neuen Karten aus Domain 1 (Pendelzeit)",
+     "Fragen: Domain 1 vollständig"
+    ]
+   },
+   {
+    "nr": 2,
+    "thema": "Architektur und Dienste",
+    "stunden": 6,
+    "ziel": "Du ordnest Regionen, Compute, Netzwerk, Speicher und Identität sicher zu.",
+    "aufgaben": [
+     "Learn: Pfad **Describe Azure architecture and services**",
+     "Portal: eine **VM anlegen** und wieder löschen – dabei auf vNet, NIC, Disk und Grösse achten",
+     "Portal: ein **Speicherkonto** anlegen, Zugriffsebenen und Redundanz im Erstellungsdialog ansehen",
+     "Notizen: Tabelle LRS / ZRS / GRS / GZRS, dazu Availability Zone gegen Region Pair",
+     "Karten: Domain 2 komplett, Domain 1 wiederholen",
+     "Fragen: Domain 2 vollständig"
+    ]
+   },
+   {
+    "nr": 3,
+    "thema": "Verwaltung, Governance und Prüfung",
+    "stunden": 5,
+    "ziel": "Stabil über 85 % in den Probeprüfungen, dann antreten.",
+    "aufgaben": [
+     "Learn: Pfad **Describe Azure management and governance**",
+     "Portal: **Pricing Calculator** mit einer VM durchspielen",
+     "Portal: ein **Tag** setzen, eine **Ressourcensperre** anlegen, in **Cost Management** umsehen",
+     "**Probeprüfung 1** schreiben, schwächste Domain nacharbeiten",
+     "Microsofts kostenloses **Practice Assessment** auf Learn durchspielen",
+     "**Probeprüfung 2** schreiben, Ziel über 85 %",
+     "Letzter Tag: nur noch **Last-Minute-Blatt** und Fehlerprotokoll"
+    ]
+   }
+  ]
+ },
+ "pruefungen": [
+  {
+   "id": "p1",
+   "titel": "Probeprüfung 1 – vollständig",
+   "dauer_min": 40,
+   "fragen": [
+    "f063",
+    "f051",
+    "f024",
+    "f054",
+    "f008",
+    "f032",
+    "f027",
+    "f066",
+    "f067",
+    "f031",
+    "f049",
+    "f047",
+    "f035",
+    "f006",
+    "f048",
+    "f044",
+    "f061",
+    "f036",
+    "f039",
+    "f012",
+    "f020",
+    "f023",
+    "f015",
+    "f058",
+    "f018",
+    "f065",
+    "f004",
+    "f037",
+    "f070",
+    "f003",
+    "f022",
+    "f017"
+   ]
+  },
+  {
+   "id": "p2",
+   "titel": "Probeprüfung 2 – andere Fragen",
+   "dauer_min": 35,
+   "fragen": [
+    "f009",
+    "f040",
+    "f030",
+    "f052",
+    "f046",
+    "f060",
+    "f034",
+    "f025",
+    "f033",
+    "f005",
+    "f019",
+    "f026",
+    "f053",
+    "f007",
+    "f050",
+    "f055",
+    "f016",
+    "f001",
+    "f010",
+    "f068",
+    "f069",
+    "f029",
+    "f014",
+    "f028",
+    "f043",
+    "f062",
+    "f042",
+    "f059"
+   ]
+  },
+  {
+   "id": "p3",
+   "titel": "Kurzcheck – 10 Fragen",
+   "dauer_min": 15,
+   "fragen": [
+    "f021",
+    "f045",
+    "f041",
+    "f057",
+    "f011",
+    "f056",
+    "f002",
+    "f013",
+    "f064",
+    "f038"
+   ]
+  }
+ ],
+ "glossar": [
+  {
+   "b": "ARM",
+   "d": "Azure Resource Manager – die Verwaltungsschicht, durch die jede Anfrage läuft."
+  },
+  {
+   "b": "Availability Zone",
+   "d": "Physisch getrennter Standort innerhalb einer Region, für Hochverfügbarkeit."
+  },
+  {
+   "b": "Bicep",
+   "d": "Schlanke Sprache für Infrastruktur als Code, wird zu ARM-Vorlagen übersetzt."
+  },
+  {
+   "b": "CapEx / OpEx",
+   "d": "Investition in Hardware gegenüber laufendem Betriebsaufwand nach Verbrauch."
+  },
+  {
+   "b": "Egress",
+   "d": "Ausgehender Datenverkehr – er kostet, eingehender meist nicht."
+  },
+  {
+   "b": "ExpressRoute",
+   "d": "Private Leitung nach Azure ohne Internet, mit verlässlicher Latenz."
+  },
+  {
+   "b": "GRS",
+   "d": "Geo-redundanter Speicher: LRS plus asynchrone Kopie in der gekoppelten Region."
+  },
+  {
+   "b": "IaC",
+   "d": "Infrastructure as Code – Infrastruktur in versionierbaren Dateien beschreiben."
+  },
+  {
+   "b": "KQL",
+   "d": "Kusto Query Language – Abfragesprache von Log Analytics."
+  },
+  {
+   "b": "LRS",
+   "d": "Lokal redundanter Speicher: drei Kopien in einem Rechenzentrum."
+  },
+  {
+   "b": "MFA",
+   "d": "Multi-Faktor-Authentifizierung: mindestens zwei Faktoren aus verschiedenen Kategorien."
+  },
+  {
+   "b": "NSG",
+   "d": "Netzwerksicherheitsgruppe – filtert Verkehr auf Subnetz- oder NIC-Ebene."
+  },
+  {
+   "b": "RBAC",
+   "d": "Rollenbasierte Zugriffssteuerung, vererbt sich von oben nach unten."
+  },
+  {
+   "b": "Region Pair",
+   "d": "Zwei gekoppelte Regionen, mindestens 300 Meilen auseinander, für Disaster Recovery."
+  },
+  {
+   "b": "Secure Score",
+   "d": "Bewertung der Sicherheitslage in Microsoft Defender for Cloud."
+  },
+  {
+   "b": "Serverless",
+   "d": "Keine Instanzen verwalten, Abrechnung pro Ausführung, Skalierung bis null."
+  },
+  {
+   "b": "Spot-VM",
+   "d": "Ungenutzte Kapazität zu stark reduziertem Preis, jederzeit kündbar."
+  },
+  {
+   "b": "vNet",
+   "d": "Virtuelles Netzwerk in einer Region, unterteilt in Subnetze."
+  },
+  {
+   "b": "ZRS",
+   "d": "Zonenredundanter Speicher: drei Kopien über Availability Zones einer Region."
+  }
+ ],
+ "lastminute": "### Die Verwechslungen, die Punkte kosten\n\n- **Availability Zone** schützt vor Ausfall eines Rechenzentrums, **Region Pair** vor Ausfall einer Region.\n- **Availability Set** wirkt nur innerhalb eines Rechenzentrums (Fault und Update Domains).\n- **Azure Policy** sagt *was* erlaubt ist, **RBAC** sagt *wer* darf.\n- **Ressourcensperren** gelten auch für Owner.\n- **Service Health**: Störung bei Azure. **Resource Health**: deine Ressource. **Application Insights**: deine Anwendung.\n- **Pricing Calculator** schätzt vorher, **Cost Management** zeigt nachher, **TCO Calculator** vergleicht mit On-Premises.\n- **Entra ID** ist kein Active Directory: keine GPOs, keine OUs, kein Kerberos. Dafür **Entra Domain Services**.\n- **Eingehender** Verkehr ist gratis, **ausgehender** kostet.\n- **Tags** vererben sich nicht von selbst.\n- Eine Ressource liegt in **genau einer** Ressourcengruppe.\n\n### Zahlen\n\n- Bestehen: **700** von 1000\n- Region Pair: mindestens **300** Meilen Abstand\n- Verwaltungsgruppen: bis zu **6** Ebenen unter der Root\n- Blob-Mindestdauer: Cool **30**, Cold **90**, Archive **180** Tage\n- Reservierung: **1** oder **3** Jahre, bis zu etwa **72 %** günstiger\n- Fundamentals-Zertifizierungen laufen **nicht** ab\n\n### Zuordnungen im Schlaf\n\n- „Nur zahlen, wenn Code läuft\" → **Azure Functions**\n- „Identische VMs, automatisch skaliert\" → **Scale Set**\n- „Private IP für einen PaaS-Dienst\" → **Private Endpoint**\n- „Verwaltung für Server ausserhalb Azure\" → **Azure Arc**\n- „Daten finden und klassifizieren\" → **Purview**\n- „Empfehlungen in fünf Kategorien\" → **Advisor**\n- „80 TB in die Cloud\" → **Data Box**\n- „Dateiserver mit Azure synchron halten\" → **File Sync**\n\n### In der Prüfung\n\nAZ-900 fragt viel nach **Zuordnung**: Dienst zu Zweck. Lies die letzte Zeile zuerst, sie nennt das\nKriterium – günstigste Option, geringster Verwaltungsaufwand, höchste Verfügbarkeit.\nBei „Ja/Nein\"-Blöcken wird jede Zeile einzeln gewertet: keine Zeile offen lassen."
+}

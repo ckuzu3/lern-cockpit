@@ -1,0 +1,1600 @@
+{
+ "id": "apl-1008",
+ "titel": "Applied Skills: AD DS verwalten",
+ "anbieter": "Microsoft",
+ "typ": "zertifikat",
+ "stand": "2026-11-09",
+ "termin": null,
+ "pruefung": {
+  "code": "APL-1008",
+  "name": "Administer Active Directory Domain Services",
+  "dauer": "Microsoft nennt die Zeit beim Start des Labs – Richtwert für Applied-Skills-Labs sind rund 2 Stunden",
+  "fragen": "Keine Multiple-Choice-Fragen: ein interaktives Lab, in dem du Aufgaben tatsächlich ausführst",
+  "bestehen": "Bewertet wird das Ergebnis im Lab, nicht angekreuzte Antworten",
+  "kosten": "kostenlos (Applied Skills; auf der Assessment-Seite prüfen)",
+  "gueltigkeit": "Applied-Skills-Nachweise laufen nicht ab",
+  "sprache": "Deutsch verfügbar, dazu Englisch, Spanisch, Französisch, Japanisch, Portugiesisch (BR), Chinesisch (vereinfacht)",
+  "quelle": "https://learn.microsoft.com/en-us/credentials/applied-skills/administer-active-directory-domain-services/"
+ },
+ "hinweis": "Dies ist ein Lab, keine Multiple-Choice-Prüfung. Nach dem Start des Labs musst du 72 Stunden warten, bis du es erneut öffnen kannst – also erst üben, dann starten. Die Fragen hier sind Trockenübungen zu den offiziellen Aufgabenbereichen, keine echten Prüfungsinhalte.",
+ "ressourcen": [
+  {
+   "titel": "Credential-Seite: Administer AD DS",
+   "url": "https://learn.microsoft.com/en-us/credentials/applied-skills/administer-active-directory-domain-services/",
+   "was": "Hier startest du das Lab. Vorher lesen: 72 Stunden Sperre nach dem Start"
+  },
+  {
+   "titel": "Offizieller Study Guide APL-1008",
+   "url": "https://learn.microsoft.com/en-us/credentials/applied-skills/resources/study-guides/apl-1008",
+   "was": "Die verbindliche Liste der Lab-Aufgaben"
+  },
+  {
+   "titel": "Learn-Modul: Introduction to AD DS",
+   "url": "https://learn.microsoft.com/en-us/training/modules/introduction-to-ad-ds/",
+   "was": "Objekte, OUs, Topologie"
+  },
+  {
+   "titel": "Learn-Modul: Domain Controller und FSMO-Rollen",
+   "url": "https://learn.microsoft.com/en-us/training/modules/manage-active-directory-domain-services-flexible-single-master-operation-roles/",
+   "was": "DC-Bereitstellung und Rollenübertragung"
+  },
+  {
+   "titel": "Learn-Modul: Implement Group Policy Objects",
+   "url": "https://learn.microsoft.com/en-us/training/modules/implement-group-policy-objects/",
+   "was": "GPOs, Verarbeitungsreihenfolge, Rechtezuweisung"
+  },
+  {
+   "titel": "Learn-Modul: AD DS überwachen und Fehler beheben",
+   "url": "https://learn.microsoft.com/en-us/training/modules/manage-advanced-features-of-ad-ds/4-monitor-and-troubleshoot-ad-ds",
+   "was": "Auditing und Fehlersuche"
+  },
+  {
+   "titel": "Lab-Hinweise von Microsoft",
+   "url": "https://learn.microsoft.com/credentials/support/assessment-duration-lab-experience",
+   "was": "Wie das Assessment-Lab abläuft"
+  }
+ ],
+ "domains": [
+  {
+   "id": "d1",
+   "titel": "Domain Controller bereitstellen und verwalten",
+   "kurz": "DC-Installation, FSMO-Rollen",
+   "gewicht": "Lab-Aufgabe 1",
+   "themen": [
+    "Domain Controller bereitstellen",
+    "Eine FSMO-Rolle (Flexible Single Master Operations) übertragen"
+   ],
+   "zusammenfassung": "## Einen Domain Controller heraufstufen\n\nZwei Schritte, immer in dieser Reihenfolge: **Rolle installieren**, dann **heraufstufen**.\n\nIm Server-Manager: *Verwalten → Rollen und Features hinzufügen → Active Directory-Domänendienste*,\ndanach im gelben Warndreieck *Diesen Server zu einem Domänencontroller heraufstufen*.\n\nIn PowerShell – und das ist der Weg, den du im Lab zeigen solltest:\n\n```\nInstall-WindowsFeature AD-Domain-Services -IncludeManagementTools\nInstall-ADDSDomainController -DomainName \"contoso.com\" -Credential (Get-Credential) -InstallDns\n```\n\nFür eine **neue Gesamtstruktur** stattdessen `Install-ADDSForest -DomainName \"contoso.com\"`,\nfür eine **neue untergeordnete Domäne** `Install-ADDSDomain`.\n\nWichtige Parameter: `-SiteName`, `-DatabasePath`, `-LogPath`, `-SysvolPath`,\n`-NoGlobalCatalog:$false` (Standard ist Globaler Katalog **ja**),\n`-ReadOnlyReplica` für einen **RODC**.\n\nNach der Heraufstufung startet der Server neu. Prüfen mit:\n`Get-ADDomainController -Filter *` und `dcdiag`.\n\n## Die fünf FSMO-Rollen\n\nZwei auf Gesamtstruktur-Ebene, drei je Domäne:\n\n| Rolle | Ebene | Wofür |\n|---|---|---|\n| **Schema Master** | Gesamtstruktur | Änderungen am Schema |\n| **Domain Naming Master** | Gesamtstruktur | Domänen hinzufügen und entfernen |\n| **PDC Emulator** | Domäne | Zeitquelle, Passwortänderungen, Sperrungen, GPO-Bearbeitung |\n| **RID Master** | Domäne | vergibt RID-Pools für neue Sicherheitsprinzipale |\n| **Infrastructure Master** | Domäne | pflegt domänenübergreifende Objektverweise |\n\nMerkhilfe: **Schema und Domain Naming** sind einmal pro **Gesamtstruktur**,\n**PDC, RID und Infrastructure** einmal pro **Domäne**.\n\n### Rollen anzeigen\n\n```\nGet-ADForest | Select-Object SchemaMaster, DomainNamingMaster\nGet-ADDomain  | Select-Object PDCEmulator, RIDMaster, InfrastructureMaster\nnetdom query fsmo\n```\n\n### Rolle übertragen\n\n**Übertragen (transfer)** heisst: beide Domain Controller sind erreichbar, geordneter Wechsel.\n\n```\nMove-ADDirectoryServerOperationMasterRole -Identity \"DC02\" -OperationMasterRole PDCEmulator\nMove-ADDirectoryServerOperationMasterRole -Identity \"DC02\" -OperationMasterRole 0,1,2,3,4\n```\n\nDie Zahlen: **0 = PDCEmulator, 1 = RIDMaster, 2 = InfrastructureMaster,\n3 = SchemaMaster, 4 = DomainNamingMaster.**\n\n**Beschlagnahmen (seize)** nur, wenn der bisherige Rolleninhaber **dauerhaft ausgefallen** ist –\nmit `-Force`. Der alte Inhaber darf danach nie wieder ans Netz.\n\nÜber die grafische Oberfläche: PDC, RID und Infrastructure in *Active Directory-Benutzer und -Computer*\n(Rechtsklick auf die Domäne → *Betriebsmaster*), Domain Naming in *Active Directory-Domänen und -Vertrauensstellungen*,\nSchema in der MMC *Active Directory-Schema* – die muss erst mit `regsvr32 schmmgmt.dll` registriert werden."
+  },
+  {
+   "id": "d2",
+   "titel": "Active-Directory-Topologie konfigurieren",
+   "kurz": "Funktionsebenen, Standorte, Subnetze",
+   "gewicht": "Lab-Aufgabe 2",
+   "themen": [
+    "Funktionsebene einer Domäne oder Gesamtstruktur heraufstufen",
+    "Einen neuen Standort erstellen und einem Subnetz zuordnen",
+    "Domain Controller zwischen Standorten verschieben"
+   ],
+   "zusammenfassung": "## Funktionsebenen\n\nDie Funktionsebene bestimmt, welche AD-Funktionen zur Verfügung stehen und welche\nWindows-Server-Versionen noch Domain Controller sein dürfen.\n\n**Regel:** Die Funktionsebene kann nie höher sein als die älteste Windows-Version unter den\nDomain Controllern. Heraufstufen ist – ab Windows Server 2008 R2 – rückgängig machbar,\naber plane nicht damit.\n\n```\nGet-ADDomain | Select-Object DomainMode\nGet-ADForest | Select-Object ForestMode\n\nSet-ADDomainMode -Identity \"contoso.com\" -DomainMode Windows2016Domain\nSet-ADForestMode -Identity \"contoso.com\" -ForestMode Windows2016Forest\n```\n\nReihenfolge: **zuerst die Domäne**, dann die Gesamtstruktur. Die Gesamtstruktur-Ebene kann nie\nhöher sein als die niedrigste Domänen-Ebene darin.\n\nGrafisch: *Active Directory-Domänen und -Vertrauensstellungen* → Rechtsklick auf die Domäne bzw.\nauf den Knoten → *Domänenfunktionsebene heraufstufen* / *Gesamtstrukturfunktionsebene heraufstufen*.\n\nWichtige Schwellen, die du kennen solltest: **Windows Server 2008** brachte DFS-R für SYSVOL,\n**2008 R2** den AD-Papierkorb und authentifizierungsrichtlinien-fähige Konten,\n**2012** Dynamic Access Control und **gMSA**, **2016** Privileged Access Management.\n\n## Standorte und Subnetze\n\nStandorte (Sites) bilden die **physische** Struktur ab – Topologie und Replikation –, während\nOUs die **logische** Verwaltung abbilden. Verwechsle die beiden nicht.\n\nWerkzeug: **Active Directory-Standorte und -Dienste** (`dssite.msc`).\n\n### Standort anlegen\n\n```\nNew-ADReplicationSite -Name \"Zuerich\"\n```\nGrafisch: Rechtsklick auf *Sites* → *Neuer Standort*, dann einen Standortverknüpfung auswählen\n(standardmässig `DEFAULTIPSITELINK`).\n\n### Subnetz anlegen und zuordnen\n\n```\nNew-ADReplicationSubnet -Name \"10.10.20.0/24\" -Site \"Zuerich\"\n```\nGrafisch: *Subnets* → *Neues Subnetz*, Präfix eintragen, Standort auswählen.\n\nDas Subnetz ist der Grund, warum das Ganze funktioniert: Ein Client sucht anhand **seiner IP-Adresse**\ndas passende Subnetz, findet so seinen Standort und spricht bevorzugt mit einem Domain Controller\n**dort**. Fehlt das Subnetz, meldet sich der Client irgendwo an – das ist der klassische Fehler.\n\n### Domain Controller verschieben\n\n```\nMove-ADDirectoryServer -Identity \"DC02\" -Site \"Zuerich\"\n```\nGrafisch: den Serverknoten im alten Standort aufklappen, Rechtsklick → *Verschieben*, Zielstandort wählen.\n\n### Standortverknüpfungen\n\nEine **Site Link** verbindet Standorte und steuert die Replikation:\n**Kosten** (niedriger = bevorzugt), **Replikationsintervall** (Standard 180 Minuten, Minimum 15)\nund ein Zeitplan.\n\n```\nNew-ADReplicationSiteLink -Name \"Zuerich-Bern\" -SitesIncluded \"Zuerich\",\"Bern\" -Cost 100 -ReplicationFrequencyInMinutes 15\n```\n\nInnerhalb eines Standorts repliziert AD fast sofort und unkomprimiert, zwischen Standorten\nnach Zeitplan und komprimiert. Der **KCC** berechnet die Replikationstopologie automatisch;\nzwischen Standorten übernimmt der **ISTG** diese Aufgabe."
+  },
+  {
+   "id": "d3",
+   "titel": "AD-DS-Objekte erstellen und verwalten",
+   "kurz": "Benutzer, Gruppen, OUs, gMSA, Papierkorb",
+   "gewicht": "Lab-Aufgabe 3",
+   "themen": [
+    "Ein Benutzerkonto erstellen",
+    "Massenverwaltung von Benutzerkonten durchführen",
+    "Deaktivierte Benutzerkonten verwalten",
+    "Benutzerkennwörter zurücksetzen",
+    "Ein gruppenverwaltetes Dienstkonto (gMSA) einrichten",
+    "Gruppen erstellen",
+    "Benutzer zu Gruppen hinzufügen, auch zu privilegierten Gruppen und der Gruppe Geschützte Benutzer",
+    "Organisationseinheiten erstellen und verwalten",
+    "Objekte aus dem AD-DS-Papierkorb wiederherstellen"
+   ],
+   "zusammenfassung": "## Benutzer\n\n```\nNew-ADUser -Name \"Anna Meier\" -GivenName Anna -Surname Meier `\n  -SamAccountName ameier -UserPrincipalName ameier@contoso.com `\n  -Path \"OU=IT,DC=contoso,DC=com\" `\n  -AccountPassword (ConvertTo-SecureString \"Pa55w.rd!\" -AsPlainText -Force) `\n  -Enabled $true -ChangePasswordAtLogon $true\n```\n\n**Achtung:** Ohne `-Enabled $true` wird das Konto **deaktiviert** angelegt. Das ist der häufigste\nStolperstein im Lab.\n\n### Massenverwaltung aus einer CSV\n\n```\nImport-Csv .\benutzer.csv | ForEach-Object {\n  New-ADUser -Name $_.Name -SamAccountName $_.SamAccountName `\n    -UserPrincipalName \"$($_.SamAccountName)@contoso.com\" -Path $_.OU `\n    -AccountPassword (ConvertTo-SecureString $_.Passwort -AsPlainText -Force) -Enabled $true\n}\n```\n\n### Deaktivierte Konten finden und aufräumen\n\n```\nSearch-ADAccount -AccountDisabled -UsersOnly\nSearch-ADAccount -AccountInactive -TimeSpan 90.00:00:00 -UsersOnly\nDisable-ADAccount -Identity ameier\nEnable-ADAccount  -Identity ameier\nUnlock-ADAccount  -Identity ameier\n```\n\n**Deaktiviert** und **gesperrt** sind nicht dasselbe: Deaktiviert hat ein Administrator gemacht,\ngesperrt entsteht durch zu viele Fehlversuche und löst sich nach der Sperrdauer von selbst.\n\n### Kennwort zurücksetzen\n\n```\nSet-ADAccountPassword -Identity ameier -Reset `\n  -NewPassword (ConvertTo-SecureString \"Neu.Pa55w!\" -AsPlainText -Force)\nSet-ADUser -Identity ameier -ChangePasswordAtLogon $true\n```\n\n## Gruppen\n\nDrei **Gültigkeitsbereiche**, die du auseinanderhalten musst:\n\n| Bereich | Mitglieder aus | Berechtigungen gültig in |\n|---|---|---|\n| **Domänenlokal** | gesamter Gesamtstruktur | nur eigener Domäne |\n| **Global** | nur eigener Domäne | gesamter Gesamtstruktur |\n| **Universal** | gesamter Gesamtstruktur | gesamter Gesamtstruktur |\n\nZwei **Typen**: **Sicherheit** (Berechtigungen vergeben) und **Verteilung** (nur E-Mail).\n\nDie Microsoft-Empfehlung heisst **AGDLP**: *Accounts* in *Global groups*,\ndiese in *Domain Local groups*, auf die *Permissions* vergeben werden.\n\n```\nNew-ADGroup -Name \"IT-Admins\" -GroupScope Global -GroupCategory Security -Path \"OU=IT,DC=contoso,DC=com\"\nAdd-ADGroupMember -Identity \"IT-Admins\" -Members ameier, bmueller\nGet-ADGroupMember -Identity \"IT-Admins\"\n```\n\n### Privilegierte Gruppen und Geschützte Benutzer\n\nPrivilegiert sind unter anderem **Domänen-Admins**, **Organisations-Admins**, **Schema-Admins**,\n**Administratoren**, **Konten-Operatoren**.\n\nDie Gruppe **Geschützte Benutzer** (Protected Users) härtet ihre Mitglieder:\nkein NTLM, keine Delegierung, kein zwischengespeicherter Anmeldeinformationen-Login,\nnur Kerberos mit AES, Ticketlaufzeit auf vier Stunden begrenzt.\nDas kann Anmeldungen brechen, wenn eine Anwendung noch NTLM braucht – bewusst einsetzen.\n\n```\nAdd-ADGroupMember -Identity \"Protected Users\" -Members ameier\n```\n\n## Organisationseinheiten\n\n```\nNew-ADOrganizationalUnit -Name \"IT\" -Path \"DC=contoso,DC=com\" -ProtectedFromAccidentalDeletion $true\n```\n\nDer **Schutz vor versehentlichem Löschen** ist standardmässig **an**. Willst du eine OU löschen,\nmusst du ihn erst entfernen – im Snap-In über *Ansicht → Erweiterte Features* und dann\nim Objekt-Register, oder:\n\n```\nSet-ADOrganizationalUnit -Identity \"OU=IT,DC=contoso,DC=com\" -ProtectedFromAccidentalDeletion $false\nRemove-ADOrganizationalUnit -Identity \"OU=IT,DC=contoso,DC=com\" -Recursive\n```\n\nOUs sind der **Ansatzpunkt für GPOs und Delegierung** – Gruppen sind es nicht.\n\n## Gruppenverwaltetes Dienstkonto (gMSA)\n\nEin gMSA hat ein automatisch rotierendes Kennwort (alle 30 Tage) und kann von mehreren Servern\ngenutzt werden. Einmalige Vorbereitung im Gesamtstruktur-Stamm:\n\n```\nAdd-KdsRootKey -EffectiveTime ((Get-Date).AddHours(-10))\n```\n\nDer Rückdatierungstrick spart die sonst nötige Wartezeit von zehn Stunden – im Lab unverzichtbar.\n\n```\nNew-ADServiceAccount -Name \"gmsaSQL\" -DNSHostName \"gmsaSQL.contoso.com\" `\n  -PrincipalsAllowedToRetrieveManagedPassword \"SQL-Server\"\nInstall-ADServiceAccount -Identity \"gmsaSQL\"      # auf dem Zielserver\nTest-ADServiceAccount -Identity \"gmsaSQL\"\n```\n\nIm Dienst wird der Kontoname mit angehängtem Dollarzeichen eingetragen (`contoso\\gmsaSQL$`),\ndas Kennwortfeld bleibt **leer**.\n\n## AD-Papierkorb\n\nAb Funktionsebene **Windows Server 2008 R2**, einmal aktiviert **nicht mehr abschaltbar**:\n\n```\nEnable-ADOptionalFeature -Identity \"Recycle Bin Feature\" -Scope ForestOrConfigurationSet `\n  -Target \"contoso.com\"\n```\n\nGelöschtes finden und wiederherstellen:\n\n```\nGet-ADObject -Filter 'isDeleted -eq $true -and Name -like \"*Meier*\"' -IncludeDeletedObjects\nGet-ADObject -Filter 'Name -like \"*Meier*\"' -IncludeDeletedObjects | Restore-ADObject\n```\n\nGrafisch im **Active Directory-Verwaltungscenter** unter *Deleted Objects*.\nWiederhergestellte Objekte behalten ihre **SID** und damit alle Berechtigungen –\ndas ist der ganze Sinn gegenüber einem Neuanlegen."
+  },
+  {
+   "id": "d4",
+   "titel": "Gruppenrichtlinien erstellen und konfigurieren",
+   "kurz": "GPO anlegen, verknüpfen, Reichweite",
+   "gewicht": "Lab-Aufgabe 4",
+   "themen": [
+    "Eine GPO erstellen und verknüpfen",
+    "Gruppenrichtlinieneinstellungen konfigurieren",
+    "Reichweite und Verarbeitungsreihenfolge von Gruppenrichtlinien konfigurieren"
+   ],
+   "zusammenfassung": "## GPO anlegen und verknüpfen\n\nWerkzeug: **Gruppenrichtlinienverwaltung** (`gpmc.msc`).\n\n```\nNew-GPO -Name \"Bildschirmsperre\"\nNew-GPLink -Name \"Bildschirmsperre\" -Target \"OU=IT,DC=contoso,DC=com\"\n# beides in einem Schritt, grafisch: Rechtsklick auf die OU ->\n# \"Gruppenrichtlinienobjekt hier erstellen und verknüpfen\"\n```\n\nEine GPO liegt immer im Container *Gruppenrichtlinienobjekte* und wird **verknüpft** mit\neinem **Standort**, einer **Domäne** oder einer **OU** – nie direkt mit einer Gruppe.\n\n## Verarbeitungsreihenfolge: LSDOU\n\n**Lokal → Standort (Site) → Domäne → OU**, und bei verschachtelten OUs von oben nach unten.\n**Die zuletzt angewendete Einstellung gewinnt**, also die der untersten OU.\n\nInnerhalb einer Ebene entscheidet die **Verknüpfungsreihenfolge**: **Link Order 1 wird zuletzt\nangewendet und gewinnt** damit. Das ist kontraintuitiv und ein beliebter Prüfungspunkt.\n\n### Zwei Ausnahmen\n\n- **Erzwungen (Enforced)** auf einer Verknüpfung: Diese GPO setzt sich gegen alle tieferen durch\n  und lässt sich nicht blockieren.\n- **Vererbung deaktivieren (Block Inheritance)** auf einer OU: blockiert alles von oben –\n  **ausser** erzwungenen GPOs.\n\nTrifft *Enforced* auf *Block Inheritance*, gewinnt immer **Enforced**.\n\n## Reichweite steuern\n\nDrei Werkzeuge, drei Zwecke:\n\n1. **Sicherheitsfilterung** – die GPO gilt nur für bestimmte Benutzer, Gruppen oder Computer.\n   Das Objekt braucht *Lesen* und *Gruppenrichtlinie übernehmen*. Standardmässig steht hier\n   *Authentifizierte Benutzer*.\n2. **WMI-Filter** – eine Abfrage entscheidet, etwa nur 64-Bit-Systeme oder nur Laptops.\n   Kostet Verarbeitungszeit beim Anmelden.\n3. **Verknüpfung deaktivieren** oder **Computer-/Benutzerkonfiguration deaktivieren** –\n   wenn eine Hälfte der GPO ohnehin leer ist, spart das Zeit.\n\n```\nSet-GPPermission -Name \"Bildschirmsperre\" -TargetName \"IT-Admins\" -TargetType Group -PermissionLevel GpoApply\nGet-GPInheritance -Target \"OU=IT,DC=contoso,DC=com\"\nSet-GPInheritance -Target \"OU=IT,DC=contoso,DC=com\" -IsBlocked Yes\nSet-GPLink -Name \"Bildschirmsperre\" -Target \"OU=IT,DC=contoso,DC=com\" -Enforced Yes\n```\n\n## Benutzer- und Computerkonfiguration\n\nEine GPO hat zwei Hälften. Die **Computerkonfiguration** greift beim Start, die\n**Benutzerkonfiguration** bei der Anmeldung – und zwar jeweils für das Objekt, das in der\nverknüpften OU liegt. Benutzereinstellungen in einer Computer-OU verpuffen.\n\nFür den Sonderfall gibt es die **Loopbackverarbeitung**\n(*Computerkonfiguration → Richtlinien → Administrative Vorlagen → System → Gruppenrichtlinie →\nLoopbackverarbeitungsmodus für Benutzergruppenrichtlinie konfigurieren*):\n- **Zusammenführen**: Benutzer-GPOs des Benutzers **und** der Computer-OU\n- **Ersetzen**: nur die der Computer-OU\nTypisch für Terminalserver und Kioske.\n\n## Aktualisierung und Prüfung\n\nClients holen Gruppenrichtlinien alle **90 Minuten** plus eine zufällige Verschiebung von bis zu\n30 Minuten, Domain Controller alle **5 Minuten**. Sofort:\n\n```\ngpupdate /force\ngpresult /r\ngpresult /h bericht.html\nGet-GPResultantSetOfPolicy -ReportType Html -Path .\rsop.html\n```\n\nIm GPMC heisst das Werkzeug **Gruppenrichtlinienergebnisse** (für einen tatsächlichen Stand)\nbzw. **Gruppenrichtlinienmodellierung** (für ein Planspiel)."
+  },
+  {
+   "id": "d5",
+   "titel": "Sicherheit in AD DS verwalten",
+   "kurz": "Delegierung, Kennwortrichtlinien, Auditing",
+   "gewicht": "Lab-Aufgabe 5",
+   "themen": [
+    "Berechtigungen in AD DS delegieren",
+    "Die Kennwortrichtlinie der Domäne konfigurieren",
+    "Eine fein abgestimmte Kennwortrichtlinie konfigurieren und anwenden",
+    "Überwachung konfigurieren, einschliesslich erweiterter Überwachungsrichtlinie",
+    "Zuweisen von Benutzerrechten über Gruppenrichtlinien konfigurieren"
+   ],
+   "zusammenfassung": "## Delegierung\n\nRechte an einer **OU** an eine Gruppe übertragen, ohne Domänen-Admin zu vergeben.\nGrafisch: *Active Directory-Benutzer und -Computer* → Rechtsklick auf die OU →\n**Objektverwaltung zuweisen** → Assistent. Typische Aufgaben:\n*Benutzerkonten erstellen, löschen und verwalten*, *Kennwörter zurücksetzen und Änderung erzwingen*,\n*Gruppenmitgliedschaft ändern*.\n\nFein steuern lässt es sich über *Eigenschaften → Sicherheit → Erweitert*, mit Vererbung auf\n*Nachfolgende Benutzerobjekte*. Auf der Kommandozeile mit `dsacls`:\n\n```\ndsacls \"OU=IT,DC=contoso,DC=com\" /I:S /G \"CONTOSO\\Helpdesk:CA;Reset Password;user\"\n```\n\nGrundsatz: **an eine Gruppe delegieren, nie an einzelne Personen**, und so tief wie möglich\nin der OU-Struktur.\n\n## Kennwortrichtlinie der Domäne\n\nEs gibt **eine** Kennwortrichtlinie pro Domäne. Sie steht in der **Default Domain Policy** und muss\nauf **Domänenebene** verknüpft sein – auf einer OU hat sie für Domänenkonten keine Wirkung.\nDas ist der Klassiker unter den Fehlern.\n\n*Computerkonfiguration → Richtlinien → Windows-Einstellungen → Sicherheitseinstellungen →\nKontorichtlinien → Kennwortrichtlinie*\n\nDie Werte, die du kennen musst: **Kennwortchronik erzwingen**, **maximales** und **minimales\nKennwortalter**, **minimale Kennwortlänge**, **Komplexitätsanforderungen**,\n**Kennwörter mit umkehrbarer Verschlüsselung speichern** (immer deaktiviert lassen).\nDazu die **Kontosperrungsrichtlinie**: Schwellenwert, Sperrdauer, Zurücksetzungszähler.\n\n```\nGet-ADDefaultDomainPasswordPolicy\nSet-ADDefaultDomainPasswordPolicy -Identity contoso.com -MinPasswordLength 14 -PasswordHistoryCount 24 `\n  -LockoutThreshold 5 -LockoutDuration 00:15:00 -LockoutObservationWindow 00:15:00\n```\n\n## Fein abgestimmte Kennwortrichtlinie (FGPP)\n\nDamit bekommen einzelne Gruppen – typischerweise Administratoren – strengere Regeln.\nVoraussetzung: Domänenfunktionsebene **Windows Server 2008** oder höher.\nFGPPs werden auf **Benutzer oder Gruppen** angewendet, **nie auf OUs**.\n\n```\nNew-ADFineGrainedPasswordPolicy -Name \"Admin-PSO\" -Precedence 10 `\n  -MinPasswordLength 20 -PasswordHistoryCount 24 -ComplexityEnabled $true `\n  -LockoutThreshold 3 -LockoutDuration 00:30:00 -LockoutObservationWindow 00:30:00\nAdd-ADFineGrainedPasswordPolicySubject -Identity \"Admin-PSO\" -Subjects \"IT-Admins\"\nGet-ADUserResultantPasswordPolicy -Identity ameier\n```\n\n**Precedence**: die **niedrigste Zahl gewinnt**. Treffen mehrere PSOs über Gruppen zu, entscheidet\ndie Precedence; eine direkt am Benutzer verknüpfte PSO schlägt alle über Gruppen.\n\nGrafisch im **Active Directory-Verwaltungscenter** unter\n*System → Password Settings Container*.\n\n## Überwachung (Auditing)\n\nZwei Ebenen, und die neuere gewinnt:\n\n- **Einfache Überwachungsrichtlinie**: *Sicherheitseinstellungen → Lokale Richtlinien → Überwachungsrichtlinie*\n- **Erweiterte Überwachungsrichtlinienkonfiguration**: *Sicherheitseinstellungen →\n  Erweiterte Überwachungsrichtlinienkonfiguration* – rund 60 Unterkategorien statt neun Kategorien\n\nDamit sich beide nicht in die Quere kommen, aktivierst du\n**Überwachung: Unterkategorieeinstellungen der Überwachungsrichtlinie erzwingen** unter\n*Sicherheitsoptionen*. Ohne das überschreibt die einfache Richtlinie die erweiterte.\n\nFür AD-Objektzugriff braucht es **zwei** Dinge – das wird gerne vergessen:\n1. Die Richtlinie **Verzeichnisdienstzugriff überwachen** (bzw. die Unterkategorie\n   *Verzeichnisdienständerungen überwachen*) aktivieren\n2. Am Objekt selbst eine **SACL** setzen: *Eigenschaften → Sicherheit → Erweitert → Überwachung*\n\nErst dann erscheinen Ereignisse im **Sicherheitsprotokoll**:\n**4720** Benutzer erstellt, **4726** gelöscht, **4728/4729** Mitglied zu globaler Gruppe\nhinzugefügt oder entfernt, **4740** Konto gesperrt, **5136** Verzeichnisobjekt geändert,\n**4624** erfolgreiche Anmeldung, **4625** fehlgeschlagene Anmeldung.\n\n```\nauditpol /get /category:*\nauditpol /set /subcategory:\"Directory Service Changes\" /success:enable /failure:enable\n```\n\n## Zuweisen von Benutzerrechten\n\n*Computerkonfiguration → Richtlinien → Windows-Einstellungen → Sicherheitseinstellungen →\nLokale Richtlinien → Zuweisen von Benutzerrechten*\n\nDie wichtigen Einträge: **Lokal anmelden zulassen**, **Anmelden über Remotedesktopdienste zulassen**,\n**Zugriff auf diesen Computer über das Netzwerk verweigern**, **Herunterfahren des Systems**,\n**Sichern von Dateien und Verzeichnissen**, **Annehmen der Clientidentität nach Authentifizierung**.\n\nWichtig: Diese Einstellungen sind **ersetzend, nicht ergänzend**. Wer eine Liste setzt, muss alle\nnötigen Konten aufführen – sonst sperrt man sich aus. Und sie gehören in die\n**Computerkonfiguration**, verknüpft mit der OU der **Computer**, nicht der Benutzer."
+  }
+ ],
+ "karten": [
+  {
+   "domain": "d1",
+   "front": "Welche zwei Schritte machen einen Server zum Domain Controller?",
+   "back": "1. Rolle installieren: `Install-WindowsFeature AD-Domain-Services -IncludeManagementTools`\n2. Heraufstufen: `Install-ADDSDomainController -DomainName contoso.com -InstallDns`\nDanach startet der Server neu.",
+   "id": "k001"
+  },
+  {
+   "domain": "d1",
+   "front": "Welches Cmdlet erstellt eine ganz neue Gesamtstruktur?",
+   "back": "`Install-ADDSForest -DomainName \"contoso.com\"`\nFür eine zusätzliche Domäne: `Install-ADDSDomain`. Für einen weiteren DC in bestehender Domäne: `Install-ADDSDomainController`.",
+   "id": "k002"
+  },
+  {
+   "domain": "d1",
+   "front": "Nenne die fünf FSMO-Rollen und ihre Ebene.",
+   "back": "**Gesamtstruktur**: Schema Master, Domain Naming Master.\n**Domäne**: PDC Emulator, RID Master, Infrastructure Master.",
+   "id": "k003"
+  },
+  {
+   "domain": "d1",
+   "front": "Was macht der PDC Emulator?",
+   "back": "Zeitquelle der Domäne, verarbeitet Kennwortänderungen vorrangig, prüft Kontosperrungen, ist Standardziel beim Bearbeiten von Gruppenrichtlinien.",
+   "id": "k004"
+  },
+  {
+   "domain": "d1",
+   "front": "Was macht der RID Master?",
+   "back": "Vergibt **RID-Pools** an die Domain Controller. Ohne ihn können irgendwann keine neuen Sicherheitsprinzipale (Benutzer, Gruppen, Computer) mehr angelegt werden.",
+   "id": "k005"
+  },
+  {
+   "domain": "d1",
+   "front": "Wie zeigst du alle FSMO-Rolleninhaber an?",
+   "back": "`Get-ADForest | Select SchemaMaster, DomainNamingMaster`\n`Get-ADDomain | Select PDCEmulator, RIDMaster, InfrastructureMaster`\noder `netdom query fsmo`",
+   "id": "k006"
+  },
+  {
+   "domain": "d1",
+   "front": "Mit welchem Cmdlet überträgst du eine FSMO-Rolle?",
+   "back": "`Move-ADDirectoryServerOperationMasterRole -Identity \"DC02\" -OperationMasterRole PDCEmulator`\nMehrere auf einmal über die Zahlen 0–4.",
+   "id": "k007"
+  },
+  {
+   "domain": "d1",
+   "front": "Welche Zahl steht für welche FSMO-Rolle?",
+   "back": "**0** PDCEmulator · **1** RIDMaster · **2** InfrastructureMaster · **3** SchemaMaster · **4** DomainNamingMaster",
+   "id": "k008"
+  },
+  {
+   "domain": "d1",
+   "front": "Wann überträgst du (transfer) und wann beschlagnahmst du (seize)?",
+   "back": "**Transfer**: beide DCs sind erreichbar, geordneter Wechsel.\n**Seize** (`-Force`): nur wenn der bisherige Inhaber **dauerhaft** ausgefallen ist. Der alte DC darf danach nie wieder ans Netz.",
+   "id": "k009"
+  },
+  {
+   "domain": "d1",
+   "front": "Wo überträgst du die Rollen grafisch?",
+   "back": "**PDC, RID, Infrastructure**: AD-Benutzer und -Computer → Rechtsklick Domäne → Betriebsmaster.\n**Domain Naming**: AD-Domänen und -Vertrauensstellungen.\n**Schema**: MMC AD-Schema, vorher `regsvr32 schmmgmt.dll`.",
+   "id": "k010"
+  },
+  {
+   "domain": "d1",
+   "front": "Welcher Parameter macht aus einem DC einen RODC?",
+   "back": "`-ReadOnlyReplica` bei `Install-ADDSDomainController`. Ein RODC hält eine schreibgeschützte Kopie – typisch für Zweigstellen ohne sicheren Serverraum.",
+   "id": "k011"
+  },
+  {
+   "domain": "d1",
+   "front": "Wie prüfst du nach der Heraufstufung, ob alles läuft?",
+   "back": "`Get-ADDomainController -Filter *` listet alle DCs, `dcdiag` prüft die Gesundheit, `repadmin /replsummary` die Replikation.",
+   "id": "k012"
+  },
+  {
+   "domain": "d1",
+   "front": "Ist ein neuer Domain Controller standardmässig globaler Katalog?",
+   "back": "**Ja.** `Install-ADDSDomainController` setzt den globalen Katalog standardmässig. Mit `-NoGlobalCatalog` schaltest du ihn ab.",
+   "id": "k013"
+  },
+  {
+   "domain": "d1",
+   "front": "Welche Parameter steuern die Ablage der AD-Datenbank?",
+   "back": "`-DatabasePath`, `-LogPath` und `-SysvolPath` bei `Install-ADDSDomainController`. Standard ist jeweils unter `C:\\Windows\\NTDS` bzw. `C:\\Windows\\SYSVOL`.",
+   "id": "k014"
+  },
+  {
+   "domain": "d2",
+   "front": "Was begrenzt die mögliche Funktionsebene einer Domäne?",
+   "back": "Die **älteste Windows-Server-Version unter den Domain Controllern**. Erst wenn alle alten DCs weg sind, lässt sich heraufstufen.",
+   "id": "k015"
+  },
+  {
+   "domain": "d2",
+   "front": "In welcher Reihenfolge stufst du Funktionsebenen herauf?",
+   "back": "**Zuerst die Domäne**, dann die Gesamtstruktur. Die Gesamtstruktur-Ebene kann nie höher sein als die niedrigste Domänen-Ebene darin.",
+   "id": "k016"
+  },
+  {
+   "domain": "d2",
+   "front": "Welche Cmdlets setzen die Funktionsebenen?",
+   "back": "`Set-ADDomainMode -Identity contoso.com -DomainMode Windows2016Domain`\n`Set-ADForestMode -Identity contoso.com -ForestMode Windows2016Forest`\nAnzeigen mit `Get-ADDomain | Select DomainMode`.",
+   "id": "k017"
+  },
+  {
+   "domain": "d2",
+   "front": "Ab welcher Funktionsebene gibt es den AD-Papierkorb?",
+   "back": "**Windows Server 2008 R2**. Ab **2012** kommen gMSA und Dynamic Access Control dazu, ab **2016** Privileged Access Management.",
+   "id": "k018"
+  },
+  {
+   "domain": "d2",
+   "front": "Was bilden Standorte (Sites) ab – und was nicht?",
+   "back": "Standorte bilden die **physische** Struktur ab: Topologie und Replikation. Die **logische** Verwaltung bilden **OUs** ab. Verwechsle die beiden nicht.",
+   "id": "k019"
+  },
+  {
+   "domain": "d2",
+   "front": "Wie legst du einen Standort an?",
+   "back": "`New-ADReplicationSite -Name \"Zuerich\"`\nGrafisch in `dssite.msc`: Rechtsklick auf *Sites* → Neuer Standort, dann Standortverknüpfung wählen.",
+   "id": "k020"
+  },
+  {
+   "domain": "d2",
+   "front": "Wie ordnest du einem Standort ein Subnetz zu?",
+   "back": "`New-ADReplicationSubnet -Name \"10.10.20.0/24\" -Site \"Zuerich\"`\nOhne Subnetz findet ein Client seinen Standort nicht und meldet sich irgendwo an.",
+   "id": "k021"
+  },
+  {
+   "domain": "d2",
+   "front": "Warum ist das Subnetz so wichtig?",
+   "back": "Der Client sucht anhand **seiner IP** das passende Subnetz, findet darüber seinen Standort und spricht bevorzugt einen **lokalen** Domain Controller an. Fehlt es, geht die Anmeldung über die WAN-Strecke.",
+   "id": "k022"
+  },
+  {
+   "domain": "d2",
+   "front": "Wie verschiebst du einen Domain Controller in einen anderen Standort?",
+   "back": "`Move-ADDirectoryServer -Identity \"DC02\" -Site \"Zuerich\"`\nGrafisch in `dssite.msc`: Serverknoten → Rechtsklick → Verschieben.",
+   "id": "k023"
+  },
+  {
+   "domain": "d2",
+   "front": "Was steuert eine Standortverknüpfung (Site Link)?",
+   "back": "**Kosten** (niedriger = bevorzugt), **Replikationsintervall** (Standard 180 Minuten, Minimum 15) und einen **Zeitplan**. Standardverknüpfung: `DEFAULTIPSITELINK`.",
+   "id": "k024"
+  },
+  {
+   "domain": "d2",
+   "front": "Wie repliziert AD innerhalb und zwischen Standorten?",
+   "back": "**Innerhalb**: fast sofort, unkomprimiert, Änderungsbenachrichtigung.\n**Zwischen**: nach Zeitplan, komprimiert, über Standortverknüpfungen.",
+   "id": "k025"
+  },
+  {
+   "domain": "d2",
+   "front": "Was machen KCC und ISTG?",
+   "back": "Der **KCC** berechnet die Replikationstopologie innerhalb eines Standorts, der **ISTG** (Inter-Site Topology Generator) die Verbindungen zwischen Standorten.",
+   "id": "k026"
+  },
+  {
+   "domain": "d2",
+   "front": "Lässt sich eine Funktionsebene wieder senken?",
+   "back": "Ab Windows Server 2008 R2 ist das in Grenzen möglich, aber nicht für jede Kombination und nicht, wenn bereits Funktionen genutzt werden. Plane nicht damit.",
+   "id": "k027"
+  },
+  {
+   "domain": "d2",
+   "front": "Welches Snap-In verwaltet Standorte?",
+   "back": "**Active Directory-Standorte und -Dienste**, Aufruf mit `dssite.msc`. Dort liegen *Sites*, *Subnets* und *Inter-Site Transports*.",
+   "id": "k028"
+  },
+  {
+   "domain": "d3",
+   "front": "Welcher Parameter wird beim Anlegen eines Benutzers am häufigsten vergessen?",
+   "back": "`-Enabled $true`. Ohne ihn legt `New-ADUser` das Konto **deaktiviert** an.",
+   "id": "k029"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie legst du ein Benutzerkonto mit Kennwort an?",
+   "back": "```\nNew-ADUser -Name \"Anna Meier\" -SamAccountName ameier `\n -UserPrincipalName ameier@contoso.com -Path \"OU=IT,DC=contoso,DC=com\" `\n -AccountPassword (ConvertTo-SecureString \"Pa55w.rd!\" -AsPlainText -Force) `\n -Enabled $true -ChangePasswordAtLogon $true\n```",
+   "id": "k030"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie legst du viele Benutzer aus einer CSV an?",
+   "back": "`Import-Csv .\\benutzer.csv | ForEach-Object { New-ADUser ... }` – die Spaltennamen der CSV werden über `$_.Spalte` angesprochen.",
+   "id": "k031"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie findest du deaktivierte oder lange inaktive Konten?",
+   "back": "`Search-ADAccount -AccountDisabled -UsersOnly`\n`Search-ADAccount -AccountInactive -TimeSpan 90.00:00:00 -UsersOnly`",
+   "id": "k032"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist der Unterschied zwischen deaktiviert und gesperrt?",
+   "back": "**Deaktiviert** hat ein Administrator gemacht – nur er hebt es auf (`Enable-ADAccount`).\n**Gesperrt** entsteht durch zu viele Fehlversuche und löst sich nach der Sperrdauer von selbst (`Unlock-ADAccount`).",
+   "id": "k033"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie setzt du ein Kennwort zurück und erzwingst eine Änderung?",
+   "back": "```\nSet-ADAccountPassword -Identity ameier -Reset -NewPassword (ConvertTo-SecureString \"Neu.Pa55w!\" -AsPlainText -Force)\nSet-ADUser -Identity ameier -ChangePasswordAtLogon $true\n```",
+   "id": "k034"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche drei Gruppen-Gültigkeitsbereiche gibt es?",
+   "back": "**Domänenlokal**: Mitglieder aus der ganzen Gesamtstruktur, Berechtigungen nur in der eigenen Domäne.\n**Global**: Mitglieder nur aus der eigenen Domäne, Berechtigungen überall.\n**Universal**: beides gesamtstrukturweit.",
+   "id": "k035"
+  },
+  {
+   "domain": "d3",
+   "front": "Was bedeutet AGDLP?",
+   "back": "**A**ccounts in **G**lobal groups, diese in **D**omain **L**ocal groups, auf die **P**ermissions vergeben werden. Microsofts empfohlenes Berechtigungsmodell.",
+   "id": "k036"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche zwei Gruppentypen gibt es?",
+   "back": "**Sicherheit** – kann Berechtigungen erhalten.\n**Verteilung** – nur für E-Mail-Verteilerlisten, keine Berechtigungen.",
+   "id": "k037"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie legst du eine Gruppe an und fügst Mitglieder hinzu?",
+   "back": "```\nNew-ADGroup -Name \"IT-Admins\" -GroupScope Global -GroupCategory Security -Path \"OU=IT,DC=contoso,DC=com\"\nAdd-ADGroupMember -Identity \"IT-Admins\" -Members ameier, bmueller\n```",
+   "id": "k038"
+  },
+  {
+   "domain": "d3",
+   "front": "Was bewirkt die Gruppe „Geschützte Benutzer“?",
+   "back": "Härtet ihre Mitglieder: kein NTLM, keine Delegierung, keine zwischengespeicherten Anmeldeinformationen, nur Kerberos mit AES, Ticketlaufzeit auf vier Stunden begrenzt.",
+   "id": "k039"
+  },
+  {
+   "domain": "d3",
+   "front": "Welche Gefahr birgt die Gruppe „Geschützte Benutzer“?",
+   "back": "Anwendungen, die noch **NTLM** oder Delegierung brauchen, funktionieren für diese Konten nicht mehr. Vor dem Einsatz prüfen.",
+   "id": "k040"
+  },
+  {
+   "domain": "d3",
+   "front": "Nenne vier privilegierte AD-Gruppen.",
+   "back": "**Domänen-Admins**, **Organisations-Admins**, **Schema-Admins**, **Administratoren**, dazu *Konten-Operatoren* und *Sicherungs-Operatoren*.",
+   "id": "k041"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie legst du eine Organisationseinheit an?",
+   "back": "`New-ADOrganizationalUnit -Name \"IT\" -Path \"DC=contoso,DC=com\" -ProtectedFromAccidentalDeletion $true`",
+   "id": "k042"
+  },
+  {
+   "domain": "d3",
+   "front": "Warum lässt sich eine OU oft nicht löschen?",
+   "back": "Weil der **Schutz vor versehentlichem Löschen** standardmässig aktiv ist. Erst `Set-ADOrganizationalUnit -ProtectedFromAccidentalDeletion $false`, dann löschen.",
+   "id": "k043"
+  },
+  {
+   "domain": "d3",
+   "front": "Wozu dienen OUs – und wozu nicht?",
+   "back": "OUs sind der Ansatzpunkt für **GPO-Verknüpfungen** und **Delegierung**. Für **Berechtigungen** nimmst du Gruppen, nicht OUs.",
+   "id": "k044"
+  },
+  {
+   "domain": "d3",
+   "front": "Was ist ein gMSA und was bringt es?",
+   "back": "Ein **gruppenverwaltetes Dienstkonto**: Das Kennwort rotiert automatisch alle 30 Tage, und mehrere Server dürfen es nutzen. Kein manuelles Kennwort mehr in Diensten.",
+   "id": "k045"
+  },
+  {
+   "domain": "d3",
+   "front": "Welcher Schritt geht jedem gMSA voraus?",
+   "back": "Einmalig im Gesamtstruktur-Stamm:\n`Add-KdsRootKey -EffectiveTime ((Get-Date).AddHours(-10))`\nDie Rückdatierung spart die sonst nötige Wartezeit von zehn Stunden.",
+   "id": "k046"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie erstellst und installierst du ein gMSA?",
+   "back": "```\nNew-ADServiceAccount -Name gmsaSQL -DNSHostName gmsaSQL.contoso.com `\n -PrincipalsAllowedToRetrieveManagedPassword \"SQL-Server\"\nInstall-ADServiceAccount -Identity gmsaSQL   # auf dem Zielserver\nTest-ADServiceAccount -Identity gmsaSQL\n```",
+   "id": "k047"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie trägst du ein gMSA in einem Dienst ein?",
+   "back": "Kontoname mit **angehängtem Dollarzeichen**, zum Beispiel `contoso\\gmsaSQL$`, und das **Kennwortfeld bleibt leer**.",
+   "id": "k048"
+  },
+  {
+   "domain": "d3",
+   "front": "Ab welcher Funktionsebene gibt es den AD-Papierkorb und was gilt danach?",
+   "back": "Ab **Windows Server 2008 R2**. Einmal aktiviert lässt er sich **nicht mehr abschalten**.",
+   "id": "k049"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie aktivierst du den AD-Papierkorb?",
+   "back": "`Enable-ADOptionalFeature -Identity \"Recycle Bin Feature\" -Scope ForestOrConfigurationSet -Target \"contoso.com\"`",
+   "id": "k050"
+  },
+  {
+   "domain": "d3",
+   "front": "Wie stellst du ein gelöschtes Objekt wieder her?",
+   "back": "```\nGet-ADObject -Filter 'Name -like \"*Meier*\"' -IncludeDeletedObjects | Restore-ADObject\n```\nGrafisch im **AD-Verwaltungscenter** unter *Deleted Objects*.",
+   "id": "k051"
+  },
+  {
+   "domain": "d3",
+   "front": "Warum ist der Papierkorb besser als ein neues Konto anzulegen?",
+   "back": "Das wiederhergestellte Objekt behält seine **SID** und damit alle Berechtigungen und Gruppenmitgliedschaften. Ein neues Konto hätte eine neue SID.",
+   "id": "k052"
+  },
+  {
+   "domain": "d4",
+   "front": "Wie legst du eine GPO an und verknüpfst sie?",
+   "back": "```\nNew-GPO -Name \"Bildschirmsperre\"\nNew-GPLink -Name \"Bildschirmsperre\" -Target \"OU=IT,DC=contoso,DC=com\"\n```\nGrafisch: Rechtsklick auf die OU → *Gruppenrichtlinienobjekt hier erstellen und verknüpfen*.",
+   "id": "k053"
+  },
+  {
+   "domain": "d4",
+   "front": "Womit lässt sich eine GPO verknüpfen?",
+   "back": "Mit einem **Standort**, einer **Domäne** oder einer **OU** – niemals direkt mit einer Gruppe. Gruppen steuern nur die **Sicherheitsfilterung**.",
+   "id": "k054"
+  },
+  {
+   "domain": "d4",
+   "front": "Wie lautet die Verarbeitungsreihenfolge von Gruppenrichtlinien?",
+   "back": "**LSDOU**: Lokal → Standort → Domäne → OU, bei verschachtelten OUs von oben nach unten. **Die zuletzt angewendete Einstellung gewinnt.**",
+   "id": "k055"
+  },
+  {
+   "domain": "d4",
+   "front": "Welche Verknüpfung gewinnt innerhalb einer OU?",
+   "back": "Die mit **Link Order 1** – sie wird **zuletzt** angewendet und überschreibt damit die anderen. Kontraintuitiv, aber so ist es.",
+   "id": "k056"
+  },
+  {
+   "domain": "d4",
+   "front": "Was macht „Erzwungen“ (Enforced)?",
+   "back": "Die GPO setzt sich gegen alle tieferen Ebenen durch und lässt sich **nicht blockieren**. Gesetzt auf der **Verknüpfung**, nicht auf der GPO.",
+   "id": "k057"
+  },
+  {
+   "domain": "d4",
+   "front": "Was macht „Vererbung deaktivieren“?",
+   "back": "Blockiert alle GPOs von höheren Ebenen – **ausser** solchen, die auf *Erzwungen* stehen. Gesetzt auf der **OU**.",
+   "id": "k058"
+  },
+  {
+   "domain": "d4",
+   "front": "Enforced trifft auf Block Inheritance – wer gewinnt?",
+   "back": "**Enforced** gewinnt immer.",
+   "id": "k059"
+  },
+  {
+   "domain": "d4",
+   "front": "Welche drei Wege steuern die Reichweite einer GPO?",
+   "back": "**Sicherheitsfilterung** (Benutzer/Gruppen/Computer brauchen *Lesen* und *Gruppenrichtlinie übernehmen*), **WMI-Filter** (Abfrage, z. B. nur Laptops), **Verknüpfung oder eine Hälfte der GPO deaktivieren**.",
+   "id": "k060"
+  },
+  {
+   "domain": "d4",
+   "front": "Welche Berechtigungen braucht ein Objekt, damit eine GPO auf es wirkt?",
+   "back": "**Lesen** und **Gruppenrichtlinie übernehmen** (Apply Group Policy). Standardmässig hat *Authentifizierte Benutzer* beides.",
+   "id": "k061"
+  },
+  {
+   "domain": "d4",
+   "front": "Wann greift die Computer- und wann die Benutzerkonfiguration?",
+   "back": "**Computerkonfiguration** beim Systemstart, **Benutzerkonfiguration** bei der Anmeldung – jeweils für das Objekt, das in der verknüpften OU liegt.",
+   "id": "k062"
+  },
+  {
+   "domain": "d4",
+   "front": "Wofür gibt es die Loopbackverarbeitung?",
+   "back": "Damit auf bestimmten Computern (Terminalserver, Kiosk) die **Benutzereinstellungen der Computer-OU** greifen. Modus **Zusammenführen** oder **Ersetzen**.",
+   "id": "k063"
+  },
+  {
+   "domain": "d4",
+   "front": "Wie oft holen Clients Gruppenrichtlinien ab?",
+   "back": "Alle **90 Minuten** plus bis zu 30 Minuten zufällige Verschiebung. **Domain Controller** alle **5 Minuten**. Sofort mit `gpupdate /force`.",
+   "id": "k064"
+  },
+  {
+   "domain": "d4",
+   "front": "Wie prüfst du, welche GPOs tatsächlich gewirkt haben?",
+   "back": "`gpresult /r` oder `gpresult /h bericht.html` auf dem Client, bzw. **Gruppenrichtlinienergebnisse** im GPMC. Für ein Planspiel: **Gruppenrichtlinienmodellierung**.",
+   "id": "k065"
+  },
+  {
+   "domain": "d4",
+   "front": "Welche Cmdlets steuern Vererbung und Erzwingen?",
+   "back": "```\nSet-GPInheritance -Target \"OU=IT,DC=contoso,DC=com\" -IsBlocked Yes\nSet-GPLink -Name \"GPO\" -Target \"OU=IT,...\" -Enforced Yes\n```",
+   "id": "k066"
+  },
+  {
+   "domain": "d4",
+   "front": "Wie setzt du eine Sicherheitsfilterung per PowerShell?",
+   "back": "`Set-GPPermission -Name \"GPO\" -TargetName \"IT-Admins\" -TargetType Group -PermissionLevel GpoApply`",
+   "id": "k067"
+  },
+  {
+   "domain": "d5",
+   "front": "Wie delegierst du Rechte an einer OU?",
+   "back": "Rechtsklick auf die OU → **Objektverwaltung zuweisen** → Assistent. Immer an eine **Gruppe**, nie an einzelne Personen, und so tief wie möglich in der Struktur.",
+   "id": "k068"
+  },
+  {
+   "domain": "d5",
+   "front": "Welche typischen Aufgaben bietet der Delegierungsassistent?",
+   "back": "Benutzerkonten erstellen, löschen und verwalten · **Kennwörter zurücksetzen und Änderung erzwingen** · Gruppenmitgliedschaft ändern · Benutzerinformationen lesen.",
+   "id": "k069"
+  },
+  {
+   "domain": "d5",
+   "front": "Wie delegierst du auf der Kommandozeile?",
+   "back": "`dsacls \"OU=IT,DC=contoso,DC=com\" /I:S /G \"CONTOSO\\Helpdesk:CA;Reset Password;user\"`\n`/I:S` vererbt auf nachfolgende Objekte des angegebenen Typs.",
+   "id": "k070"
+  },
+  {
+   "domain": "d5",
+   "front": "Wo muss die Kennwortrichtlinie der Domäne verknüpft sein?",
+   "back": "Auf **Domänenebene** – in der Regel in der *Default Domain Policy*. Auf einer OU verknüpft hat sie für Domänenkonten **keine Wirkung**.",
+   "id": "k071"
+  },
+  {
+   "domain": "d5",
+   "front": "Wo in der GPO steht die Kennwortrichtlinie?",
+   "back": "*Computerkonfiguration → Richtlinien → Windows-Einstellungen → Sicherheitseinstellungen → **Kontorichtlinien** → Kennwortrichtlinie*",
+   "id": "k072"
+  },
+  {
+   "domain": "d5",
+   "front": "Welche Werte umfasst die Kennwortrichtlinie?",
+   "back": "Kennwortchronik erzwingen · maximales und minimales Kennwortalter · minimale Kennwortlänge · Komplexitätsanforderungen · umkehrbare Verschlüsselung (immer **deaktiviert** lassen).",
+   "id": "k073"
+  },
+  {
+   "domain": "d5",
+   "front": "Was regelt die Kontosperrungsrichtlinie?",
+   "back": "**Schwellenwert** (Fehlversuche), **Sperrdauer** und **Zurücksetzungszähler**. Bei Schwellenwert 0 wird nie gesperrt.",
+   "id": "k074"
+  },
+  {
+   "domain": "d5",
+   "front": "Wie setzt du die Domänen-Kennwortrichtlinie per PowerShell?",
+   "back": "```\nSet-ADDefaultDomainPasswordPolicy -Identity contoso.com -MinPasswordLength 14 `\n -PasswordHistoryCount 24 -LockoutThreshold 5 -LockoutDuration 00:15:00\n```",
+   "id": "k075"
+  },
+  {
+   "domain": "d5",
+   "front": "Worauf lässt sich eine fein abgestimmte Kennwortrichtlinie anwenden?",
+   "back": "Auf **Benutzer und Gruppen** – **niemals auf OUs**. Das ist der entscheidende Unterschied zur Domänenrichtlinie.",
+   "id": "k076"
+  },
+  {
+   "domain": "d5",
+   "front": "Welche Funktionsebene braucht eine FGPP?",
+   "back": "**Windows Server 2008** oder höher auf Domänenebene.",
+   "id": "k077"
+  },
+  {
+   "domain": "d5",
+   "front": "Wie erstellst du eine FGPP und weist sie zu?",
+   "back": "```\nNew-ADFineGrainedPasswordPolicy -Name \"Admin-PSO\" -Precedence 10 -MinPasswordLength 20 -ComplexityEnabled $true\nAdd-ADFineGrainedPasswordPolicySubject -Identity \"Admin-PSO\" -Subjects \"IT-Admins\"\n```",
+   "id": "k078"
+  },
+  {
+   "domain": "d5",
+   "front": "Welche FGPP gewinnt, wenn mehrere zutreffen?",
+   "back": "Die mit der **niedrigsten Precedence**. Eine direkt am **Benutzer** verknüpfte PSO schlägt alle, die über Gruppen gelten. Prüfen mit `Get-ADUserResultantPasswordPolicy`.",
+   "id": "k079"
+  },
+  {
+   "domain": "d5",
+   "front": "Was ist der Unterschied zwischen einfacher und erweiterter Überwachungsrichtlinie?",
+   "back": "**Einfach**: neun Kategorien unter *Lokale Richtlinien → Überwachungsrichtlinie*.\n**Erweitert**: rund 60 Unterkategorien unter *Erweiterte Überwachungsrichtlinienkonfiguration* – viel genauer.",
+   "id": "k080"
+  },
+  {
+   "domain": "d5",
+   "front": "Welche Einstellung verhindert, dass die einfache Überwachungsrichtlinie die erweiterte überschreibt?",
+   "back": "**Überwachung: Unterkategorieeinstellungen der Überwachungsrichtlinie erzwingen** unter *Sicherheitsoptionen*. Ohne sie gewinnt die einfache Richtlinie.",
+   "id": "k081"
+  },
+  {
+   "domain": "d5",
+   "front": "Welche zwei Schritte braucht die Überwachung von AD-Objektzugriffen?",
+   "back": "1. Richtlinie **Verzeichnisdienstzugriff überwachen** aktivieren.\n2. Am Objekt eine **SACL** setzen: Eigenschaften → Sicherheit → Erweitert → **Überwachung**.\nOhne beides erscheint kein Ereignis.",
+   "id": "k082"
+  },
+  {
+   "domain": "d5",
+   "front": "Nenne wichtige Ereignis-IDs im Sicherheitsprotokoll.",
+   "back": "**4720** Benutzer erstellt · **4726** gelöscht · **4728/4729** Mitglied zu globaler Gruppe hinzugefügt/entfernt · **4740** Konto gesperrt · **5136** Verzeichnisobjekt geändert · **4624/4625** Anmeldung erfolgreich/fehlgeschlagen",
+   "id": "k083"
+  },
+  {
+   "domain": "d5",
+   "front": "Wie prüfst und setzt du Überwachung auf der Kommandozeile?",
+   "back": "```\nauditpol /get /category:*\nauditpol /set /subcategory:\"Directory Service Changes\" /success:enable /failure:enable\n```",
+   "id": "k084"
+  },
+  {
+   "domain": "d5",
+   "front": "Was ist bei „Zuweisen von Benutzerrechten“ besonders zu beachten?",
+   "back": "Die Einstellungen sind **ersetzend, nicht ergänzend**: Wer eine Liste setzt, muss alle nötigen Konten aufführen. Sie gehören in die **Computerkonfiguration**, verknüpft mit der OU der **Computer**.",
+   "id": "k085"
+  }
+ ],
+ "fragen": [
+  {
+   "domain": "d1",
+   "frage": "Du sollst einen zweiten Domain Controller in einer bestehenden Domäne bereitstellen. Welche zwei Schritte sind nötig?",
+   "optionen": [
+    "Install-WindowsFeature AD-Domain-Services",
+    "Install-ADDSDomainController",
+    "Install-ADDSForest",
+    "New-ADReplicationSite"
+   ],
+   "richtig": [
+    0,
+    1
+   ],
+   "erklaerung": "Erst die **Rolle installieren**, dann **heraufstufen**. `Install-ADDSForest` wäre für eine neue Gesamtstruktur, ein Standort hat mit der Bereitstellung nichts zu tun.",
+   "id": "f001"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche FSMO-Rollen gibt es genau einmal pro Gesamtstruktur?",
+   "optionen": [
+    "Schema Master",
+    "Domain Naming Master",
+    "PDC Emulator",
+    "RID Master"
+   ],
+   "richtig": [
+    0,
+    1
+   ],
+   "erklaerung": "**Schema Master** und **Domain Naming Master** sind gesamtstrukturweit. PDC Emulator, RID Master und Infrastructure Master gibt es je **Domäne** einmal.",
+   "id": "f002"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welche Rolle vergibt die RID-Pools, ohne die keine neuen Konten mehr angelegt werden können?",
+   "optionen": [
+    "PDC Emulator",
+    "RID Master",
+    "Infrastructure Master",
+    "Schema Master"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Der **RID Master** verteilt RID-Pools an die Domain Controller. Läuft der Pool eines DC leer und der RID Master ist weg, entstehen dort keine neuen Sicherheitsprinzipale mehr.",
+   "id": "f003"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welcher Befehl überträgt die PDC-Emulator-Rolle geordnet auf DC02?",
+   "optionen": [
+    "Move-ADDirectoryServerOperationMasterRole -Identity DC02 -OperationMasterRole PDCEmulator",
+    "Move-ADDirectoryServer -Identity DC02 -Site PDCEmulator",
+    "Set-ADDomain -PDCEmulator DC02",
+    "netdom transfer DC02 /role:PDC"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "`Move-ADDirectoryServerOperationMasterRole` überträgt FSMO-Rollen. `Move-ADDirectoryServer` verschiebt einen DC zwischen **Standorten** – ein beliebter Verwechslungspunkt.",
+   "id": "f004"
+  },
+  {
+   "domain": "d1",
+   "frage": "Wann ist das Beschlagnahmen (seize) einer FSMO-Rolle zulässig?",
+   "optionen": [
+    "Wenn der Rolleninhaber kurz nicht erreichbar ist",
+    "Wenn der Rolleninhaber dauerhaft ausgefallen ist und nie wieder ans Netz geht",
+    "Immer, es ist schneller",
+    "Nur für die Schema-Rolle"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Seize ist der Notfallweg. Kommt der alte Rolleninhaber danach zurück ans Netz, entstehen zwei Inhaber derselben Rolle – mit schwer behebbaren Folgen.",
+   "id": "f005"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welches Snap-In musst du erst mit regsvr32 registrieren, um die Schema-Rolle grafisch zu übertragen?",
+   "optionen": [
+    "dssite.msc",
+    "dsa.msc",
+    "schmmgmt.dll für Active Directory-Schema",
+    "gpmc.msc"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "Die MMC **Active Directory-Schema** ist nicht vorregistriert: `regsvr32 schmmgmt.dll`, dann als Snap-In hinzufügen.",
+   "id": "f006"
+  },
+  {
+   "domain": "d1",
+   "frage": "Welcher Parameter erstellt einen schreibgeschützten Domain Controller?",
+   "optionen": [
+    "-NoGlobalCatalog",
+    "-ReadOnlyReplica",
+    "-InstallDns",
+    "-SiteName"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "`-ReadOnlyReplica` erzeugt einen **RODC** – typisch für Zweigstellen ohne sicheren Serverraum.",
+   "id": "f007"
+  },
+  {
+   "domain": "d1",
+   "frage": "Womit prüfst du nach der Heraufstufung die Gesundheit des Domain Controllers?",
+   "optionen": [
+    "gpresult /r",
+    "dcdiag",
+    "gpupdate /force",
+    "auditpol /get"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**dcdiag** prüft Domain Controller, `repadmin /replsummary` ergänzt die Replikation. Die anderen Befehle betreffen Gruppenrichtlinien und Überwachung.",
+   "id": "f008"
+  },
+  {
+   "domain": "d2",
+   "frage": "Was begrenzt die Funktionsebene, die du für eine Domäne setzen kannst?",
+   "optionen": [
+    "Die Anzahl der Benutzer",
+    "Die älteste Windows-Server-Version unter den Domain Controllern",
+    "Die Gesamtstruktur-Ebene",
+    "Die Anzahl der Standorte"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Alle Domain Controller müssen die gewünschte Ebene unterstützen. Ein alter DC blockiert das Heraufstufen, bis er entfernt ist.",
+   "id": "f009"
+  },
+  {
+   "domain": "d2",
+   "frage": "In welcher Reihenfolge stufst du die Funktionsebenen herauf?",
+   "optionen": [
+    "Erst Gesamtstruktur, dann Domäne",
+    "Erst Domäne, dann Gesamtstruktur",
+    "Beliebig",
+    "Beide gleichzeitig"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Die Gesamtstruktur-Ebene kann nie höher sein als die niedrigste Domänen-Ebene darin – also **zuerst die Domäne**.",
+   "id": "f010"
+  },
+  {
+   "domain": "d2",
+   "frage": "Benutzer in Zürich melden sich an Domain Controllern in Bern an, obwohl ein lokaler DC existiert. Was fehlt am wahrscheinlichsten?",
+   "optionen": [
+    "Eine Standortverknüpfung",
+    "Ein Subnetz, das dem Standort Zürich zugeordnet ist",
+    "Ein globaler Katalog",
+    "Eine Funktionsebene"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Der Client findet seinen Standort über das **Subnetz** zu seiner IP-Adresse. Fehlt die Zuordnung, wählt er einen beliebigen Domain Controller – oft über die WAN-Strecke.",
+   "id": "f011"
+  },
+  {
+   "domain": "d2",
+   "frage": "Welcher Befehl ordnet ein Subnetz einem Standort zu?",
+   "optionen": [
+    "New-ADReplicationSite -Name Zuerich",
+    "New-ADReplicationSubnet -Name \"10.10.20.0/24\" -Site Zuerich",
+    "Move-ADDirectoryServer -Identity DC02 -Site Zuerich",
+    "New-ADReplicationSiteLink -Name Zuerich-Bern"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "`New-ADReplicationSubnet` erstellt das Subnetz und bindet es mit `-Site` an den Standort.",
+   "id": "f012"
+  },
+  {
+   "domain": "d2",
+   "frage": "Womit verschiebst du einen Domain Controller in einen anderen Standort?",
+   "optionen": [
+    "Move-ADDirectoryServer",
+    "Move-ADObject",
+    "Move-ADDirectoryServerOperationMasterRole",
+    "Set-ADReplicationSite"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "`Move-ADDirectoryServer -Identity DC02 -Site Zuerich`. `Move-ADDirectoryServerOperationMasterRole` überträgt dagegen FSMO-Rollen.",
+   "id": "f013"
+  },
+  {
+   "domain": "d2",
+   "frage": "Was steuert eine Standortverknüpfung?",
+   "optionen": [
+    "Kosten",
+    "Replikationsintervall",
+    "Zeitplan",
+    "Funktionsebene"
+   ],
+   "richtig": [
+    0,
+    1,
+    2
+   ],
+   "erklaerung": "Kosten (niedriger = bevorzugter Pfad), Intervall (Standard 180 Minuten, Minimum 15) und Zeitplan. Mit der Funktionsebene hat sie nichts zu tun.",
+   "id": "f014"
+  },
+  {
+   "domain": "d2",
+   "frage": "Worin unterscheidet sich die Replikation innerhalb und zwischen Standorten?",
+   "optionen": [
+    "Innerhalb komprimiert, zwischen unkomprimiert",
+    "Innerhalb nahezu sofort und unkomprimiert, zwischen nach Zeitplan und komprimiert",
+    "Es gibt keinen Unterschied",
+    "Zwischen Standorten wird gar nicht repliziert"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Innerhalb eines Standorts wird mit Änderungsbenachrichtigung fast sofort und unkomprimiert repliziert; zwischen Standorten nach Zeitplan und komprimiert, um die WAN-Leitung zu schonen.",
+   "id": "f015"
+  },
+  {
+   "domain": "d2",
+   "frage": "Was bilden Standorte ab, was Organisationseinheiten?",
+   "optionen": [
+    "Standorte die logische, OUs die physische Struktur",
+    "Standorte die physische Struktur und Replikation, OUs die logische Verwaltung",
+    "Beide dasselbe",
+    "Standorte sind für Gruppenrichtlinien, OUs für Replikation"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Standorte bilden Netzwerktopologie und Replikation ab, OUs die Verwaltungsstruktur mit GPO-Verknüpfungen und Delegierung. GPOs lassen sich allerdings auch mit Standorten verknüpfen.",
+   "id": "f016"
+  },
+  {
+   "domain": "d3",
+   "frage": "Ein mit New-ADUser angelegtes Konto kann sich nicht anmelden. Was wurde vergessen?",
+   "optionen": [
+    "-Path",
+    "-Enabled $true",
+    "-UserPrincipalName",
+    "-ChangePasswordAtLogon"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Ohne `-Enabled $true` legt `New-ADUser` das Konto **deaktiviert** an. Ein fehlender `-Path` legt es nur in den Standardcontainer *Users*.",
+   "id": "f017"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welches Cmdlet findet Konten, die seit 90 Tagen nicht mehr benutzt wurden?",
+   "optionen": [
+    "Get-ADUser -Filter *",
+    "Search-ADAccount -AccountInactive -TimeSpan 90.00:00:00 -UsersOnly",
+    "Get-ADObject -IncludeDeletedObjects",
+    "Unlock-ADAccount"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "`Search-ADAccount` ist das Werkzeug für Kontozustände: `-AccountInactive`, `-AccountDisabled`, `-LockedOut`, `-PasswordExpired`.",
+   "id": "f018"
+  },
+  {
+   "domain": "d3",
+   "frage": "Worin unterscheiden sich ein deaktiviertes und ein gesperrtes Konto?",
+   "optionen": [
+    "Es ist dasselbe",
+    "Deaktiviert setzt ein Administrator, gesperrt entsteht durch Fehlversuche und löst sich nach der Sperrdauer",
+    "Gesperrt setzt ein Administrator",
+    "Deaktivierte Konten entsperren sich von selbst"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "`Enable-ADAccount` hebt eine Deaktivierung auf, `Unlock-ADAccount` eine Sperre. Die Sperre endet ausserdem nach der konfigurierten Sperrdauer von selbst.",
+   "id": "f019"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welche Gruppe hat Mitglieder aus der ganzen Gesamtstruktur, vergibt Berechtigungen aber nur in der eigenen Domäne?",
+   "optionen": [
+    "Global",
+    "Domänenlokal",
+    "Universal",
+    "Verteilung"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Domänenlokal** nimmt Mitglieder von überall auf, wirkt aber nur in der eigenen Domäne. **Global** ist umgekehrt, **Universal** beides gesamtstrukturweit.",
+   "id": "f020"
+  },
+  {
+   "domain": "d3",
+   "frage": "Was beschreibt AGDLP?",
+   "optionen": [
+    "Accounts in Global groups, diese in Domain Local groups, darauf Permissions",
+    "Alle Gruppen domänenlokal anlegen",
+    "Benutzer direkt berechtigen",
+    "Gruppen in OUs verschachteln"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "AGDLP ist Microsofts Empfehlung für saubere, nachvollziehbare Berechtigungen – besonders in Umgebungen mit mehreren Domänen.",
+   "id": "f021"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welcher Gruppentyp kann keine Berechtigungen erhalten?",
+   "optionen": [
+    "Sicherheitsgruppe",
+    "Verteilergruppe",
+    "Globale Gruppe",
+    "Universelle Gruppe"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Verteilergruppen** dienen nur E-Mail-Verteilern. Berechtigungen vergeben nur **Sicherheitsgruppen**, unabhängig vom Gültigkeitsbereich.",
+   "id": "f022"
+  },
+  {
+   "domain": "d3",
+   "frage": "Was bewirkt die Aufnahme in die Gruppe Geschützte Benutzer?",
+   "optionen": [
+    "Mehr Rechte im Verzeichnis",
+    "Kein NTLM, keine Delegierung, keine zwischengespeicherten Anmeldeinformationen",
+    "Automatische Kennwortrotation",
+    "Schutz vor Löschen"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Die Gruppe **härtet** ihre Mitglieder. Anwendungen, die NTLM oder Delegierung brauchen, funktionieren für diese Konten nicht mehr – vorher prüfen.",
+   "id": "f023"
+  },
+  {
+   "domain": "d3",
+   "frage": "Eine OU lässt sich nicht löschen. Was ist die Ursache?",
+   "optionen": [
+    "Sie enthält Objekte",
+    "Der Schutz vor versehentlichem Löschen ist aktiv",
+    "Es fehlt die Berechtigung",
+    "OUs lassen sich nie löschen"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Der **Schutz vor versehentlichem Löschen** ist beim Anlegen standardmässig aktiv. Erst `Set-ADOrganizationalUnit -ProtectedFromAccidentalDeletion $false`, dann löschen.",
+   "id": "f024"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welcher Schritt muss einmalig vor dem ersten gMSA erfolgen?",
+   "optionen": [
+    "Enable-ADOptionalFeature",
+    "Add-KdsRootKey",
+    "Install-ADServiceAccount",
+    "Set-ADDomainMode"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Der **KDS-Stammschlüssel** ist Voraussetzung. Mit `-EffectiveTime ((Get-Date).AddHours(-10))` entfällt die sonst nötige Wartezeit von zehn Stunden.",
+   "id": "f025"
+  },
+  {
+   "domain": "d3",
+   "frage": "Wie trägst du ein gMSA als Dienstkonto ein?",
+   "optionen": [
+    "Kontoname mit Kennwort",
+    "Kontoname mit angehängtem Dollarzeichen, Kennwortfeld leer",
+    "Als lokales Systemkonto",
+    "Als Netzwerkdienst"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "`contoso\\gmsaSQL$` und ein **leeres** Kennwortfeld – das Kennwort holt sich der Server selbst und erneuert es alle 30 Tage.",
+   "id": "f026"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welches Cmdlet prüft auf dem Zielserver, ob das gMSA funktioniert?",
+   "optionen": [
+    "Get-ADServiceAccount",
+    "Test-ADServiceAccount",
+    "Install-ADServiceAccount",
+    "New-ADServiceAccount"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "`Test-ADServiceAccount` liefert True, wenn der Server das Kennwort abrufen und das Konto nutzen kann. `Install-ADServiceAccount` richtet es vorher ein.",
+   "id": "f027"
+  },
+  {
+   "domain": "d3",
+   "frage": "Was gilt für den AD-Papierkorb, wenn er einmal aktiviert ist?",
+   "optionen": [
+    "Er lässt sich jederzeit abschalten",
+    "Er lässt sich nicht mehr abschalten",
+    "Er gilt nur für Benutzer",
+    "Er muss pro OU aktiviert werden"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Die Aktivierung ist **endgültig** und gilt gesamtstrukturweit. Voraussetzung ist die Funktionsebene Windows Server 2008 R2.",
+   "id": "f028"
+  },
+  {
+   "domain": "d3",
+   "frage": "Warum ist das Wiederherstellen aus dem Papierkorb besser als ein neues Konto anzulegen?",
+   "optionen": [
+    "Es geht schneller",
+    "Das Objekt behält seine SID und damit alle Berechtigungen",
+    "Das Kennwort bleibt erhalten",
+    "Es benötigt keine Lizenz"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Die **SID** ist der Schlüssel zu allen Berechtigungen und Gruppenmitgliedschaften. Ein neu angelegtes Konto bekommt eine neue SID und verliert damit alles.",
+   "id": "f029"
+  },
+  {
+   "domain": "d3",
+   "frage": "Welches Cmdlet legt eine globale Sicherheitsgruppe an?",
+   "optionen": [
+    "New-ADGroup -GroupScope Global -GroupCategory Security",
+    "New-ADGroup -GroupScope Universal -GroupCategory Distribution",
+    "Add-ADGroupMember",
+    "New-ADOrganizationalUnit"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "`-GroupScope` bestimmt den Gültigkeitsbereich, `-GroupCategory` den Typ. `Add-ADGroupMember` fügt erst danach Mitglieder hinzu.",
+   "id": "f030"
+  },
+  {
+   "domain": "d4",
+   "frage": "Wie lautet die Verarbeitungsreihenfolge von Gruppenrichtlinien?",
+   "optionen": [
+    "Lokal → OU → Domäne → Standort",
+    "Lokal → Standort → Domäne → OU",
+    "Domäne → Standort → OU → Lokal",
+    "OU → Domäne → Standort → Lokal"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**LSDOU**: Lokal, Standort, Domäne, OU. Die zuletzt angewendete Einstellung gewinnt – also in der Regel die der untersten OU.",
+   "id": "f031"
+  },
+  {
+   "domain": "d4",
+   "frage": "Zwei GPOs sind mit derselben OU verknüpft. Welche gewinnt bei widersprüchlichen Einstellungen?",
+   "optionen": [
+    "Die mit Link Order 1",
+    "Die mit der höchsten Link-Order-Nummer",
+    "Die zuletzt erstellte",
+    "Beide werden ignoriert"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "**Link Order 1** wird **zuletzt** angewendet und überschreibt damit die anderen. Das wirkt umgekehrt, ist aber so definiert.",
+   "id": "f032"
+  },
+  {
+   "domain": "d4",
+   "frage": "Eine OU hat „Vererbung deaktivieren“ gesetzt, eine Domänen-GPO steht auf „Erzwungen“. Was passiert?",
+   "optionen": [
+    "Die Domänen-GPO greift trotzdem",
+    "Die Vererbungssperre gewinnt",
+    "Beide werden ignoriert",
+    "Es entsteht ein Konflikt"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "**Erzwungen schlägt Vererbungssperre.** So lassen sich unternehmensweite Vorgaben durchsetzen, ohne dass eine OU sie aushebeln kann.",
+   "id": "f033"
+  },
+  {
+   "domain": "d4",
+   "frage": "Welche zwei Berechtigungen braucht ein Objekt, damit eine GPO auf es wirkt?",
+   "optionen": [
+    "Lesen",
+    "Gruppenrichtlinie übernehmen",
+    "Vollzugriff",
+    "Schreiben"
+   ],
+   "richtig": [
+    0,
+    1
+   ],
+   "erklaerung": "**Lesen** und **Gruppenrichtlinie übernehmen** (Apply Group Policy). Genau diese beiden steuert die Sicherheitsfilterung.",
+   "id": "f034"
+  },
+  {
+   "domain": "d4",
+   "frage": "Eine GPO soll nur für Laptops gelten. Was setzt du ein?",
+   "optionen": [
+    "Sicherheitsfilterung auf eine Gruppe",
+    "WMI-Filter",
+    "Vererbung deaktivieren",
+    "Erzwungen"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Ein **WMI-Filter** entscheidet anhand von Systemeigenschaften, etwa dem Chassis-Typ. Eine Sicherheitsfilterung ginge auch, verlangt aber eine gepflegte Gruppe.",
+   "id": "f035"
+  },
+  {
+   "domain": "d4",
+   "frage": "Womit lässt sich eine GPO verknüpfen?",
+   "optionen": [
+    "Standort",
+    "Domäne",
+    "Organisationseinheit",
+    "Sicherheitsgruppe"
+   ],
+   "richtig": [
+    0,
+    1,
+    2
+   ],
+   "erklaerung": "Verknüpfungen gibt es nur mit **Standort, Domäne und OU**. Gruppen steuern die Reichweite ausschliesslich über die **Sicherheitsfilterung**.",
+   "id": "f036"
+  },
+  {
+   "domain": "d4",
+   "frage": "Auf einem Terminalserver sollen die Benutzereinstellungen der Computer-OU gelten. Was aktivierst du?",
+   "optionen": [
+    "Erzwungen",
+    "Loopbackverarbeitung",
+    "Vererbung deaktivieren",
+    "WMI-Filter"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Die **Loopbackverarbeitung** wendet die Benutzerkonfiguration der Computer-OU an – im Modus *Zusammenführen* oder *Ersetzen*. Klassisch für Terminalserver und Kioske.",
+   "id": "f037"
+  },
+  {
+   "domain": "d4",
+   "frage": "In welchem Abstand holen Clients Gruppenrichtlinien ab?",
+   "optionen": [
+    "Alle 5 Minuten",
+    "Alle 90 Minuten plus bis zu 30 Minuten zufällig",
+    "Alle 8 Stunden",
+    "Nur beim Neustart"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Clients: 90 Minuten plus zufällige Verschiebung. **Domain Controller**: alle 5 Minuten. Sofort geht es mit `gpupdate /force`.",
+   "id": "f038"
+  },
+  {
+   "domain": "d4",
+   "frage": "Womit prüfst du auf einem Client, welche GPOs tatsächlich angewendet wurden?",
+   "optionen": [
+    "gpupdate /force",
+    "gpresult /r",
+    "dcdiag",
+    "auditpol /get"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "`gpresult /r` zeigt den tatsächlichen Stand, `gpresult /h` erzeugt einen HTML-Bericht. `gpupdate` wendet nur neu an, prüft aber nichts.",
+   "id": "f039"
+  },
+  {
+   "domain": "d4",
+   "frage": "Wo wird die Einstellung „Erzwungen“ gesetzt?",
+   "optionen": [
+    "Auf der GPO selbst",
+    "Auf der Verknüpfung",
+    "Auf der OU",
+    "In der Sicherheitsfilterung"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Erzwungen** ist eine Eigenschaft der **Verknüpfung**. Dieselbe GPO kann an einer Stelle erzwungen und an einer anderen normal verknüpft sein.",
+   "id": "f040"
+  },
+  {
+   "domain": "d5",
+   "frage": "Eine Kennwortrichtlinie wurde auf einer OU verknüpft, wirkt aber nicht auf die Domänenbenutzer. Warum?",
+   "optionen": [
+    "Die GPO ist deaktiviert",
+    "Die Kennwortrichtlinie für Domänenkonten muss auf Domänenebene verknüpft sein",
+    "Es fehlt die Sicherheitsfilterung",
+    "Die Funktionsebene ist zu niedrig"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Die Kennwortrichtlinie für **Domänenkonten** wirkt nur von der **Domänenebene** aus. Auf einer OU verknüpft betrifft sie nur die lokalen Konten der dortigen Computer.",
+   "id": "f041"
+  },
+  {
+   "domain": "d5",
+   "frage": "Du brauchst für Administratoren strengere Kennwortregeln als für alle anderen. Was setzt du ein?",
+   "optionen": [
+    "Eine zweite Default Domain Policy",
+    "Eine fein abgestimmte Kennwortrichtlinie, angewendet auf die Admin-Gruppe",
+    "Eine GPO auf der Admin-OU",
+    "Die Gruppe Geschützte Benutzer"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Nur eine **FGPP** erlaubt abweichende Kennwortregeln innerhalb einer Domäne. Sie wird auf **Benutzer oder Gruppen** angewendet, nie auf OUs.",
+   "id": "f042"
+  },
+  {
+   "domain": "d5",
+   "frage": "Worauf lässt sich eine fein abgestimmte Kennwortrichtlinie anwenden?",
+   "optionen": [
+    "Auf Organisationseinheiten",
+    "Auf Benutzer und Gruppen",
+    "Auf Standorte",
+    "Auf Computer"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "FGPPs gelten für **Benutzer und globale Sicherheitsgruppen**. Das ist der häufigste Fehler: Eine Zuweisung an eine OU gibt es nicht.",
+   "id": "f043"
+  },
+  {
+   "domain": "d5",
+   "frage": "Zwei FGPPs treffen über Gruppen auf denselben Benutzer zu. Welche gilt?",
+   "optionen": [
+    "Die zuletzt erstellte",
+    "Die mit der niedrigsten Precedence",
+    "Die strengere",
+    "Beide zusammen"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Die **niedrigste Precedence** gewinnt. Eine direkt am Benutzer verknüpfte PSO schlägt zudem jede über Gruppen. Prüfen mit `Get-ADUserResultantPasswordPolicy`.",
+   "id": "f044"
+  },
+  {
+   "domain": "d5",
+   "frage": "Der Helpdesk soll Kennwörter zurücksetzen dürfen, aber keine Domänen-Admin-Rechte bekommen. Was tust du?",
+   "optionen": [
+    "Mitglieder der Gruppe Konten-Operatoren machen",
+    "Auf der OU die Objektverwaltung an eine Helpdesk-Gruppe delegieren",
+    "Eine GPO mit Benutzerrechten verknüpfen",
+    "Eine FGPP erstellen"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Delegierung** auf OU-Ebene an eine **Gruppe** ist der vorgesehene Weg. *Konten-Operatoren* ist eine privilegierte Gruppe mit deutlich mehr Rechten als nötig.",
+   "id": "f045"
+  },
+  {
+   "domain": "d5",
+   "frage": "Was braucht es, damit Änderungen an einem AD-Objekt im Sicherheitsprotokoll erscheinen?",
+   "optionen": [
+    "Nur die Überwachungsrichtlinie aktivieren",
+    "Die Überwachungsrichtlinie aktivieren und am Objekt eine SACL setzen",
+    "Nur eine SACL setzen",
+    "Den AD-Papierkorb aktivieren"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "**Beides** ist nötig: die Richtlinie *Verzeichnisdienstzugriff überwachen* und eine **SACL** am Objekt unter Sicherheit → Erweitert → Überwachung.",
+   "id": "f046"
+  },
+  {
+   "domain": "d5",
+   "frage": "Welche Einstellung verhindert, dass die einfache Überwachungsrichtlinie die erweiterte überschreibt?",
+   "optionen": [
+    "Erzwungen auf der Verknüpfung",
+    "Überwachung: Unterkategorieeinstellungen der Überwachungsrichtlinie erzwingen",
+    "Loopbackverarbeitung",
+    "Vererbung deaktivieren"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Diese Sicherheitsoption sorgt dafür, dass die **erweiterte** Überwachungsrichtlinie gilt. Ohne sie setzen sich die neun groben Kategorien durch.",
+   "id": "f047"
+  },
+  {
+   "domain": "d5",
+   "frage": "Welche Ereignis-ID steht für ein gesperrtes Benutzerkonto?",
+   "optionen": [
+    "4720",
+    "4726",
+    "4740",
+    "5136"
+   ],
+   "richtig": [
+    2
+   ],
+   "erklaerung": "**4740** ist die Kontosperrung. 4720 ist die Erstellung, 4726 die Löschung, 5136 die Änderung eines Verzeichnisobjekts.",
+   "id": "f048"
+  },
+  {
+   "domain": "d5",
+   "frage": "Was ist beim Zuweisen von Benutzerrechten über GPO besonders zu beachten?",
+   "optionen": [
+    "Die Einstellungen ergänzen bestehende Zuweisungen",
+    "Die Einstellungen ersetzen die bestehende Liste vollständig",
+    "Sie gehören in die Benutzerkonfiguration",
+    "Sie wirken nur auf Domain Controller"
+   ],
+   "richtig": [
+    1
+   ],
+   "erklaerung": "Benutzerrechtzuweisungen sind **ersetzend**. Wer nur eine Gruppe einträgt, entfernt alle anderen – inklusive Administratoren. Sie gehören in die **Computerkonfiguration**.",
+   "id": "f049"
+  },
+  {
+   "domain": "d5",
+   "frage": "Welcher Befehl aktiviert die Überwachung von Verzeichnisdienständerungen auf der Kommandozeile?",
+   "optionen": [
+    "auditpol /set /subcategory:\"Directory Service Changes\" /success:enable",
+    "gpupdate /force",
+    "dsacls /G",
+    "Set-ADDefaultDomainPasswordPolicy"
+   ],
+   "richtig": [
+    0
+   ],
+   "erklaerung": "`auditpol` setzt Unterkategorien der erweiterten Überwachungsrichtlinie. `/get /category:*` zeigt den aktuellen Stand.",
+   "id": "f050"
+  }
+ ],
+ "lernplan": {
+  "hinweis": "3 Wochen à ca. 5 Stunden. Das Assessment ist ein Lab – der Schwerpunkt liegt auf Übung im Homelab, nicht auf Auswendiglernen. Starte das Lab erst, wenn Woche 3 durch ist: nach dem Start sind 72 Stunden Sperre.",
+  "wochen": [
+   {
+    "nr": 1,
+    "thema": "Domain Controller und Topologie",
+    "stunden": 5,
+    "ziel": "Du stellst einen DC bereit, überträgst eine FSMO-Rolle und baust Standort plus Subnetz.",
+    "aufgaben": [
+     "Homelab: zwei Windows-Server-VMs bereitstellen (DC01 bestehend, DC02 neu)",
+     "Learn-Modul **Domain Controller und FSMO-Rollen** durcharbeiten",
+     "Lab: DC02 mit `Install-WindowsFeature` und `Install-ADDSDomainController` heraufstufen",
+     "Lab: FSMO-Rollen anzeigen (`netdom query fsmo`), **PDC Emulator auf DC02 übertragen** und zurück",
+     "Lab: Funktionsebene prüfen und – wenn möglich – heraufstufen",
+     "Lab: Standort **Zuerich** anlegen, Subnetz zuordnen, DC02 dorthin verschieben",
+     "Karten: Bereiche 1 und 2 (Pendelzeit)",
+     "Fragen: Bereiche 1 und 2 vollständig"
+    ]
+   },
+   {
+    "nr": 2,
+    "thema": "Objekte und Gruppenrichtlinien",
+    "stunden": 6,
+    "ziel": "Du legst Benutzer, Gruppen, OUs und ein gMSA an und beherrschst GPO-Reichweite.",
+    "aufgaben": [
+     "Learn-Modul **Introduction to AD DS** und **Implement Group Policy Objects**",
+     "Lab: OU-Struktur anlegen, 20 Benutzer **aus einer CSV** erzeugen, Kennwort zurücksetzen",
+     "Lab: globale und domänenlokale Gruppe nach **AGDLP** verschachteln",
+     "Lab: `Add-KdsRootKey` mit Rückdatierung, dann **gMSA** anlegen, installieren und testen",
+     "Lab: AD-Papierkorb aktivieren, Benutzer löschen und **wiederherstellen**",
+     "Lab: GPO erstellen und verknüpfen, **Vererbung deaktivieren** und **Erzwungen** gegeneinander testen",
+     "Lab: Sicherheitsfilterung auf eine Gruppe setzen, mit `gpresult /r` prüfen",
+     "Karten: Bereiche 3 und 4",
+     "Fragen: Bereiche 3 und 4 vollständig"
+    ]
+   },
+   {
+    "nr": 3,
+    "thema": "Sicherheit und Generalprobe",
+    "stunden": 5,
+    "ziel": "Delegierung, Kennwortrichtlinien und Auditing sitzen. Danach das Lab starten.",
+    "aufgaben": [
+     "Learn-Modul **AD DS überwachen und Fehler beheben**",
+     "Lab: Objektverwaltung an eine **Helpdesk-Gruppe** delegieren (nur Kennwort zurücksetzen)",
+     "Lab: Domänen-Kennwortrichtlinie anpassen, dann eine **FGPP** für die Admin-Gruppe anlegen",
+     "Lab: erweiterte Überwachung aktivieren, **SACL** auf eine OU setzen, Änderung provozieren, Ereignis 5136 im Protokoll suchen",
+     "Lab: **Zuweisen von Benutzerrechten** über GPO setzen und prüfen",
+     "**Trockenübung 1** schreiben, schwächsten Bereich nacharbeiten",
+     "Alle fünf Aufgabenbereiche einmal **ohne Spickzettel** im Lab durchspielen – auf Zeit",
+     "**Trockenübung 2** schreiben",
+     "Erst jetzt: Assessment-Lab auf Microsoft Learn starten"
+    ]
+   }
+  ]
+ },
+ "pruefungen": [
+  {
+   "id": "p1",
+   "titel": "Trockenübung 1 – alle Bereiche",
+   "dauer_min": 30,
+   "fragen": [
+    "f048",
+    "f032",
+    "f017",
+    "f024",
+    "f011",
+    "f020",
+    "f043",
+    "f034",
+    "f008",
+    "f013",
+    "f001",
+    "f019",
+    "f010",
+    "f040",
+    "f025",
+    "f003",
+    "f044",
+    "f036",
+    "f029",
+    "f046"
+   ]
+  },
+  {
+   "id": "p2",
+   "titel": "Trockenübung 2 – andere Fragen",
+   "dauer_min": 30,
+   "fragen": [
+    "f018",
+    "f022",
+    "f016",
+    "f049",
+    "f038",
+    "f027",
+    "f028",
+    "f007",
+    "f047",
+    "f006",
+    "f014",
+    "f050",
+    "f031",
+    "f026",
+    "f045",
+    "f009",
+    "f005",
+    "f030",
+    "f035",
+    "f037"
+   ]
+  },
+  {
+   "id": "p3",
+   "titel": "Kurzcheck – 10 Fragen",
+   "dauer_min": 15,
+   "fragen": [
+    "f015",
+    "f033",
+    "f041",
+    "f039",
+    "f002",
+    "f004",
+    "f023",
+    "f021",
+    "f042",
+    "f012"
+   ]
+  }
+ ],
+ "glossar": [
+  {
+   "b": "AGDLP",
+   "d": "Accounts → Global → Domain Local → Permissions. Microsofts Berechtigungsmodell."
+  },
+  {
+   "b": "dcdiag",
+   "d": "Prüfwerkzeug für die Gesundheit eines Domain Controllers."
+  },
+  {
+   "b": "dsacls",
+   "d": "Kommandozeile zum Setzen von Berechtigungen auf AD-Objekten."
+  },
+  {
+   "b": "dssite.msc",
+   "d": "Snap-In Active Directory-Standorte und -Dienste."
+  },
+  {
+   "b": "FGPP / PSO",
+   "d": "Fein abgestimmte Kennwortrichtlinie, gilt für Benutzer und Gruppen, nie für OUs."
+  },
+  {
+   "b": "FSMO",
+   "d": "Flexible Single Master Operations – die fünf Sonderrollen im Verzeichnis."
+  },
+  {
+   "b": "gMSA",
+   "d": "Gruppenverwaltetes Dienstkonto mit automatisch rotierendem Kennwort."
+  },
+  {
+   "b": "GPMC",
+   "d": "Gruppenrichtlinienverwaltung, Aufruf mit gpmc.msc."
+  },
+  {
+   "b": "ISTG",
+   "d": "Inter-Site Topology Generator – berechnet Verbindungen zwischen Standorten."
+  },
+  {
+   "b": "KCC",
+   "d": "Knowledge Consistency Checker – berechnet die Replikationstopologie."
+  },
+  {
+   "b": "KDS-Stammschlüssel",
+   "d": "Voraussetzung für gMSA, einmal pro Gesamtstruktur mit Add-KdsRootKey."
+  },
+  {
+   "b": "LSDOU",
+   "d": "Verarbeitungsreihenfolge: Lokal, Standort, Domäne, OU."
+  },
+  {
+   "b": "Precedence",
+   "d": "Rangzahl einer FGPP – die niedrigste gewinnt."
+  },
+  {
+   "b": "RODC",
+   "d": "Read-Only Domain Controller, schreibgeschützte Kopie für Zweigstellen."
+  },
+  {
+   "b": "SACL",
+   "d": "System Access Control List – legt fest, welche Zugriffe überwacht werden."
+  },
+  {
+   "b": "Seize",
+   "d": "Beschlagnahmen einer FSMO-Rolle, nur bei dauerhaftem Ausfall des Inhabers."
+  },
+  {
+   "b": "Site Link",
+   "d": "Standortverknüpfung mit Kosten, Intervall und Zeitplan."
+  },
+  {
+   "b": "SYSVOL",
+   "d": "Freigegebener Ordner mit Skripten und Gruppenrichtlinienvorlagen, zwischen DCs repliziert."
+  }
+ ],
+ "lastminute": "### Lab-Spickzettel – die Befehle, die du blind können solltest\n\n```\n# Domain Controller\nInstall-WindowsFeature AD-Domain-Services -IncludeManagementTools\nInstall-ADDSDomainController -DomainName contoso.com -InstallDns\nnetdom query fsmo\nMove-ADDirectoryServerOperationMasterRole -Identity DC02 -OperationMasterRole PDCEmulator\n\n# Topologie\nSet-ADDomainMode -Identity contoso.com -DomainMode Windows2016Domain\nNew-ADReplicationSite   -Name \"Zuerich\"\nNew-ADReplicationSubnet -Name \"10.10.20.0/24\" -Site \"Zuerich\"\nMove-ADDirectoryServer  -Identity DC02 -Site \"Zuerich\"\n\n# Objekte\nNew-ADUser -Name \"Anna Meier\" -SamAccountName ameier -Path \"OU=IT,DC=contoso,DC=com\" `\n  -AccountPassword (ConvertTo-SecureString \"Pa55w.rd!\" -AsPlainText -Force) -Enabled $true\nSet-ADAccountPassword -Identity ameier -Reset -NewPassword (ConvertTo-SecureString \"Neu!\" -AsPlainText -Force)\nNew-ADGroup -Name \"IT-Admins\" -GroupScope Global -GroupCategory Security -Path \"OU=IT,DC=contoso,DC=com\"\nAdd-ADGroupMember -Identity \"IT-Admins\" -Members ameier\nNew-ADOrganizationalUnit -Name \"IT\" -Path \"DC=contoso,DC=com\"\n\n# gMSA\nAdd-KdsRootKey -EffectiveTime ((Get-Date).AddHours(-10))\nNew-ADServiceAccount -Name gmsaSQL -DNSHostName gmsaSQL.contoso.com -PrincipalsAllowedToRetrieveManagedPassword \"SQL-Server\"\nInstall-ADServiceAccount -Identity gmsaSQL ; Test-ADServiceAccount -Identity gmsaSQL\n\n# Papierkorb\nEnable-ADOptionalFeature -Identity \"Recycle Bin Feature\" -Scope ForestOrConfigurationSet -Target contoso.com\nGet-ADObject -Filter 'Name -like \"*Meier*\"' -IncludeDeletedObjects | Restore-ADObject\n\n# Gruppenrichtlinien\nNew-GPO -Name \"Bildschirmsperre\" ; New-GPLink -Name \"Bildschirmsperre\" -Target \"OU=IT,DC=contoso,DC=com\"\nSet-GPInheritance -Target \"OU=IT,DC=contoso,DC=com\" -IsBlocked Yes\nSet-GPLink -Name \"Bildschirmsperre\" -Target \"OU=IT,DC=contoso,DC=com\" -Enforced Yes\ngpupdate /force ; gpresult /r\n\n# Sicherheit\nSet-ADDefaultDomainPasswordPolicy -Identity contoso.com -MinPasswordLength 14 -LockoutThreshold 5\nNew-ADFineGrainedPasswordPolicy -Name \"Admin-PSO\" -Precedence 10 -MinPasswordLength 20 -ComplexityEnabled $true\nAdd-ADFineGrainedPasswordPolicySubject -Identity \"Admin-PSO\" -Subjects \"IT-Admins\"\nauditpol /set /subcategory:\"Directory Service Changes\" /success:enable /failure:enable\n```\n\n### Die Fallen\n\n- `New-ADUser` **ohne** `-Enabled $true` legt das Konto deaktiviert an.\n- Eine **OU** lässt sich nicht löschen, solange der Schutz vor versehentlichem Löschen aktiv ist.\n- Eine **FGPP** gilt für Benutzer und Gruppen, **nie** für OUs.\n- Die **Kennwortrichtlinie der Domäne** wirkt nur, wenn sie auf **Domänenebene** verknüpft ist.\n- **Erzwungen** schlägt **Vererbung deaktivieren**.\n- **Link Order 1** wird zuletzt angewendet und gewinnt.\n- Auditing braucht **Richtlinie und SACL**, nicht nur eines von beiden.\n- **Benutzerrechtzuweisungen ersetzen** die bestehende Liste vollständig.\n- **gMSA** braucht vorher den **KDS-Stammschlüssel** – mit Rückdatierung, sonst zehn Stunden Wartezeit.\n- Ohne **Subnetz** findet ein Client seinen Standort nicht.\n\n### Zum Ablauf des Assessments\n\n- Es ist ein **interaktives Lab**, keine Multiple-Choice-Prüfung. Du führst die Aufgaben aus.\n- Nach dem Start musst du **72 Stunden** warten, bis du es erneut öffnen kannst. Also erst üben.\n- Das Laden des Labs dauert ein paar Minuten – in der Zeit darfst du etwas anderes tun.\n- Mausbewegungen und Eingaben werden zu Qualitätszwecken aufgezeichnet.\n- Arbeite mit **PowerShell**, wo du kannst: schneller und weniger fehleranfällig als Klickwege.\n- Lies jede Aufgabe zu Ende, bevor du beginnst. Namen und Pfade werden wörtlich geprüft."
+}

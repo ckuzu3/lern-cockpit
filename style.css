@@ -1,0 +1,249 @@
+/* Lern-Cockpit – Gestaltung nach den Prinzipien von Apples Human Interface Guidelines:
+   Klarheit, Zurückhaltung, Tiefe. Systemfarben, Systemschrift, gruppierte Listen,
+   unscharfe Leisten, 44pt-Tippziele, heller und dunkler Modus. */
+
+:root{
+  color-scheme: light dark;
+
+  /* Systemfarben – hell */
+  --bg:#f2f2f7;            /* systemGroupedBackground */
+  --fg1:#ffffff;           /* secondarySystemGroupedBackground – Listenflächen */
+  --fg2:#f2f2f7;           /* tertiary – Felder auf Listenflächen */
+  --sep:rgba(60,60,67,.26);
+  --label:#000000;
+  --label2:rgba(60,60,67,.6);
+  --label3:rgba(60,60,67,.3);
+  --tint:#007aff;
+  --green:#34c759; --red:#ff3b30; --orange:#ff9500; --grau:#8e8e93;
+  --fill:rgba(116,116,128,.12);
+  --bar:rgba(249,249,249,.82);
+
+  --rad:10px;              /* Radius gruppierter Listen */
+  --rad-l:14px;
+  --inset:16px;            /* Seitenabstand */
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#000000; --fg1:#1c1c1e; --fg2:#2c2c2e;
+    --sep:rgba(84,84,88,.65);
+    --label:#ffffff; --label2:rgba(235,235,245,.6); --label3:rgba(235,235,245,.3);
+    --tint:#0a84ff;
+    --green:#30d158; --red:#ff453a; --orange:#ff9f0a; --grau:#8e8e93;
+    --fill:rgba(118,118,128,.24);
+    --bar:rgba(22,22,24,.8);
+  }
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--label);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;
+  font-size:17px;line-height:1.3;letter-spacing:-.01em;
+  overscroll-behavior-y:none;
+}
+a{color:var(--tint);text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+
+/* ---------- Navigationsleiste ---------- */
+#navbar{
+  position:fixed;top:0;left:0;right:0;z-index:60;
+  padding-top:var(--sat);
+  background:transparent;transition:background .25s,box-shadow .25s;
+}
+#navbar.fest{background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);
+  backdrop-filter:saturate(180%) blur(20px);box-shadow:0 .5px 0 var(--sep)}
+#navbar .inner{height:44px;display:flex;align-items:center;padding:0 8px;position:relative}
+#navbar .zurueck{display:flex;align-items:center;gap:1px;color:var(--tint);font-size:17px;
+  padding:6px 8px 6px 2px;min-height:44px}
+#navbar .zurueck svg{width:12px;height:20px;flex:0 0 12px}
+#navbar .titel{position:absolute;left:50%;transform:translateX(-50%);
+  font-size:17px;font-weight:600;letter-spacing:-.02em;opacity:0;transition:opacity .2s;
+  max-width:58%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#navbar.fest .titel{opacity:1}
+#navbar .rechts{margin-left:auto;color:var(--tint);font-size:17px;padding:6px 8px;min-height:44px;
+  display:flex;align-items:center}
+
+/* ---------- Seite ---------- */
+#app{padding:calc(var(--sat) + 44px) 0 calc(96px + var(--sab));max-width:720px;margin:0 auto}
+#app.ohne-tabs{padding-bottom:calc(32px + var(--sab))}
+.boot{color:var(--label2);padding:56px 0;text-align:center;font-size:15px}
+
+h1.gross{font-size:34px;line-height:1.12;font-weight:700;letter-spacing:-.03em;
+  margin:4px var(--inset) 2px;padding-top:4px}
+.unter{margin:0 var(--inset) 4px;color:var(--label2);font-size:15px;line-height:1.35}
+
+/* ---------- Gruppierte Liste ---------- */
+.gruppe{margin:30px 0 0}
+.gruppe > .kopf{font-size:13px;color:var(--label2);margin:0 var(--inset) 7px;line-height:1.3}
+.gruppe > .fuss{font-size:13px;color:var(--label2);margin:7px var(--inset) 0;line-height:1.35}
+.liste{background:var(--fg1);border-radius:var(--rad);margin:0 var(--inset);overflow:hidden}
+@media (min-width:500px){ .liste{border-radius:var(--rad-l)} }
+
+.zeile{display:flex;align-items:center;gap:12px;min-height:44px;padding:11px var(--inset);
+  position:relative;width:100%;background:none}
+.zeile + .zeile::before{content:"";position:absolute;left:var(--inset);right:0;top:0;height:.5px;background:var(--sep)}
+.zeile.tap:active{background:var(--fill)}
+.zeile .haupt{flex:1;min-width:0}
+.zeile .t{display:block;font-size:17px;line-height:1.25;letter-spacing:-.02em}
+.zeile .s{display:block;font-size:13px;color:var(--label2);margin-top:2px;line-height:1.3}
+.zeile .wert{color:var(--label2);font-size:17px;white-space:nowrap}
+.chev{width:9px;height:15px;flex:0 0 9px;color:var(--label3)}
+.zeile .ikon{width:29px;height:29px;flex:0 0 29px;border-radius:7px;display:grid;place-items:center;color:#fff}
+.zeile .ikon svg{width:18px;height:18px}
+
+/* ---------- Abzeichen ---------- */
+.badge{min-width:22px;height:22px;padding:0 7px;border-radius:11px;background:var(--grau);
+  color:#fff;font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+.badge.tint{background:var(--tint)} .badge.gruen{background:var(--green)}
+.badge.rot{background:var(--red)} .badge.orange{background:var(--orange)}
+.badge.leise{background:var(--fill);color:var(--label2)}
+
+/* ---------- Fortschritt ---------- */
+.bar{height:6px;background:var(--fill);border-radius:3px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--tint);border-radius:3px;transition:width .35s ease}
+.bar > i.gruen{background:var(--green)}
+.ring{position:relative;flex:0 0 auto}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-weight:600;letter-spacing:-.03em}
+
+/* ---------- Kacheln ---------- */
+.kacheln{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 var(--inset)}
+.kachel{background:var(--fg1);border-radius:var(--rad);padding:14px}
+.kachel b{display:block;font-size:28px;font-weight:600;letter-spacing:-.03em;line-height:1.1}
+.kachel > span{display:block;font-size:13px;color:var(--label2);margin-top:3px}
+.kachel b span{font-size:17px;color:var(--label2);font-weight:600}
+
+/* ---------- Knöpfe ---------- */
+.knopf{display:block;width:calc(100% - var(--inset)*2);margin:12px var(--inset);
+  background:var(--tint);color:#fff;border-radius:12px;padding:0 16px;height:50px;
+  font-size:17px;font-weight:600;letter-spacing:-.02em;text-align:center;line-height:50px}
+.knopf:active{opacity:.7}
+.knopf.leise{background:var(--fill);color:var(--tint)}
+.knopf.warnung{background:var(--fill);color:var(--red)}
+.knopf.klein{height:44px;line-height:44px;font-size:16px}
+.knopfreihe{display:flex;gap:10px;margin:12px var(--inset)}
+.knopfreihe > *{flex:1;width:auto;margin:0}
+
+/* ---------- Lernkarte ---------- */
+.flash{background:var(--fg1);border-radius:var(--rad-l);margin:8px var(--inset);padding:26px 20px;
+  min-height:46vh;display:flex;flex-direction:column;justify-content:center}
+.flash .dom{font-size:13px;color:var(--label2);text-align:center;margin-bottom:14px}
+.flash .frage{font-size:22px;font-weight:600;letter-spacing:-.025em;line-height:1.28;text-align:center}
+.flash .hinweis{text-align:center;color:var(--label3);font-size:15px;margin-top:20px}
+.flash .antwort{margin-top:18px;padding-top:18px;border-top:.5px solid var(--sep);font-size:16px;line-height:1.45}
+.flash .antwort p{margin:7px 0}
+.bewerten{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px var(--inset)}
+.bewerten button{background:var(--fg1);border-radius:12px;padding:11px 2px;text-align:center;
+  font-size:12px;font-weight:600;letter-spacing:-.01em}
+.bewerten button:active{background:var(--fill)}
+.bewerten button i{display:block;font-style:normal;font-size:16px;margin-bottom:3px}
+.bewerten button:nth-child(1){color:var(--red)} .bewerten button:nth-child(2){color:var(--orange)}
+.bewerten button:nth-child(3){color:var(--tint)} .bewerten button:nth-child(4){color:var(--green)}
+
+/* ---------- Fragen ---------- */
+.frageblock{background:var(--fg1);border-radius:var(--rad);margin:8px var(--inset);padding:16px;
+  font-size:17px;font-weight:600;letter-spacing:-.02em;line-height:1.32}
+.frageblock .mehrfach{font-size:13px;font-weight:400;color:var(--label2);margin-top:6px}
+.optionen{margin:0 var(--inset)}
+.opt{display:flex;gap:11px;align-items:flex-start;width:100%;background:var(--fg1);
+  border-radius:12px;padding:13px 14px;margin:8px 0;font-size:16px;line-height:1.35;
+  border:1.5px solid transparent;transition:border-color .15s,background .15s}
+.opt:active{background:var(--fill)}
+.opt .b{flex:0 0 22px;height:22px;border-radius:11px;background:var(--fill);color:var(--label2);
+  font-size:12px;font-weight:600;display:grid;place-items:center;margin-top:1px}
+.opt.gewaehlt{border-color:var(--tint)} .opt.gewaehlt .b{background:var(--tint);color:#fff}
+.opt.richtig{border-color:var(--green)} .opt.richtig .b{background:var(--green);color:#fff}
+.opt.falsch{border-color:var(--red)} .opt.falsch .b{background:var(--red);color:#fff}
+.erklaerung{background:var(--fg1);border-radius:var(--rad);margin:14px var(--inset);padding:16px;
+  font-size:15px;line-height:1.5}
+.erklaerung .kopfz{font-size:15px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.erklaerung .kopfz.ok{color:var(--green)} .erklaerung .kopfz.nok{color:var(--red)}
+.erklaerung p{margin:7px 0}
+
+/* ---------- Fliesstext ---------- */
+.text{background:var(--fg1);border-radius:var(--rad);margin:8px var(--inset);padding:4px 16px 16px;
+  font-size:16px;line-height:1.52}
+.text h3{font-size:20px;font-weight:700;letter-spacing:-.025em;margin:22px 0 8px}
+.text h4{font-size:16px;font-weight:600;color:var(--tint);margin:18px 0 5px;letter-spacing:-.01em}
+.text p{margin:9px 0}
+.text ul{margin:9px 0;padding-left:21px}
+.text li{margin:5px 0}
+.text strong{font-weight:600}
+.text code{background:var(--fill);padding:2px 6px;border-radius:5px;font-size:14px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0}
+.tbl table{border-collapse:collapse;width:100%;min-width:420px;font-size:14px}
+.tbl th,.tbl td{border-bottom:.5px solid var(--sep);padding:9px 10px;text-align:left;vertical-align:top}
+.tbl th{font-weight:600;color:var(--label2);font-size:13px;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:0}
+
+/* ---------- Prüfung ---------- */
+.timer{position:sticky;top:calc(var(--sat) + 44px);z-index:30;background:var(--bar);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  padding:8px var(--inset);display:flex;justify-content:space-between;align-items:center;
+  box-shadow:0 .5px 0 var(--sep);font-size:15px;color:var(--label2)}
+.timer b{font-variant-numeric:tabular-nums;font-size:17px;color:var(--label);font-weight:600}
+.timer.knapp b{color:var(--red)}
+
+/* ---------- Tableiste ---------- */
+#tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;
+  background:var(--bar);-webkit-backdrop-filter:saturate(180%) blur(20px);
+  backdrop-filter:saturate(180%) blur(20px);box-shadow:0 -.5px 0 var(--sep);
+  padding-bottom:var(--sab)}
+#tabbar button{flex:1;height:49px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;color:var(--grau);font-size:10px;font-weight:500;letter-spacing:0}
+#tabbar button svg{width:26px;height:26px}
+#tabbar button.an{color:var(--tint)}
+
+/* ---------- Sonstiges ---------- */
+.leer{text-align:center;color:var(--label2);padding:52px var(--inset);font-size:16px;line-height:1.45}
+.leer .gross{font-size:46px;margin-bottom:12px;opacity:.5}
+textarea.feld{width:calc(100% - var(--inset)*2);margin:0 var(--inset);background:var(--fg1);
+  color:var(--label);border:0;border-radius:var(--rad);padding:14px;font-size:13px;line-height:1.4;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;min-height:150px;resize:vertical}
+textarea.feld:focus{outline:2px solid var(--tint);outline-offset:-2px}
+.toast{position:fixed;left:50%;bottom:calc(72px + var(--sab));transform:translateX(-50%) translateY(10px);
+  background:rgba(40,40,42,.95);color:#fff;padding:11px 18px;border-radius:22px;font-size:15px;
+  z-index:90;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:84vw;text-align:center}
+.toast.an{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- Statuszeile über Karten und Drill ---------- */
+.statuszeile,.drillbar{display:flex;justify-content:space-between;align-items:center;
+  margin:2px var(--inset) 0;font-size:13px;color:var(--label2)}
+.drillbar{margin-bottom:8px;font-weight:600;color:var(--label)}
+.drillbar span:last-child{font-weight:400;color:var(--label2)}
+
+/* ---------- Werkzeugleiste: markieren, Notiz, Flagge ---------- */
+.werkzeuge{display:flex;gap:8px;margin:10px var(--inset) 0}
+.werkzeuge button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--fg1);border-radius:11px;min-height:44px;padding:0 10px;
+  font-size:14px;color:var(--label2);font-weight:500}
+.werkzeuge button svg{width:19px;height:19px;flex:0 0 19px}
+.werkzeuge button:active{background:var(--fill)}
+.werkzeuge button.an{color:var(--orange)}
+.notiz{background:var(--fg1);border-left:3px solid var(--orange);border-radius:0 10px 10px 0;
+  margin:10px var(--inset) 0;padding:12px 14px;font-size:15px;line-height:1.45;white-space:pre-wrap}
+textarea.notizfeld{min-height:96px;margin-top:10px;font-family:inherit;font-size:16px}
+
+/* ---------- Verlauf ---------- */
+.verlauf{display:flex;align-items:flex-end;gap:4px;height:56px}
+.verlauf i{flex:1;background:var(--tint);border-radius:3px;min-height:3px;display:block}
+
+/* ---------- Suche ---------- */
+.suchfeld{display:flex;align-items:center;gap:8px;background:var(--fg1);border-radius:11px;
+  margin:10px var(--inset);padding:0 12px;height:44px}
+.suchfeld span{display:flex;color:var(--label3)}
+.suchfeld svg{width:19px;height:19px}
+.suchfeld input{flex:1;border:0;background:none;color:var(--label);font-size:17px;
+  font-family:inherit;outline:none;min-width:0;height:44px;-webkit-appearance:none}
+.suchfeld input::placeholder{color:var(--label3)}
+
+/* ---------- Prüfungsraster ---------- */
+.raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:9px;margin:10px var(--inset)}
+.feldnr{height:46px;border-radius:11px;background:var(--fg1);color:var(--label2);
+  font-size:16px;font-weight:600;display:grid;place-items:center;border:1.5px solid transparent}
+.feldnr.bea{background:var(--tint);color:#fff}
+.feldnr.mark{border-color:var(--orange)}
+.feldnr:active{opacity:.7}
