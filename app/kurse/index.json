@@ -1,17 +1,19 @@
 {
-  "kurse": ["md-102.json"],
+  "kurse": ["md-102.json", "apl-1008.json", "az-900.json"],
   "fahrplan": [
     {"id":"md-102","titel":"MD-102 Endpoint Administrator","zeitraum":"Nov 2026 – Jan 2027","aufwand":"8 Wochen · 60–70 h",
      "warum":"Deckt genau deinen Arbeitsalltag ab (Intune, Windows-Clients, Entra-Join). Kleinster Lernaufwand, grösster Nutzen für Bewerbungen."},
+    {"id":"apl-1008","titel":"Applied Skills: AD DS verwalten","zeitraum":"läuft","aufwand":"3 Wochen · 15 h",
+     "warum":"Lab statt Multiple Choice, kostenlos, und du kennst AD ohnehin. Gute Ergänzung zwischen zwei grossen Themen."},
+    {"id":"az-900","titel":"AZ-900 Azure Fundamentals","zeitraum":"läuft","aufwand":"3 Wochen · 16 h",
+     "warum":"Kurzer Einstieg vor AZ-104. Allein im Lebenslauf schwach, als Grundlage für Azure aber genau richtig."},
     {"id":"itil-4-foundation","titel":"ITIL 4 Foundation","zeitraum":"Feb 2027","aufwand":"2 Wochen · 15–20 h",
      "warum":"Günstig und schnell, wird in Zürcher Ausschreibungen für Service-Rollen oft verlangt. Nice-to-have, kein Differenzierer."},
     {"id":"az-104","titel":"AZ-104 Azure Administrator","zeitraum":"Mär – Jun 2027","aufwand":"12 Wochen · 100–120 h",
-     "warum":"Die gefragteste Cloud-Zertifizierung für System Engineers. AZ-900 nur als kurzes Aufwärmen, wenn Azure neu für dich ist."},
+     "warum":"Die gefragteste Cloud-Zertifizierung für System Engineers. Baut direkt auf AZ-900 auf."},
     {"id":"sc-300","titel":"SC-300 Identity & Access Administrator","zeitraum":"Jul – Aug 2027","aufwand":"7 Wochen · 50–70 h",
-     "warum":"Entra ID in der Tiefe. Baut direkt auf MD-102 und AZ-104 auf – die Überschneidung senkt den Aufwand deutlich."},
+     "warum":"Entra ID in der Tiefe. Baut auf MD-102 und AZ-104 auf – die Überschneidung senkt den Aufwand deutlich."},
     {"id":"ccna","titel":"CCNA 200-301","zeitraum":"Sep 2027 – Feb 2028","aufwand":"5 Monate · 150–250 h",
-     "warum":"Starkes Signal für Netzwerk-/System-Engineering, aber der mit Abstand grösste Brocken. Erst nach den Microsoft-Zertifikaten."},
-    {"id":"applied-skills-adds","titel":"Microsoft Applied Skills: AD DS","zeitraum":"flexibel, als Lückenfüller","aufwand":"2–3 Wochen · 15–25 h",
-     "warum":"Praxisnah und günstig, du kennst AD ohnehin. Weniger bekannt als ein Zertifikat – gut als Ergänzung zwischen zwei grossen Themen."}
+     "warum":"Starkes Signal für Netzwerk-/System-Engineering, aber der mit Abstand grösste Brocken. Erst nach den Microsoft-Zertifikaten."}
   ]
 }
